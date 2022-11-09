@@ -1,0 +1,16 @@
+C:\Users\halop\RiderProjects\kursa4\kursa4\bin\Debug\kursa4.exe.config
+C:\Users\halop\RiderProjects\kursa4\kursa4\bin\Debug\kursa4.exe
+C:\Users\halop\RiderProjects\kursa4\kursa4\bin\Debug\kursa4.pdb
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.AssemblyReference.cache
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.SuggestedBindingRedirects.cache
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\MainWindow.g.cs
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\App.g.cs
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4_MarkupCompile.cache
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4_MarkupCompile.lref
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\MainWindow.baml
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.g.resources
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.Properties.Resources.resources
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.GenerateResource.cache
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.CoreCompileInputs.cache
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.exe
+C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.pdb
