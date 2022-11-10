@@ -1,16 +1,46 @@
-﻿<Window x:Class="kursa4.MainWindow"
+﻿
+<Window  x:Name="window"  x:Class="kursa4.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:kursa4"
         mc:Ignorable="d"
-        Title="MorskoyBOY" Height="400" Width="650">
-    <Grid x:Name="kirillpopusk">
-        <Grid.Background>
-            <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\temp_background.png"></ImageBrush>      
-        </Grid.Background>
+        Title="MorskoyBOY" Height="800" Width="1200"
+        SizeChanged="MainWindow_OnSizeChanged">
+    
+    
+    <Canvas x:Name="canvas" DragOver="ShipOver">
+        <Canvas.Background>
+            <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\temp_background.png"></ImageBrush>
+        </Canvas.Background>
+           
+           <Grid x:Name="grid" Height="800" Width="1200">
+                  <Canvas x:Name="field" DragOver="ShipOver" Visibility="Hidden" Height="600" Width="600" 
+                          HorizontalAlignment="Center" VerticalAlignment="Center" AllowDrop="True" Drop="Field_OnDrop"></Canvas>
+                  <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" Height="100" Width="400" Click="ButtonPlay_OnClick" FontSize="40"/>
+           </Grid>
         
-        <Button x:Name="ButtonPlay" Width="200" Height="80" Content="Начать игру" Click="ButtonPlay_OnClick"></Button>
-    </Grid>
+        <Label x:Name="Ship4" Height="60" Width="240" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden"> ЧЕТЫРЁХПАЛУБНИК </Label>
+        <Label x:Name="Ship3_1" Height="60" Width="180" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,80"> ТРЁХПАЛУБНИК </Label>
+        <Label x:Name="Ship3_2" Height="60" Width="180" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,160"> ТРЁХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_1" Height="60" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,240"> ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_2" Height="60" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,320"> ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_3" Height="60" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,400"> ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship1_1" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,480"> КАТЕР </Label>
+        <Label x:Name="Ship1_2" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="75,480"> КАТЕР </Label>
+        <Label x:Name="Ship1_3" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="150,480"> КАТЕР </Label>
+        <Label x:Name="Ship1_4" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" MouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="225,480"> КАТЕР </Label>
+    </Canvas>
 </Window>
