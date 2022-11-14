@@ -4,6 +4,7 @@ using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -21,7 +22,7 @@ namespace kursa4
             cells = new Button[10, 10];
             DrawField();
         }
-        
+
         private void ButtonPlay_OnClick(object sender, RoutedEventArgs e)
         {
             Application.Current.MainWindow.Height = 800;
@@ -58,19 +59,25 @@ namespace kursa4
                 }
             }
         }
+
+        private UIElement dragobject = null;
+        private Label temp = null;
+        private Point offset;
         
         private void Ship_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Label Ship = (Label)sender;
-            DragDrop.DoDragDrop(Ship, Ship.Content, DragDropEffects.Move);
+            this.dragobject = sender as UIElement;
+            this.temp = (Label)sender;
+            this.offset = e.GetPosition(this.canvas);
+            this.offset.Y -= Canvas.GetTop(this.dragobject);
+            this.offset.X -= Canvas.GetLeft(this.dragobject);
+            this.canvas.CaptureMouse();
         }
         
-        private void ShipOver(object sender, DragEventArgs e)
+        private void ShipOver(object sender, MouseButtonEventArgs e)
         {
-            Point dropPosition = e.GetPosition(canvas);
-            
-            Canvas.SetLeft(Ship4,dropPosition.X);
-            Canvas.SetTop(Ship4,dropPosition.Y);
+            this.dragobject = null;
+            this.canvas.ReleaseMouseCapture();
         }
 
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -82,6 +89,28 @@ namespace kursa4
         private void Field_OnDrop(object sender, DragEventArgs e)
         {
             //cells[0,0]
+        }
+
+        private void Ship_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (this.dragobject == null)
+            {
+                return;
+            }
+
+            var position = e.GetPosition(sender as IInputElement);
+            Canvas.SetTop(this.dragobject, position.Y - this.offset.Y);
+            Canvas.SetLeft(this.dragobject, position.X - this.offset.X);
+        }
+
+        private void Canvas_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (this.dragobject != null && (string)temp.Tag != "blocked" && e.Key == Key.R)
+            {
+                var rotateTransform = this.dragobject.RenderTransform as RotateTransform;
+                var transform = new RotateTransform(90 + (rotateTransform?.Angle ?? 0));
+                this.dragobject.RenderTransform = transform;
+            }
         }
     }
 }
