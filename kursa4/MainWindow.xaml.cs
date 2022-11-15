@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
+using System.Runtime.Remoting.Channels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,6 +9,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 using kursa4.Properties;
 using Label = System.Windows.Controls.Label;
 
@@ -15,11 +17,11 @@ namespace kursa4
 {
     public partial class MainWindow
     {
-        private Button[,] cells;
+        private Border[,] cells;
         public MainWindow()
         {
             InitializeComponent();
-            cells = new Button[10, 10];
+            cells = new Border[10, 10];
             DrawField();
         }
 
@@ -51,23 +53,30 @@ namespace kursa4
             {
                 for (int j = 0; j < 10; ++j)
                 {
-                    cells[i, j] = new Button() { Width = 60, Height = 60 };
-                    cells[i, j].Name = "button_" + i.ToString() + j.ToString();
+                    cells[i, j] = new Border() { Width = 60, Height = 60, 
+                        BorderThickness = new Thickness(1), 
+                        BorderBrush = Brushes.Black, Background = Brushes.Cornsilk,
+                    };
+                    cells[i, j].AllowDrop = true;
+                    cells[i, j].Name = "Border_" + i.ToString() + j.ToString();
                     Canvas.SetLeft(cells[i, j], 0 + j * 60);
                     Canvas.SetTop(cells[i, j], 0 + i * 60);
                     field.Children.Add(cells[i, j]);
+                    cells[i, j].PreviewMouseUp += ShipOver;
+                    cells[i, j].MouseEnter += OnDragEnter;
                 }
             }
         }
 
+
         private UIElement dragobject = null;
-        private Label temp = null;
+        private Border temp = null;
         private Point offset;
+        private bool enter_in_bord = false;
         
         private void Ship_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             this.dragobject = sender as UIElement;
-            this.temp = (Label)sender;
             this.offset = e.GetPosition(this.canvas);
             this.offset.Y -= Canvas.GetTop(this.dragobject);
             this.offset.X -= Canvas.GetLeft(this.dragobject);
@@ -76,8 +85,14 @@ namespace kursa4
         
         private void ShipOver(object sender, MouseButtonEventArgs e)
         {
-            this.dragobject = null;
             this.canvas.ReleaseMouseCapture();
+
+            if (this.enter_in_bord)
+            {
+                Canvas.SetTop(this.dragobject,Canvas.GetTop(temp)); //todo улетает корабль в пизду
+                Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp));
+            }
+            this.dragobject = null;
         }
 
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -86,9 +101,11 @@ namespace kursa4
             grid.Height = window.ActualHeight;
         }
 
-        private void Field_OnDrop(object sender, DragEventArgs e)
+       
+        private void OnDragEnter(object sender, MouseEventArgs e)
         {
-            //cells[0,0]
+            temp = sender as Border;
+            enter_in_bord = true;
         }
 
         private void Ship_MouseMove(object sender, MouseEventArgs e)
