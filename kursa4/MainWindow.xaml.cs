@@ -60,6 +60,16 @@ namespace kursa4
                     };
                     cells[i, j].AllowDrop = true;
                     cells[i, j].Name = "Border_" + i.ToString() + j.ToString();
+                    if (j == 9)
+                    {
+                        cells[i, j].Tag = "critical_9";
+                    } else if (j == 8)
+                    {
+                        cells[i, j].Tag = "critical_8";
+                    } else if (j == 7)
+                    {
+                        cells[i, j].Tag = "critical_7";
+                    }
                     Canvas.SetLeft(cells[i, j], 0 + j * 60);
                     Canvas.SetTop(cells[i, j], 0 + i * 60);
                     field.Children.Add(cells[i, j]);
@@ -73,11 +83,85 @@ namespace kursa4
         {
             if (this.dragobject != null && temp != null  && this.enter_in_bord)
             {
-                Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + 100); 
-                Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + 300);
-                temp.Tag = "done";
+                if ((string)temp.Tag == "critical_9")
+                {
+                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2 - 180);
+                        tship.Tag = "touched";
+                    } else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2 - 120);
+                        tship.Tag = "touched";
+                    } else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2 - 60);
+                        tship.Tag = "touched";
+                    } else if ((string)tship.Content == "КАТЕР")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        tship.Tag = "touched";
+                    }
+                } else if ((string)temp.Tag == "critical_8")
+                {
+                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2 - 120);
+                        tship.Tag = "touched";
+                    } else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2 - 60);
+                        tship.Tag = "touched";
+                    }else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2);
+                        tship.Tag = "touched";
+                    }else if ((string)tship.Content == "КАТЕР")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        tship.Tag = "touched";
+                    }
+                } else if ((string)temp.Tag == "critical_7")
+                {
+                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2 - 60);
+                        tship.Tag = "touched";
+                    }else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        tship.Tag = "touched";
+                    }else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    {
+                        Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + (grid.Height - field.Height)/2); 
+                        Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + (grid.Width - field.Width)/2);
+                        tship.Tag = "touched";
+                    }else if ((string)tship.Content == "КАТЕР")
+                    {
+                        Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        tship.Tag = "touched";
+                    }
+                }
+                else
+                {
+                    Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
+                    Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                    tship.Tag = "touched";
+                }
             }
             this.dragobject = null;
+            this.temp = null;
         }
 
 
@@ -85,6 +169,7 @@ namespace kursa4
         private Border temp = null;
         private Label tship = null;
         private bool enter_in_bord = false;
+        private bool border_again;
 
         private void Ship_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -92,30 +177,26 @@ namespace kursa4
             this.tship = sender as Label;
             if (this.dragobject != null)
             {
-                DragDrop.DoDragDrop(this.dragobject, this.dragobject, DragDropEffects.Move);
+                DragDrop.DoDragDrop(this.dragobject, this.dragobject, DragDropEffects.All);
             }
         }
         
-        /*private void ShipOver(object sender, MouseButtonEventArgs e)
-        {
-            this.canvas.ReleaseMouseCapture();
-            this.dragobject = null;
-        }*/
 
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
             grid.Width = window.ActualWidth;
             grid.Height = window.ActualHeight;
         }
-
-       
+        
+        
         private void OnDragEnter(object sender, DragEventArgs e)
         {
-            temp = sender as Border;
             
+            this.temp = sender as Border;
             enter_in_bord = true;
         }
 
+        bool mayroll = true;
         private void Ship_MouseMove(object sender, DragEventArgs e)
         {
             if (this.dragobject == null)
@@ -123,20 +204,26 @@ namespace kursa4
                 return;
             }
 
-            var position = e.GetPosition(canvas);
-            
-            Canvas.SetTop(this.dragobject, position.Y);
-            Canvas.SetLeft(this.dragobject, position.X);
-        }
-
-        private void Canvas_OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (this.dragobject != null && (string)tship.Tag != "blocked" && e.Key == Key.R)
+            bool isKeyPressed = Keyboard.IsKeyDown(Key.R);
+            bool isKeyRelease = Keyboard.IsKeyUp(Key.R);
+            if (this.dragobject != null && (string)tship.Content != "КАТЕР" && isKeyPressed && mayroll)
             {
                 var rotateTransform = this.dragobject.RenderTransform as RotateTransform;
                 var transform = new RotateTransform(90 + (rotateTransform?.Angle ?? 0));
                 this.dragobject.RenderTransform = transform;
+                mayroll = false;
             }
+
+            if (isKeyRelease)
+            {
+                mayroll = true;
+            }
+            var position = e.GetPosition(canvas);
+            
+            Canvas.SetTop(this.dragobject, position.Y + 10);
+            Canvas.SetLeft(this.dragobject, position.X + 10);
         }
+
+        
     }
 }
