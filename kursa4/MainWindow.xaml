@@ -12,15 +12,15 @@
         >
     
     
-    <Canvas x:Name="canvas" PreviewMouseMove="Ship_MouseMove" PreviewMouseUp="ShipOver">
+    <Canvas x:Name="canvas" DragOver="Ship_MouseMove" PreviewDrop="OnPreviewDrop" AllowDrop="True">
         <Canvas.Background>
             <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\temp_background.png"></ImageBrush>
         </Canvas.Background>
            
            <Grid x:Name="grid" Height="800" Width="1200" >
                   
-                  <Canvas x:Name="field" PreviewMouseMove="Ship_MouseMove" Visibility="Hidden" 
-                          Height="600" Width="600" 
+                  <Canvas x:Name="field"  Visibility="Hidden" DragOver = "Ship_MouseMove"
+                          Height="600" Width="600"
                           HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
                   
                   <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
@@ -29,23 +29,23 @@
            
         <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
                BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown"  Visibility="Hidden"> ЧЕТЫРЁХПАЛУБНИК </Label>
-        <Label x:Name="Ship3_1" Height="60" Width="180" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,80"> ТРЁХПАЛУБНИК </Label>
-        <Label x:Name="Ship3_2" Height="60" Width="180" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,160"> ТРЁХПАЛУБНИК </Label>
-        <Label x:Name="Ship2_1" Height="60" Width="120" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,240"> ДВУХПАЛУБНИК </Label>
-        <Label x:Name="Ship2_2" Height="60" Width="120" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,320"> ДВУХПАЛУБНИК </Label>
-        <Label x:Name="Ship2_3" Height="60" Width="120" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,400"> ДВУХПАЛУБНИК </Label>
-        <Label x:Name="Ship1_1" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="0,480"> КАТЕР </Label>
-        <Label x:Name="Ship1_2" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="75,480"> КАТЕР </Label>
-        <Label x:Name="Ship1_3" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="150,480"> КАТЕР </Label>
-        <Label x:Name="Ship1_4" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" Margin="225,480"> КАТЕР </Label>
+        <Label x:Name="Ship3_1" Height="60" Width="180" Canvas.Left="0" Canvas.Top="80" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ТРЁХПАЛУБНИК </Label>
+        <Label x:Name="Ship3_2" Height="60" Width="180" Canvas.Left="0" Canvas.Top="160" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ТРЁХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_1" Height="60" Width="120" Canvas.Left="0" Canvas.Top="240" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_2" Height="60" Width="120" Canvas.Left="0" Canvas.Top="320" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship2_3" Height="60" Width="120" Canvas.Left="0" Canvas.Top="400" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+        <Label x:Name="Ship1_1" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+        <Label x:Name="Ship1_2" Height="60" Width="60" Tag = "blocked" Canvas.Left="75" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+        <Label x:Name="Ship1_3" Height="60" Width="60" Tag = "blocked" Canvas.Left="150" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+        <Label x:Name="Ship1_4" Height="60" Width="60" Tag = "blocked" Canvas.Left="225" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
     </Canvas>
 </Window>

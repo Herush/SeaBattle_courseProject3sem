@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 using kursa4.Properties;
 using Label = System.Windows.Controls.Label;
 
@@ -62,38 +63,44 @@ namespace kursa4
                     Canvas.SetLeft(cells[i, j], 0 + j * 60);
                     Canvas.SetTop(cells[i, j], 0 + i * 60);
                     field.Children.Add(cells[i, j]);
-                    cells[i, j].PreviewMouseUp += ShipOver;
-                    cells[i, j].MouseEnter += OnDragEnter;
+                    cells[i, j].DragEnter += OnDragEnter;
+                    cells[i,j].PreviewDrop += OnPreviewDrop;
                 }
             }
+        }
+
+        private void OnPreviewDrop(object sender, DragEventArgs e)
+        {
+            if (this.dragobject != null && temp != null  && this.enter_in_bord)
+            {
+                Canvas.SetTop(this.dragobject,Canvas.GetTop(temp) + 100); 
+                Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp) + 300);
+                temp.Tag = "done";
+            }
+            this.dragobject = null;
         }
 
 
         private UIElement dragobject = null;
         private Border temp = null;
-        private Point offset;
+        private Label tship = null;
         private bool enter_in_bord = false;
-        
+
         private void Ship_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             this.dragobject = sender as UIElement;
-            this.offset = e.GetPosition(this.canvas);
-            this.offset.Y -= Canvas.GetTop(this.dragobject);
-            this.offset.X -= Canvas.GetLeft(this.dragobject);
-            this.canvas.CaptureMouse();
+            this.tship = sender as Label;
+            if (this.dragobject != null)
+            {
+                DragDrop.DoDragDrop(this.dragobject, this.dragobject, DragDropEffects.Move);
+            }
         }
         
-        private void ShipOver(object sender, MouseButtonEventArgs e)
+        /*private void ShipOver(object sender, MouseButtonEventArgs e)
         {
             this.canvas.ReleaseMouseCapture();
-
-            if (this.enter_in_bord)
-            {
-                Canvas.SetTop(this.dragobject,Canvas.GetTop(temp)); //todo улетает корабль в пизду
-                Canvas.SetLeft(this.dragobject,Canvas.GetLeft(temp));
-            }
             this.dragobject = null;
-        }
+        }*/
 
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -102,27 +109,29 @@ namespace kursa4
         }
 
        
-        private void OnDragEnter(object sender, MouseEventArgs e)
+        private void OnDragEnter(object sender, DragEventArgs e)
         {
             temp = sender as Border;
+            
             enter_in_bord = true;
         }
 
-        private void Ship_MouseMove(object sender, MouseEventArgs e)
+        private void Ship_MouseMove(object sender, DragEventArgs e)
         {
             if (this.dragobject == null)
             {
                 return;
             }
 
-            var position = e.GetPosition(sender as IInputElement);
-            Canvas.SetTop(this.dragobject, position.Y - this.offset.Y);
-            Canvas.SetLeft(this.dragobject, position.X - this.offset.X);
+            var position = e.GetPosition(canvas);
+            
+            Canvas.SetTop(this.dragobject, position.Y);
+            Canvas.SetLeft(this.dragobject, position.X);
         }
 
         private void Canvas_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (this.dragobject != null && (string)temp.Tag != "blocked" && e.Key == Key.R)
+            if (this.dragobject != null && (string)tship.Tag != "blocked" && e.Key == Key.R)
             {
                 var rotateTransform = this.dragobject.RenderTransform as RotateTransform;
                 var transform = new RotateTransform(90 + (rotateTransform?.Angle ?? 0));
