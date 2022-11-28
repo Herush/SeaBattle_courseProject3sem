@@ -1,4 +1,6 @@
-﻿namespace kursa4
+﻿using System.Threading;
+
+namespace kursa4
 {
     /// <summary>
     /// Interaction logic for App.xaml
