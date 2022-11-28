@@ -102,62 +102,64 @@ namespace kursa4
             {
                 place_ship();
             }
-            
 
-            if (tship != Ship4  && !result)
+            if (this.dragobject != null)
             {
-                tempotemp(Ship4);
-            }
-            
-            if (tship != Ship3_1 && !result)
-            {
-                tempotemp(Ship3_1);
-            }
-            
-            if (tship != Ship3_2 && !result)
-            {
-                tempotemp(Ship3_2);
+                if (tship != Ship4 && !result)
+                {
+                    tempotemp(Ship4);
+                }
+
+                if (tship != Ship3_1 && !result)
+                {
+                    tempotemp(Ship3_1);
+                }
+
+                if (tship != Ship3_2 && !result)
+                {
+                    tempotemp(Ship3_2);
+                }
+
+                if (tship != Ship2_1 && !result)
+                {
+                    tempotemp(Ship2_1);
+                }
+
+                if (tship != Ship2_2 && !result)
+                {
+                    tempotemp(Ship2_2);
+                }
+
+                if (tship != Ship2_3 && !result)
+                {
+                    tempotemp(Ship2_3);
+                }
+
+                if (tship != Ship1_1 && !result)
+                {
+                    tempotemp(Ship1_1);
+                }
+
+                if (tship != Ship1_2 && !result)
+                {
+                    tempotemp(Ship1_2);
+                }
+
+                if (tship != Ship1_3 && !result)
+                {
+                    tempotemp(Ship1_3);
+                }
+
+                if (tship != Ship1_4 && !result)
+                {
+                    tempotemp(Ship1_4);
+                }
             }
 
-            if (tship != Ship2_1 && !result)
-            {
-                tempotemp(Ship2_1);
-            }
-
-            if (tship != Ship2_2 && !result)
-            {
-                tempotemp(Ship2_2);
-            }
-
-            if (tship != Ship2_3 && !result)
-            {
-                tempotemp(Ship2_3);
-            }
-
-            if (tship != Ship1_1 && !result)
-            {
-                tempotemp(Ship1_1);    
-            }
-
-            if (tship != Ship1_2 && !result)
-            {
-                tempotemp(Ship1_2);
-            }
-
-            if (tship != Ship1_3 && !result)
-            {
-                tempotemp(Ship1_3);
-            }
-
-            if (tship != Ship1_4 && !result) 
-            {
-                tempotemp(Ship1_4);
-            }
-            
             if (this.dragobject != null && result)
             {
-                Canvas.SetTop(this.dragobject, _positionOfDrag.Y);     //TODO сделать чтобы корабль сначала ставился а потом исправлялся!!
-                Canvas.SetLeft(this.dragobject, _positionOfDrag.X);
+                Canvas.SetTop(this.dragobject, _positionOfDrag.Y + (grid.Height - field.Height) / 2);     //TODO сделать чтобы корабль сначала ставился а потом исправлялся!!
+                Canvas.SetLeft(this.dragobject, _positionOfDrag.X + (grid.Height - field.Height) / 2);    //TODO если на расстоянии в 60 или меньше находится корабль, то откидывать его!
                 result = false;
             }
             this.dragobject = null;
@@ -421,9 +423,11 @@ namespace kursa4
         
         private void tempotemp(Label ttship)
         {
-            GeneralTransform t1 = this.tship.TransformToVisual(this);
+            var tdrag_boj = this.dragobject;
+            Label shipt = tdrag_boj as Label;
+            GeneralTransform t1 = shipt.TransformToVisual(this);
             GeneralTransform t2 = ttship.TransformToVisual(this);
-            Rect r1 = t1.TransformBounds(new Rect() {X = 0, Y = 0, Width = this.tship.ActualWidth, Height = this.tship.ActualHeight});
+            Rect r1 = t1.TransformBounds(new Rect() {X = 0, Y = 0, Width = shipt.ActualWidth, Height = shipt.ActualHeight});
             Rect r2 = t2.TransformBounds(new Rect() {X = 0, Y = 0, Width = ttship.ActualWidth, Height = ttship.ActualHeight});
             result = r1.IntersectsWith(r2);
         }
