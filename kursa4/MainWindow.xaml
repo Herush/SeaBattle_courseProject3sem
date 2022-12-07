@@ -21,12 +21,21 @@
                           Height="600" Width="600"
                           HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
                   
+                  <Canvas x:Name="GameField" Visibility="Hidden" Height="600" Width="600"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
+                  
                   <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
                           VerticalAlignment="Center" Height="100" Width="400" Click="ButtonPlay_OnClick" FontSize="40"/>
+                  
+                  <Button x:Name="ButtonStartGame" Height="50" Width="200" Content="Закончить расстановку" HorizontalAlignment="Center"
+                          VerticalAlignment="Top"  Click="ButtonStartGame_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Button x:Name="ButtonResetShips" Height="50" Width="200" Content="Сбросить все корабли" HorizontalAlignment="Right"
+                          VerticalAlignment="Center" Click="ButtonResetShips_OnClick" FontSize="15" Visibility="Hidden"></Button>
            </Grid>
            
-        <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown"  Visibility="Hidden" > ЧЕТЫРЁХПАЛУБНИК </Label>
+           <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
+                  BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown"  Visibility="Hidden" > ЧЕТЫРЁХПАЛУБНИК </Label>
         <Label x:Name="Ship3_1" Height="60" Width="180" Canvas.Left="0" Canvas.Top="80" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
                BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ТРЁХПАЛУБНИК </Label>
         <Label x:Name="Ship3_2" Height="60" Width="180" Canvas.Left="0" Canvas.Top="160" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
