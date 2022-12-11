@@ -25,7 +25,7 @@ namespace kursa4
     public partial class MainWindow
     {
         private Border[,] cells;
-        private bool[,] compships = new bool[10,10];
+        private int[,] compships = new int[10,10];
 
         public MainWindow()
         {
@@ -814,43 +814,508 @@ namespace kursa4
 
         private int count = 0;
         Random ran = new Random();
+        private int position;
         
-        private void comp_field() //TODO доделать генерацию поля ботяры
+        private void comp_field()
         {
             int i = 0, j = 0;
 
             while (count < 10)
             {
-                i++;
-                while (compships[i, j] == false)
+                i = ran.Next(0, 10);
+                j = ran.Next(0, 10);
+
+                if (compships[i, j] == 0)
                 {
-                    if (ran.Next(0, 1) == 0)
-                    {
-                        compships[i, j] = false;
-                    } else if ()
-                    {
-                        compships[i, j++] = true;
-                        compship_generator(i,j);
-                    }
+                    position = ran.Next(0, 1);
+                    compship_generator(i, j);
+                    count++;
                 }
             }
         }
 
         private void compship_generator(int i,int j)
         {
-            if (count == 0)
+            bool j_edge_l = false, i_edge_u = false, i_edge_d = false, j_edge_r = false;
+            
+            if (count == 0 && !(i < 6 && j < 6))
             {
-                count++;
-
-                if (ran.Next(0, 1) == 0)
+                if (j < 6)
                 {
-                    if (i == 0 && j == 0)
+                    j_edge_r = true;
+                }
+                if (j > 0)
+                {
+                    j_edge_l = true;
+                }
+                if (i > 0)
+                {
+                    i_edge_u = true;
+                }
+                if (i < 6)
+                {
+                    i_edge_d = true;
+                }
+                
+                if (position == 0)
+                {
+                    if (j > 6)
                     {
-                        
+                        position = 1;
+                        compship_generator(i,j);
+                    } 
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j + 1] = 1;
+                        compships[i, j + 2] = 1;
+                        compships[i, j + 3] = 1;
+                        if (j_edge_r)
+                        {
+                            compships[i, j + 4] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            compships[i, j - 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            compships[i + 1, j + 2] = 2;
+                            compships[i + 1, j + 3] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i + 1, j + 4] = 2;
+                            }
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            compships[i - 1, j + 2] = 2;
+                            compships[i - 1, j + 3] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i - 1, j + 4] = 2;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (i > 6)
+                    {
+                        position = 0;
+                        compship_generator(i,j);
+                    }
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i + 1, j] = 1;
+                        compships[i + 2, j] = 1;
+                        compships[i + 3, j] = 1;
+                        if (i_edge_d)
+                        {
+                            compships[i + 4, j] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            compships[i - 1, j] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            compships[i + 2, j - 1] = 2;
+                            compships[i + 3, j - 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 4, j - 1] = 2;
+                            }
+                        }
+
+                        if (j_edge_r)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i, j + 1] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            compships[i + 2, j + 1] = 2;
+                            compships[i + 3, j + 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 4, j + 1] = 2;
+                            }
+                        }
                     }
                 }
             }
-        }
+            else if (count == 1 || count == 2 && !(i < 7 && j < 7))
+            {
+                if (j < 7)
+                {
+                    j_edge_r = true;
+                }
+                if (j > 0)
+                {
+                    j_edge_l = true;
+                }
+                if (i > 0)
+                {
+                    i_edge_u = true;
+                }
+                if (i < 7)
+                {
+                    i_edge_d = true;
+                }
+                
+                if (position == 0)
+                {
+                    if (j > 7)
+                    {
+                        position = 1;
+                        compship_generator(i,j);
+                    } 
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j + 1] = 1;
+                        compships[i, j + 2] = 1;
+                        if (j_edge_r)
+                        {
+                            compships[i, j + 3] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            compships[i, j - 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            compships[i + 1, j + 2] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i + 1, j + 3] = 2;
+                            }
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            compships[i - 1, j + 2] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i - 1, j + 3] = 2;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (i > 7)
+                    {
+                        position = 0;
+                        compship_generator(i,j);
+                    }
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i + 1, j] = 1;
+                        compships[i + 2, j] = 1;
+                        if (i_edge_d)
+                        {
+                            compships[i + 3, j] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            compships[i - 1, j] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            compships[i + 2, j - 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 3, j - 1] = 2;
+                            }
+                        }
+
+                        if (j_edge_r)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i, j + 1] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            compships[i + 2, j + 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 3, j + 1] = 2;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (count == 3 || count == 4 || count == 5 && !(i < 8 && j < 8))
+            {
+                if (j < 8)
+                {
+                    j_edge_r = true;
+                }
+                if (j > 0)
+                {
+                    j_edge_l = true;
+                }
+                if (i > 0)
+                {
+                    i_edge_u = true;
+                }
+                if (i < 8)
+                {
+                    i_edge_d = true;
+                }
+                
+                if (position == 0)
+                {
+                    if (j > 8)
+                    {
+                        position = 1;
+                        compship_generator(i,j);
+                    } 
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j + 1] = 1;
+                        if (j_edge_r)
+                        {
+                            compships[i, j + 2] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            compships[i, j - 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i + 1, j + 2] = 2;
+                            }
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j_edge_l)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            if (j_edge_r)
+                            {
+                                compships[i - 1, j + 2] = 2;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (i > 8)
+                    {
+                        position = 0;
+                        compship_generator(i,j);
+                    }
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i + 1, j] = 1;
+                        if (i_edge_d)
+                        {
+                            compships[i + 2, j] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            compships[i - 1, j] = 2;
+                        }
+
+                        if (j_edge_l)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 2, j - 1] = 2;
+                            }
+                        }
+
+                        if (j_edge_r)
+                        {
+                            if (i_edge_u)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i, j + 1] = 2;
+                            compships[i + 1, j + 1] = 2;
+                            if (i_edge_d)
+                            {
+                                compships[i + 2, j + 1] = 2;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (count >= 6)
+            {
+                if (j == 9)
+                {
+                    j_edge_r = true;
+                }
+                if (j > 0)
+                {
+                    j_edge_l = true;
+                }
+                if (i > 0)
+                {
+                    i_edge_u = true;
+                }
+                if (i == 9)
+                {
+                    i_edge_d = true;
+                }
+                
+                if (position == 0)
+                {
+                    compships[i, j] = 1;
+                    if (!j_edge_r)
+                    {
+                        compships[i, j + 1] = 2;
+                    }
+
+                    if (j_edge_l)
+                    {
+                        compships[i, j - 1] = 2;
+                    }
+
+                    if (i_edge_d)
+                    {
+                        if (j_edge_l)
+                        {
+                            compships[i + 1, j - 1] = 2;
+                        }
+                        compships[i + 1, j] = 2;
+                        if (!j_edge_r)
+                        {
+                            compships[i + 1, j + 1] = 2;
+                        }
+                    }
+
+                    if (i_edge_u)
+                    {
+                        if (j_edge_l)
+                        {
+                            compships[i - 1, j - 1] = 2;
+                        }
+                        compships[i - 1, j] = 2;
+                        if (!j_edge_r)
+                        {
+                            compships[i - 1, j + 1] = 2;
+                        }
+                    }
+                }
+                else
+                {
+                    
+                    compships[i, j] = 1;
+                    if (i_edge_d)
+                    {
+                        compships[i + 1, j] = 2;
+                    }
+
+                    if (i_edge_u)
+                    {
+                        compships[i - 1, j] = 2;
+                    }
+
+                    if (j_edge_l)
+                    {
+                        if (i_edge_u)
+                        {
+                            compships[i + 1, j - 1] = 2;
+                        }
+                        compships[i, j - 1] = 2;
+                        if (i_edge_d)
+                        {
+                            compships[i + 1, j - 1] = 2;
+                        }
+                    }
+
+                    if (j_edge_r)
+                    {
+                        if (i_edge_u)
+                        {
+                            compships[i - 1, j + 1] = 2;
+                        }
+                        compships[i, j + 1] = 2;
+                        if (i_edge_d)
+                        {
+                            compships[i + 1, j + 1] = 2;
+                        }
+                    }
+                }
+            }
+        } 
         
         private void show_unvisible()
         {
@@ -946,9 +1411,16 @@ namespace kursa4
 
             if (result)
             {
-                ttemp.Background = new SolidColorBrush(Colors.Firebrick);
-                result = false;
+                check_hitplayer(ttemp);
+                if (!result)
+                {
+                    ttemp.Background = new SolidColorBrush(Colors.Firebrick);
+                } else if (result)
+                {
+                    ttemp.Background = new SolidColorBrush(Colors.Blue);
+                }
                 
+                result = false;
             }
 
         }
@@ -1037,12 +1509,40 @@ namespace kursa4
             {
                 delete_ship();
             }
-        }
+        } //TODO доделать, чтобы при попадании по кораблю, компьютер дальше стрелял по гор. или верт.
 
         private void delete_ship()
         {
             
         } //TODO придумать удаление корабля
+
+        private void check_hitplayer(Button ttemp)
+        {
+            int[] klp = find_name_gbutton(ttemp);
+            if (compships[klp[0], klp[1]] == 1)
+            {
+                result = true;
+                compships[klp[0], klp[1]] = 0;
+            }
+        }
         
+        private int[] find_name_gbutton(Button ttemp)
+        {
+            int[] arrtemp = new int[2];
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    if (ttemp != null && ttemp.Name == game_cells[i, j].Name)
+                    {
+                        arrtemp[0] = i;
+                        arrtemp[1] = j;
+                        return arrtemp;
+                    }
+                }
+            }
+
+            return arrtemp;
+        }
     }
 }
