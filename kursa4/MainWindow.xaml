@@ -32,6 +32,9 @@
                   
                   <Button x:Name="ButtonResetShips" Height="50" Width="200" Content="Сбросить все корабли" HorizontalAlignment="Right"
                           VerticalAlignment="Center" Click="ButtonResetShips_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Button x:Name="ButtonContinue" Height="50" Width="200" Content="Продолжить" HorizontalAlignment="Right"
+                          VerticalAlignment="Top" Margin="20" Click="ButtonContinue_OnClick" FontSize="15" Visibility="Hidden"></Button>
            </Grid>
            
            <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 

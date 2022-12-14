@@ -127,7 +127,7 @@ namespace kursa4
                 _poinOfDrag = sender as Border;
                 point_true = false;
             }
-        } //TODO при быстром перемещении корабля хавается не та клетка, может зайти в deadzone корябля
+        } //TODO при быстром перемещении корабля хавается не та клетка, может зайти в deadzone корябля UPD. Всё ещё похуй :D 
 
         private void OnPreviewDrop(object sender, DragEventArgs e)
         {
@@ -1330,11 +1330,12 @@ namespace kursa4
             Ship1_3.Visibility = Visibility.Hidden;
             Ship1_4.Visibility = Visibility.Hidden;
 
-            field.Visibility = Visibility.Visible;
+            ButtonContinue.Visibility = Visibility.Hidden;
+            field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Visible;
         }
 
-        private void check_ship_on_button(Button ttemp, Label ttship)
+        private void check_hit_of_ship(Border ttemp, Label ttship)
         {
             GeneralTransform t1 = ttemp.TransformToVisual(this);
             GeneralTransform t2 = ttship.TransformToVisual(this);
@@ -1342,94 +1343,299 @@ namespace kursa4
                 { X = 0, Y = 0, Width = ttemp.ActualWidth, Height = ttemp.ActualHeight });
             Rect r2 = t2.TransformBounds(new Rect()
                 { X = 0, Y = 0, Width = ttship.ActualWidth, Height = ttship.ActualHeight });
-            result = r1.IntersectsWith(r2);
-            catch_ship = ttship;
-            shipname = ttship.Name;
-        }
-        
+            if ((string)ttship.Tag != "destroyed")
+            {
+                hitShip = r1.IntersectsWith(r2);
+                catch_ship = ttship;
+            }
+            else
+            {
+                comphit();
+            }
+        }  //TODO Херотня с переполнением бордера
+
+        private bool hitShip = false;
         private int[] hitCapacity = new int[6];
         private Label catch_ship = null;
-        private string shipname;
 
-        private void check_hit(Button bord)
+        private void check_hit(Border bord)
         {
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship4);
+                check_hit_of_ship(bord, Ship4);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship3_1);
+                check_hit_of_ship(bord, Ship3_1);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship3_2);
+                check_hit_of_ship(bord, Ship3_2);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship2_1);
+                check_hit_of_ship(bord, Ship2_1);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship2_2);
+                check_hit_of_ship(bord, Ship2_2);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship2_3);
+                check_hit_of_ship(bord, Ship2_3);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship1_1);
+                check_hit_of_ship(bord, Ship1_1);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship1_2);
+                check_hit_of_ship(bord, Ship1_2);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship1_3);
+                check_hit_of_ship(bord, Ship1_3);
             }
 
-            if (!result)
+            if (!hitShip)
             {
-                check_ship_on_button(bord, Ship1_4);
+                check_hit_of_ship(bord, Ship1_4);
             }
         }
 
+        
+        private bool hit = false;
         private void GameCellClick(object sender, RoutedEventArgs e)
         {
-            result = true;
             Button ttemp = sender as Button;
+            check_hitplayer(ttemp);
 
-            if (result)
+            
+            if (!hit)
             {
-                check_hitplayer(ttemp);
-                if (!result)
-                {
-                    ttemp.Background = new SolidColorBrush(Colors.Firebrick);
-                } else if (result)
-                {
-                    ttemp.Background = new SolidColorBrush(Colors.Blue);
-                }
-                
-                result = false;
+                ttemp.Background = new SolidColorBrush(Colors.Firebrick);
+                field_with_comphits();
+            }
+            else if (hit)
+            {
+                ttemp.Background = new SolidColorBrush(Colors.Blue);
             }
 
         }
 
-        private void hit_on_ship(Button ttemp) 
+        private void comphit() //TODO при вертикальной или 2 стрельбе стреляет по 3, хп почему -_-....
+        {
+            int i = ran.Next(0, 9);
+            int j = ran.Next(0, 9);
+            
+            check_hit(cells[i,j]);
+            if (hitShip)
+            {
+                cells[i, j].Background = new SolidColorBrush(Colors.Blue);
+                if_hit(i, j);
+            }
+            else
+            {
+                cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+            }
+        }
+
+        private int position_hit = 0;
+        
+        private void if_hit(int i, int j)
+        {
+            if (hitShip)
+            {
+                hitShip = false;
+                
+                int luck = 0;
+
+
+                if (position_hit == 1 || position_hit == 0)
+                {
+                    if (j == 0)
+                    {
+                        luck = ran.Next(1, 3);
+                    }
+
+                    if (j == 9)
+                    {
+                        bool jail = true;
+                        while (jail)
+                        {
+                            luck = ran.Next(0, 3);
+                            if (luck != 1)
+                            {
+                                jail = false;
+                            }
+                        }
+                    }
+                }
+
+                if (position_hit == 2 || position_hit == 0)
+                {
+                    if (i == 0)
+                    {
+                        bool jail = true;
+                        while (jail)
+                        {
+                            luck = ran.Next(0, 3);
+                            if (luck != 2)
+                            {
+                                jail = false;
+                            }
+                        }
+                    }
+
+                    if (i == 9)
+                    {
+                        bool jail = true;
+                        while (jail)
+                        {
+                            luck = ran.Next(0, 3);
+                            if (luck != 3)
+                            {
+                                jail = false;
+                            }
+                        }
+                    }
+                }
+
+                if (position_hit == 0)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        bool jail = true;
+                        while (jail)
+                        {
+                            luck = ran.Next(0, 3);
+                            if (luck != 2 && luck != 0)
+                            {
+                                jail = false;
+                            }
+                        }
+                    }
+
+                    if (i == 9 && j == 9)
+                    {
+                        bool jail = true;
+                        while (jail)
+                        {
+                            luck = ran.Next(0, 3);
+                            if (luck != 1 && luck != 3)
+                            {
+                                jail = false;
+                            }
+                        }
+                    }
+                }
+
+                if (j > 0 && j < 9 && i > 0 && i < 9)
+                {
+                    if (position_hit == 1)
+                    {
+                        luck = ran.Next(0, 1);
+                    } 
+                    else if (position_hit == 2)
+                    {
+                        luck = ran.Next(2, 3);
+                    }
+                    else
+                    {
+                        luck = ran.Next(0, 3);    
+                    }
+                }
+
+
+                if (luck == 0)
+                {
+                    check_hit(cells[i, j - 1]);
+                    if (hitShip)
+                    {
+                        cells[i, j - 1].Background = new SolidColorBrush(Colors.Blue);
+                        hit_on_ship();
+                        position_hit = 1;
+                        if_hit(i, j - 1);
+                    }
+                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                }
+                else if (luck == 1)
+                {
+                    check_hit(cells[i, j + 1]);
+                    if (hitShip)
+                    {
+                        cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
+                        hit_on_ship();
+                        position_hit = 1;
+                        if_hit(i, j + 1);
+                    }
+                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                }
+                else if (luck == 2)
+                {
+                    check_hit(cells[i - 1, j]);
+                    if (hitShip)
+                    {
+                        cells[i - 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        hit_on_ship();
+                        position_hit = 2;
+                        if_hit(i - 1, j);
+                    }
+                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                }
+                else if (luck == 3)
+                {
+                    check_hit(cells[i + 1, j]);
+                    if (hitShip)
+                    {
+                        cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        hit_on_ship();
+                        position_hit = 2;
+                        if_hit(i + 1, j);
+                    }
+                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                }
+            }
+        }
+
+        private void field_with_comphits()
+        {
+            field.Visibility = Visibility.Hidden;
+            comphit();
+            show_unvisible2();
+        }
+
+        private void show_unvisible2()
+        {
+            Ship4.Visibility = Visibility.Visible;
+            Ship3_1.Visibility = Visibility.Visible;
+            Ship3_2.Visibility = Visibility.Visible;
+            Ship2_1.Visibility = Visibility.Visible;
+            Ship2_2.Visibility = Visibility.Visible;
+            Ship2_3.Visibility = Visibility.Visible;
+            Ship1_1.Visibility = Visibility.Visible;
+            Ship1_2.Visibility = Visibility.Visible;
+            Ship1_3.Visibility = Visibility.Visible;
+            Ship1_4.Visibility = Visibility.Visible;
+
+            ButtonContinue.Visibility = Visibility.Visible;
+            field.Visibility = Visibility.Visible;
+            GameField.Visibility = Visibility.Hidden;
+        }
+        
+        private void hit_on_ship() 
         {
             if (catch_ship.Name == "Ship4")
             {
-                if (hitCapacity[0] == 4)
+                if (hitCapacity[0] == 3)
                 {
                     delete_ship();
                 }
@@ -1440,7 +1646,7 @@ namespace kursa4
             }
             else if (catch_ship.Name == "Ship3_1")
             {
-                if (hitCapacity[1] == 3)
+                if (hitCapacity[1] == 2)
                 {
                     delete_ship();
                 }
@@ -1451,7 +1657,7 @@ namespace kursa4
             }
             else if (catch_ship.Name == "Ship3_2")
             {
-                if (hitCapacity[2] == 3)
+                if (hitCapacity[2] == 2)
                 {
                     delete_ship();
                 }
@@ -1462,7 +1668,7 @@ namespace kursa4
             }
             else if (catch_ship.Name == "Ship2_1")
             {
-                if (hitCapacity[3] == 2)
+                if (hitCapacity[3] == 1)
                 {
                     delete_ship();
                 }
@@ -1473,7 +1679,7 @@ namespace kursa4
             }
             else if (catch_ship.Name == "Ship2_2")
             {
-                if (hitCapacity[4] == 2)
+                if (hitCapacity[4] == 1)
                 {
                     delete_ship();
                 }
@@ -1484,7 +1690,7 @@ namespace kursa4
             }
             else if (catch_ship.Name == "Ship2_3")
             {
-                if (hitCapacity[5] == 2)
+                if (hitCapacity[5] == 1)
                 {
                     delete_ship();
                 }
@@ -1493,35 +1699,24 @@ namespace kursa4
                     hitCapacity[5]++;
                 }
             }
-            else if (catch_ship.Name == "Ship1_1")
+            else
             {
                 delete_ship();
             }
-            else if (catch_ship.Name == "Ship1_2")
-            {
-                delete_ship();
-            }
-            else if (catch_ship.Name == "Ship1_3")
-            {
-                delete_ship();
-            }
-            else if (catch_ship.Name == "Ship1_4")
-            {
-                delete_ship();
-            }
-        } //TODO доделать, чтобы при попадании по кораблю, компьютер дальше стрелял по гор. или верт.
+        }
 
         private void delete_ship()
         {
-            
-        } //TODO придумать удаление корабля
+            catch_ship.Content = "Корабль уничтожен";
+            catch_ship.Tag = "destroyed";
+        } 
 
         private void check_hitplayer(Button ttemp)
         {
             int[] klp = find_name_gbutton(ttemp);
             if (compships[klp[0], klp[1]] == 1)
             {
-                result = true;
+                hit = true;
                 compships[klp[0], klp[1]] = 0;
             }
         }
@@ -1543,6 +1738,11 @@ namespace kursa4
             }
 
             return arrtemp;
+        }
+
+        private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
+        {
+            show_unvisible();
         }
     }
 }
