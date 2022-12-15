@@ -834,55 +834,82 @@ namespace kursa4
             }
         }
 
-        private void compship_generator(int i,int j)
+        private void compship_generator(int i, int j)
         {
-            bool j_edge_l = false, i_edge_u = false, i_edge_d = false, j_edge_r = false;
+            bool j_edge_l = false, i_edge_u = false, i_edge_d = false, j_edge_r = false, leftBuild = false, downBuild = false;
+            bool[] tempbool = new bool[4];
             
-            if (count == 0 && !(i < 6 && j < 6))
+            if (count == 0)
             {
-                if (j < 6)
-                {
-                    j_edge_r = true;
-                }
-                if (j > 0)
-                {
-                    j_edge_l = true;
-                }
-                if (i > 0)
-                {
-                    i_edge_u = true;
-                }
-                if (i < 6)
-                {
-                    i_edge_d = true;
-                }
-                
+                tempbool = checked_edges(i, j, 6);
+                j_edge_r = tempbool[0];
+                j_edge_l = tempbool[1];
+                i_edge_u = tempbool[2];
+                i_edge_d = tempbool[3];
+
                 if (position == 0)
                 {
-                    if (j > 6)
+                    if (!j_edge_r)
                     {
-                        position = 1;
-                        compship_generator(i,j);
-                    } 
+                        leftBuild = true;
+                    }
+
+                    if (leftBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j - 1] = 1;
+                        compships[i, j - 2] = 1;
+                        compships[i, j - 3] = 1;
+                        compships[i, j - 4] = 2;
+
+                        if (j != 9)
+                        {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            compships[i + 1, j - 2] = 2;
+                            compships[i + 1, j - 3] = 2;
+                            compships[i + 1, j - 4] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 1, j - 2] = 2;
+                            compships[i - 1, j - 3] = 2;
+                            compships[i - 1, j - 4] = 2;
+                        }
+
+                    }
                     else
                     {
                         compships[i, j] = 1;
                         compships[i, j + 1] = 1;
                         compships[i, j + 2] = 1;
                         compships[i, j + 3] = 1;
-                        if (j_edge_r)
-                        {
-                            compships[i, j + 4] = 2;
-                        }
+                        compships[i, j + 4] = 2;
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
                             compships[i, j - 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i_edge_u)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i + 1, j - 1] = 2;
                             }
@@ -890,15 +917,12 @@ namespace kursa4
                             compships[i + 1, j + 1] = 2;
                             compships[i + 1, j + 2] = 2;
                             compships[i + 1, j + 3] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i + 1, j + 4] = 2;
-                            }
+                            compships[i + 1, j + 4] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i_edge_d)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i - 1, j - 1] = 2;
                             }
@@ -906,19 +930,56 @@ namespace kursa4
                             compships[i - 1, j + 1] = 2;
                             compships[i - 1, j + 2] = 2;
                             compships[i - 1, j + 3] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i - 1, j + 4] = 2;
-                            }
+                            compships[i - 1, j + 4] = 2;
                         }
                     }
                 }
                 else
                 {
-                    if (i > 6)
+                    if (!i_edge_d)
                     {
-                        position = 0;
-                        compship_generator(i,j);
+                        downBuild = true;
+                    }
+
+                    if (downBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i - 1, j] = 1;
+                        compships[i - 2, j] = 1;
+                        compships[i - 3, j] = 1;
+                        compships[i - 4, j] = 2;
+
+                        if (i != 9)
+                        {
+                            compships[i + 1, j] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 2, j - 1] = 2;
+                            compships[i - 3, j - 1] = 2;
+                            compships[i - 4, j - 1] = 2;
+                        }
+
+                        if (j != 9)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            compships[i - 2, j + 1] = 2;
+                            compships[i - 3, j + 1] = 2;
+                            compships[i - 4, j + 1] = 2;
+                        }
+
                     }
                     else
                     {
@@ -926,396 +987,547 @@ namespace kursa4
                         compships[i + 1, j] = 1;
                         compships[i + 2, j] = 1;
                         compships[i + 3, j] = 1;
-                        if (i_edge_d)
-                        {
-                            compships[i + 4, j] = 2;
-                        }
+                        compships[i + 4, j] = 2;
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             compships[i - 1, j] = 2;
                         }
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
-                                compships[i + 1, j - 1] = 2;
+                                compships[i - 1, j - 1] = 2;
                             }
                             compships[i, j - 1] = 2;
                             compships[i + 1, j - 1] = 2;
                             compships[i + 2, j - 1] = 2;
                             compships[i + 3, j - 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 4, j - 1] = 2;
-                            }
+                            compships[i + 4, j - 1] = 2;
                         }
 
-                        if (j_edge_r)
+                        if (j != 9)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
                                 compships[i - 1, j + 1] = 2;
                             }
-                            compships[i, j + 1] = 2;
+                            compships[i, j] = 2;
                             compships[i + 1, j + 1] = 2;
                             compships[i + 2, j + 1] = 2;
                             compships[i + 3, j + 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 4, j + 1] = 2;
-                            }
+                            compships[i + 4, j + 1] = 2;
                         }
+
                     }
                 }
             }
-            else if (count == 1 || count == 2 && !(i < 7 && j < 7))
+            else if (count == 1 || count == 2)
             {
-                if (j < 7)
-                {
-                    j_edge_r = true;
-                }
-                if (j > 0)
-                {
-                    j_edge_l = true;
-                }
-                if (i > 0)
-                {
-                    i_edge_u = true;
-                }
-                if (i < 7)
-                {
-                    i_edge_d = true;
-                }
+                tempbool = checked_edges(i, j, 7);
+                j_edge_r = tempbool[0];
+                j_edge_l = tempbool[1];
+                i_edge_u = tempbool[2];
+                i_edge_d = tempbool[3];
                 
                 if (position == 0)
                 {
-                    if (j > 7)
+                    if (!j_edge_r)
                     {
-                        position = 1;
-                        compship_generator(i,j);
-                    } 
+                        leftBuild = true;
+                    }
+
+                    if (leftBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j - 1] = 1;
+                        compships[i, j - 2] = 1;
+                        compships[i, j - 3] = 2;
+
+                        if (j != 9)
+                        {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            compships[i + 1, j - 2] = 2;
+                            compships[i + 1, j - 3] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 1, j - 2] = 2;
+                            compships[i - 1, j - 3] = 2;
+                        }
+
+                    }
                     else
                     {
                         compships[i, j] = 1;
                         compships[i, j + 1] = 1;
                         compships[i, j + 2] = 1;
-                        if (j_edge_r)
-                        {
-                            compships[i, j + 3] = 2;
-                        }
+                        compships[i, j + 3] = 1;
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
                             compships[i, j - 1] = 2;
                         }
 
                         if (i_edge_d)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i + 1, j - 1] = 2;
                             }
                             compships[i + 1, j] = 2;
                             compships[i + 1, j + 1] = 2;
                             compships[i + 1, j + 2] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i + 1, j + 3] = 2;
-                            }
+                            compships[i + 1, j + 3] = 2;
                         }
 
                         if (i_edge_u)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i - 1, j - 1] = 2;
                             }
                             compships[i - 1, j] = 2;
                             compships[i - 1, j + 1] = 2;
                             compships[i - 1, j + 2] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i - 1, j + 3] = 2;
-                            }
+                            compships[i - 1, j + 3] = 2;
                         }
                     }
                 }
                 else
                 {
-                    if (i > 7)
+                    if (!i_edge_d)
                     {
-                        position = 0;
-                        compship_generator(i,j);
+                        downBuild = true;
+                    }
+
+                    if (downBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i - 1, j] = 1;
+                        compships[i - 2, j] = 1;
+                        compships[i - 3, j] = 2;
+
+                        if (i != 9)
+                        {
+                            compships[i + 1, j] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 2, j - 1] = 2;
+                            compships[i - 3, j - 1] = 2;
+                        }
+
+                        if (j != 9)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            compships[i - 2, j + 1] = 2;
+                            compships[i - 3, j + 1] = 2;
+                        }
+
                     }
                     else
                     {
                         compships[i, j] = 1;
                         compships[i + 1, j] = 1;
                         compships[i + 2, j] = 1;
-                        if (i_edge_d)
-                        {
-                            compships[i + 3, j] = 2;
-                        }
+                        compships[i + 3, j] = 2;
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             compships[i - 1, j] = 2;
                         }
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
-                                compships[i + 1, j - 1] = 2;
+                                compships[i - 1, j - 1] = 2;
                             }
                             compships[i, j - 1] = 2;
                             compships[i + 1, j - 1] = 2;
                             compships[i + 2, j - 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 3, j - 1] = 2;
-                            }
+                            compships[i + 3, j - 1] = 2;
                         }
 
-                        if (j_edge_r)
+                        if (j != 9)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
                                 compships[i - 1, j + 1] = 2;
                             }
-                            compships[i, j + 1] = 2;
+                            compships[i, j] = 2;
                             compships[i + 1, j + 1] = 2;
                             compships[i + 2, j + 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 3, j + 1] = 2;
-                            }
+                            compships[i + 3, j + 1] = 2;
                         }
+
                     }
                 }
             }
-            else if (count == 3 || count == 4 || count == 5 && !(i < 8 && j < 8))
+            else if (count > 2 && count < 6)
             {
-                if (j < 8)
-                {
-                    j_edge_r = true;
-                }
-                if (j > 0)
-                {
-                    j_edge_l = true;
-                }
-                if (i > 0)
-                {
-                    i_edge_u = true;
-                }
-                if (i < 8)
-                {
-                    i_edge_d = true;
-                }
+                tempbool = checked_edges(i, j, 8);
+                j_edge_r = tempbool[0];
+                j_edge_l = tempbool[1];
+                i_edge_u = tempbool[2];
+                i_edge_d = tempbool[3];
                 
                 if (position == 0)
                 {
-                    if (j > 8)
+                    if (!j_edge_r)
                     {
-                        position = 1;
-                        compship_generator(i,j);
-                    } 
+                        leftBuild = true;
+                    }
+
+                    if (leftBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j - 1] = 1;
+                        compships[i, j - 2] = 2;
+
+                        if (j != 9)
+                        {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j - 1] = 2;
+                            compships[i + 1, j - 2] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 1, j - 2] = 2;
+                        }
+
+                    }
                     else
                     {
                         compships[i, j] = 1;
                         compships[i, j + 1] = 1;
-                        if (j_edge_r)
-                        {
-                            compships[i, j + 2] = 2;
-                        }
+                        compships[i, j + 2] = 2;
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
                             compships[i, j - 1] = 2;
                         }
 
                         if (i_edge_d)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i + 1, j - 1] = 2;
                             }
                             compships[i + 1, j] = 2;
                             compships[i + 1, j + 1] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i + 1, j + 2] = 2;
-                            }
+                            compships[i + 1, j + 2] = 2;
                         }
 
                         if (i_edge_u)
                         {
-                            if (j_edge_l)
+                            if (j != 0)
                             {
                                 compships[i - 1, j - 1] = 2;
                             }
                             compships[i - 1, j] = 2;
                             compships[i - 1, j + 1] = 2;
-                            if (j_edge_r)
-                            {
-                                compships[i - 1, j + 2] = 2;
-                            }
+                            compships[i - 1, j + 2] = 2;
                         }
                     }
                 }
                 else
                 {
-                    if (i > 8)
+                    if (!i_edge_d)
                     {
-                        position = 0;
-                        compship_generator(i,j);
+                        downBuild = true;
+                    }
+
+                    if (downBuild)
+                    {
+                        compships[i, j] = 1;
+                        compships[i - 1, j] = 1;
+                        compships[i - 2, j] = 2;
+
+                        if (i != 9)
+                        {
+                            compships[i + 1, j] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i - 1, j - 1] = 2;
+                            compships[i - 2, j - 1] = 2;
+                        }
+
+                        if (j != 9)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i, j] = 2;
+                            compships[i - 1, j + 1] = 2;
+                            compships[i - 2, j + 1] = 2;
+                        }
+
                     }
                     else
                     {
                         compships[i, j] = 1;
                         compships[i + 1, j] = 1;
-                        if (i_edge_d)
-                        {
-                            compships[i + 2, j] = 2;
-                        }
+                        compships[i + 2, j] = 2;
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             compships[i - 1, j] = 2;
                         }
 
-                        if (j_edge_l)
+                        if (j != 0)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
-                                compships[i + 1, j - 1] = 2;
+                                compships[i - 1, j - 1] = 2;
                             }
                             compships[i, j - 1] = 2;
                             compships[i + 1, j - 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 2, j - 1] = 2;
-                            }
+                            compships[i + 2, j - 1] = 2;
                         }
 
-                        if (j_edge_r)
+                        if (j != 9)
                         {
-                            if (i_edge_u)
+                            if (i != 0)
                             {
                                 compships[i - 1, j + 1] = 2;
                             }
-                            compships[i, j + 1] = 2;
+                            compships[i, j] = 2;
                             compships[i + 1, j + 1] = 2;
-                            if (i_edge_d)
-                            {
-                                compships[i + 2, j + 1] = 2;
-                            }
+                            compships[i + 2, j + 1] = 2;
                         }
+
                     }
                 }
             }
             else if (count >= 6)
             {
-                if (j == 9)
-                {
-                    j_edge_r = true;
-                }
-                if (j > 0)
-                {
-                    j_edge_l = true;
-                }
-                if (i > 0)
-                {
-                    i_edge_u = true;
-                }
-                if (i == 9)
-                {
-                    i_edge_d = true;
-                }
+                tempbool = checked_edges(i, j, 9);
+                j_edge_r = tempbool[0];
+                j_edge_l = tempbool[1];
+                i_edge_u = tempbool[2];
+                i_edge_d = tempbool[3];
                 
                 if (position == 0)
                 {
-                    compships[i, j] = 1;
                     if (!j_edge_r)
                     {
-                        compships[i, j + 1] = 2;
+                        leftBuild = true;
                     }
 
-                    if (j_edge_l)
+                    if (leftBuild)
                     {
+                        compships[i, j] = 1;
                         compships[i, j - 1] = 2;
-                    }
 
-                    if (i_edge_d)
-                    {
-                        if (j_edge_l)
+                        if (j != 9)
                         {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
                             compships[i + 1, j - 1] = 2;
                         }
-                        compships[i + 1, j] = 2;
-                        if (!j_edge_r)
-                        {
-                            compships[i + 1, j + 1] = 2;
-                        }
-                    }
 
-                    if (i_edge_u)
-                    {
-                        if (j_edge_l)
+                        if (i_edge_u)
                         {
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
                             compships[i - 1, j - 1] = 2;
                         }
-                        compships[i - 1, j] = 2;
-                        if (!j_edge_r)
+
+                    }
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i, j + 1] = 2;
+
+                        if (j != 0)
                         {
+                            compships[i, j - 1] = 2;
+                        }
+
+                        if (i_edge_d)
+                        {
+                            if (j != 0)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i + 1, j] = 2;
+                            compships[i + 1, j + 1] = 2;
+                        }
+
+                        if (i_edge_u)
+                        {
+                            if (j != 0)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+                            compships[i - 1, j] = 2;
                             compships[i - 1, j + 1] = 2;
                         }
                     }
                 }
                 else
                 {
-                    
-                    compships[i, j] = 1;
-                    if (i_edge_d)
+                    if (!i_edge_d)
                     {
-                        compships[i + 1, j] = 2;
+                        downBuild = true;
                     }
 
-                    if (i_edge_u)
+                    if (downBuild)
                     {
+                        compships[i, j] = 1;
                         compships[i - 1, j] = 2;
-                    }
 
-                    if (j_edge_l)
-                    {
-                        if (i_edge_u)
+                        if (i != 9)
                         {
-                            compships[i + 1, j - 1] = 2;
+                            compships[i + 1, j] = 2;
                         }
-                        compships[i, j - 1] = 2;
-                        if (i_edge_d)
-                        {
-                            compships[i + 1, j - 1] = 2;
-                        }
-                    }
 
-                    if (j_edge_r)
-                    {
-                        if (i_edge_u)
+                        if (j != 0)
                         {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i - 1, j - 1] = 2;
+                        }
+
+                        if (j != 9)
+                        {
+                            if (i != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                            compships[i, j] = 2;
                             compships[i - 1, j + 1] = 2;
                         }
-                        compships[i, j + 1] = 2;
-                        if (i_edge_d)
+
+                    }
+                    else
+                    {
+                        compships[i, j] = 1;
+                        compships[i + 1, j] = 2;
+
+                        if (i != 0)
                         {
+                            compships[i - 1, j] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            if (i != 0)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+                            compships[i, j - 1] = 2;
+                            compships[i + 1, j - 1] = 2;
+                        }
+
+                        if (j != 9)
+                        {
+                            if (i != 0)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                            compships[i, j] = 2;
                             compships[i + 1, j + 1] = 2;
                         }
+
                     }
                 }
             }
-        } 
+        }
+
+        private bool[] checked_edges(int i, int j, int cc)
+        {
+            bool[] tempbool = new bool[4];
+            
+            if (j < cc)
+            {
+                tempbool[0] = true;
+            }
+            if (j > 0)
+            {
+                tempbool[1] = true;
+            }
+            if (i > 0)
+            {
+                tempbool[2] = true;
+            }
+            if (i < cc)
+            {
+                tempbool[3] = true;
+            }
+
+            return tempbool;
+        }
         
         private void show_unvisible()
         {
@@ -1450,7 +1662,7 @@ namespace kursa4
 
         private int position_hit = 0;
         
-        private void if_hit(int i, int j)
+        private void if_hit(int i, int j) //TODO работает с вылетами из-за выхождения из границ массива, исправить кривоту проверок
         {
             if (hitShip)
             {
