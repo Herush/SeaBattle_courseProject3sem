@@ -867,7 +867,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 9)
                         {
                             if (j != 9)
                             {
@@ -880,7 +880,7 @@ namespace kursa4
                             compships[i + 1, j - 4] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 0)
                         {
                             if (j != 9)
                             {
@@ -907,7 +907,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 9)
                         {
                             if (j != 0)
                             {
@@ -920,7 +920,7 @@ namespace kursa4
                             compships[i + 1, j + 4] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 0)
                         {
                             if (j != 0)
                             {
@@ -1050,7 +1050,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 9)
                         {
                             if (j != 9)
                             {
@@ -1062,7 +1062,7 @@ namespace kursa4
                             compships[i + 1, j - 3] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 0)
                         {
                             if (j != 9)
                             {
@@ -1087,7 +1087,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 9)
                         {
                             if (j != 0)
                             {
@@ -1099,7 +1099,7 @@ namespace kursa4
                             compships[i + 1, j + 3] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             if (j != 0)
                             {
@@ -1221,7 +1221,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 9)
                         {
                             if (j != 9)
                             {
@@ -1232,7 +1232,7 @@ namespace kursa4
                             compships[i + 1, j - 2] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             if (j != 9)
                             {
@@ -1255,7 +1255,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 9)
                         {
                             if (j != 0)
                             {
@@ -1266,7 +1266,7 @@ namespace kursa4
                             compships[i + 1, j + 2] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             if (j != 0)
                             {
@@ -1380,7 +1380,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 9)
                         {
                             if (j != 9)
                             {
@@ -1390,7 +1390,7 @@ namespace kursa4
                             compships[i + 1, j - 1] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             if (j != 9)
                             {
@@ -1411,7 +1411,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                         }
 
-                        if (i_edge_d)
+                        if (i != 9)
                         {
                             if (j != 0)
                             {
@@ -1421,7 +1421,7 @@ namespace kursa4
                             compships[i + 1, j + 1] = 2;
                         }
 
-                        if (i_edge_u)
+                        if (i != 0)
                         {
                             if (j != 0)
                             {
@@ -1503,7 +1503,7 @@ namespace kursa4
                     }
                 }
             }
-        }
+        } //TODO проверить как генерит корабли, может не загенерить корабль
 
         private bool[] checked_edges(int i, int j, int cc)
         {
@@ -1552,19 +1552,23 @@ namespace kursa4
             GeneralTransform t1 = ttemp.TransformToVisual(this);
             GeneralTransform t2 = ttship.TransformToVisual(this);
             Rect r1 = t1.TransformBounds(new Rect()
-                { X = 0, Y = 0, Width = ttemp.ActualWidth, Height = ttemp.ActualHeight });
+                { X = 0, Y = 0, Width = ttemp.ActualWidth - 5, Height = ttemp.ActualHeight - 5 });
             Rect r2 = t2.TransformBounds(new Rect()
                 { X = 0, Y = 0, Width = ttship.ActualWidth, Height = ttship.ActualHeight });
-            if ((string)ttship.Tag != "destroyed")
+            hitShip = r1.IntersectsWith(r2);
+            if (hitShip)
             {
-                hitShip = r1.IntersectsWith(r2);
-                catch_ship = ttship;
+                if ((string)ttship.Tag == "destroyed")
+                {
+                    originalHit[0] = -1;
+                    comphit();
+                }
+                else
+                {
+                    catch_ship = ttship;   
+                }
             }
-            else
-            {
-                comphit();
-            }
-        }  //TODO Херотня с переполнением бордера
+            }  //TODO т.к. работает даже если корабль на соседней от бордера клетке, криво считает попадания
 
         private bool hitShip = false;
         private int[] hitCapacity = new int[6];
@@ -1639,19 +1643,30 @@ namespace kursa4
             else if (hit)
             {
                 ttemp.Background = new SolidColorBrush(Colors.Blue);
+                hit = false;
             }
 
         }
 
-        private void comphit() //TODO при вертикальной или 2 стрельбе стреляет по 3, хп почему -_-....
+        private int[] originalHit = new int[2];
+        
+        private void comphit() //TODO вызывается лишь 1 раз.
         {
-            int i = ran.Next(0, 9);
-            int j = ran.Next(0, 9);
+            if (originalHit[0] == -1)
+            {
+                originalHit[0] = ran.Next(0, 9);
+                originalHit[1] = ran.Next(0, 9);
+            }
+
+            int i = originalHit[0];
+            int j = originalHit[1];
             
+
             check_hit(cells[i,j]);
             if (hitShip)
             {
                 cells[i, j].Background = new SolidColorBrush(Colors.Blue);
+                hit_on_ship();
                 if_hit(i, j);
             }
             else
@@ -1661,112 +1676,126 @@ namespace kursa4
         }
 
         private int position_hit = 0;
+        private bool rightway = true, leftway = true, upway = true, downway = true;
         
         private void if_hit(int i, int j) //TODO работает с вылетами из-за выхождения из границ массива, исправить кривоту проверок
         {
             if (hitShip)
             {
+                bool jEdgeR = false,jEdgeL = false,iEdgeU = false,iEdgeD = false;
                 hitShip = false;
-                
+                int[] lie = new int[4];
+
+                if (j == 9)
+                {
+                    jEdgeR = true;
+                }
+
+                if (j == 0)
+                {
+                    jEdgeL = true;
+                }
+
+                if (i == 0)
+                {
+                    iEdgeU = true;
+                }
+
+                if (i == 9)
+                {
+                    iEdgeD = true;
+                }
+
                 int luck = 0;
-
-
-                if (position_hit == 1 || position_hit == 0)
-                {
-                    if (j == 0)
-                    {
-                        luck = ran.Next(1, 3);
-                    }
-
-                    if (j == 9)
-                    {
-                        bool jail = true;
-                        while (jail)
-                        {
-                            luck = ran.Next(0, 3);
-                            if (luck != 1)
-                            {
-                                jail = false;
-                            }
-                        }
-                    }
-                }
-
-                if (position_hit == 2 || position_hit == 0)
-                {
-                    if (i == 0)
-                    {
-                        bool jail = true;
-                        while (jail)
-                        {
-                            luck = ran.Next(0, 3);
-                            if (luck != 2)
-                            {
-                                jail = false;
-                            }
-                        }
-                    }
-
-                    if (i == 9)
-                    {
-                        bool jail = true;
-                        while (jail)
-                        {
-                            luck = ran.Next(0, 3);
-                            if (luck != 3)
-                            {
-                                jail = false;
-                            }
-                        }
-                    }
-                }
 
                 if (position_hit == 0)
                 {
-                    if (i == 0 && j == 0)
+                    if (jEdgeR || !rightway)
                     {
-                        bool jail = true;
-                        while (jail)
-                        {
-                            luck = ran.Next(0, 3);
-                            if (luck != 2 && luck != 0)
-                            {
-                                jail = false;
-                            }
-                        }
+                        lie[1] = 1;
+                    }
+                    
+                    if (jEdgeL || !leftway)
+                    {
+                        lie[0] = 1;
+                    }
+                    
+                    if (iEdgeU || !upway)
+                    {
+                        lie[2] = 1;
                     }
 
-                    if (i == 9 && j == 9)
+                    if (iEdgeD || !downway)
                     {
-                        bool jail = true;
-                        while (jail)
-                        {
-                            luck = ran.Next(0, 3);
-                            if (luck != 1 && luck != 3)
-                            {
-                                jail = false;
-                            }
-                        }
+                        lie[3] = 1;
+                    }
+                    
+                    
+                    luck = ran.Next(0, 3);
+
+                    while (lie[luck] == 1)
+                    {
+                        luck = ran.Next(0, 3);
                     }
                 }
-
-                if (j > 0 && j < 9 && i > 0 && i < 9)
+                else if (position_hit == 1)
                 {
-                    if (position_hit == 1)
+                    if (jEdgeL)
                     {
-                        luck = ran.Next(0, 1);
-                    } 
-                    else if (position_hit == 2)
-                    {
-                        luck = ran.Next(2, 3);
+                        i = originalHit[0];
+                        j = originalHit[1];
+                        
+                        luck = 1;
                     }
                     else
                     {
-                        luck = ran.Next(0, 3);    
+                        luck = 0;
+                    }
+                } 
+                else if (position_hit == 2)
+                {
+                    if (jEdgeR)
+                    {
+                        i = originalHit[0];
+                        j = originalHit[1];
+                        
+                        luck = 0;
+                    }
+                    else
+                    {
+                        luck = 1;
                     }
                 }
-
-
+                else if (position_hit == 3)
+                {
+                    if (iEdgeU)
+                    {
+                        i = originalHit[0];
+                        j = originalHit[1];
+                        
+                        luck = 3;
+                    }
+                    else
+                    {
+                        luck = 2;
+                    }
+                }
+                else if (position_hit == 4)
+                {
+                    if (iEdgeD)
+                    {
+                        i = originalHit[0];
+                        j = originalHit[1];
+                        
+                        luck = 2;
+                    }
+                    else
+                    {
+                        luck = 3;
+                    }
+                }
+                
+                
                 if (luck == 0)
                 {
                     check_hit(cells[i, j - 1]);
@@ -1777,7 +1806,16 @@ namespace kursa4
                         position_hit = 1;
                         if_hit(i, j - 1);
                     }
-                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    else if (position_hit == 1)
+                    {
+                        position_hit = 2;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
+                    else
+                    {
+                        leftway = false;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
                 }
                 else if (luck == 1)
                 {
@@ -1786,10 +1824,19 @@ namespace kursa4
                     {
                         cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
                         hit_on_ship();
-                        position_hit = 1;
+                        position_hit = 2;
                         if_hit(i, j + 1);
                     }
-                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    else if (position_hit == 2)
+                    {
+                        position_hit = 1;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
+                    else
+                    {
+                        rightway = false;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
                 }
                 else if (luck == 2)
                 {
@@ -1798,10 +1845,19 @@ namespace kursa4
                     {
                         cells[i - 1, j].Background = new SolidColorBrush(Colors.Blue);
                         hit_on_ship();
-                        position_hit = 2;
+                        position_hit = 3;
                         if_hit(i - 1, j);
                     }
-                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    else if (position_hit == 3)
+                    {
+                        position_hit = 4;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
+                    else
+                    {
+                        upway = false;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
                 }
                 else if (luck == 3)
                 {
@@ -1810,10 +1866,19 @@ namespace kursa4
                     {
                         cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
                         hit_on_ship();
-                        position_hit = 2;
+                        position_hit = 4;
                         if_hit(i + 1, j);
                     }
-                    cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    else if (position_hit == 4)
+                    {
+                        position_hit = 3;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
+                    else
+                    {
+                        downway = false;
+                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                    }
                 }
             }
         }
@@ -1845,7 +1910,7 @@ namespace kursa4
         
         private void hit_on_ship() 
         {
-            if (catch_ship.Name == "Ship4")
+            if (catch_ship.Name == "Ship4" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[0] == 3)
                 {
@@ -1856,7 +1921,7 @@ namespace kursa4
                     hitCapacity[0]++;
                 }
             }
-            else if (catch_ship.Name == "Ship3_1")
+            else if (catch_ship.Name == "Ship3_1" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[1] == 2)
                 {
@@ -1867,7 +1932,7 @@ namespace kursa4
                     hitCapacity[1]++;
                 }
             }
-            else if (catch_ship.Name == "Ship3_2")
+            else if (catch_ship.Name == "Ship3_2" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[2] == 2)
                 {
@@ -1878,7 +1943,7 @@ namespace kursa4
                     hitCapacity[2]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_1")
+            else if (catch_ship.Name == "Ship2_1" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[3] == 1)
                 {
@@ -1889,7 +1954,7 @@ namespace kursa4
                     hitCapacity[3]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_2")
+            else if (catch_ship.Name == "Ship2_2" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[4] == 1)
                 {
@@ -1900,7 +1965,7 @@ namespace kursa4
                     hitCapacity[4]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_3")
+            else if (catch_ship.Name == "Ship2_3" && (string)catch_ship.Content != "Корабль уничтожен")
             {
                 if (hitCapacity[5] == 1)
                 {
@@ -1911,7 +1976,7 @@ namespace kursa4
                     hitCapacity[5]++;
                 }
             }
-            else
+            else if ((string)catch_ship.Content != "Корабль уничтожен")
             {
                 delete_ship();
             }
@@ -1921,6 +1986,11 @@ namespace kursa4
         {
             catch_ship.Content = "Корабль уничтожен";
             catch_ship.Tag = "destroyed";
+
+            position_hit = 0;
+            originalHit[0] = -1;
+            hitShip = false;
+            comphit();
         } 
 
         private void check_hitplayer(Button ttemp)
