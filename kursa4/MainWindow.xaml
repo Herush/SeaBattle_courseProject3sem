@@ -35,6 +35,12 @@
                   
                   <Button x:Name="ButtonContinue" Height="50" Width="200" Content="Продолжить" HorizontalAlignment="Right"
                           VerticalAlignment="Top" Margin="20" Click="ButtonContinue_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Button x:Name="ButtonShowCompShips" Height="50" Width="200" Content="Показать Враж. Корабли" HorizontalAlignment="Left" 
+                          VerticalAlignment="Top" Margin="30" Click="ButtonShowCompShips_OnClick" FontSize="15" Visibility="Hidden"/>
+                  
+                  <Button x:Name="ButtonPlaceShips" Height="50" Width="200" Content="Расставить все корабли" HorizontalAlignment="Left" 
+                          VerticalAlignment="Bottom" Margin="30" Click="ButtonPlaceShips_OnClick" FontSize="15" Visibility="Hidden"/>
            </Grid>
            
            <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
