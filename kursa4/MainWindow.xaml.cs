@@ -975,7 +975,8 @@ namespace kursa4
         private void compship_generator(int i, int j)
         {
             bool j_edge_l = false, i_edge_u = false, i_edge_d = false, j_edge_r = false, leftBuild = false, downBuild = false, rightBuild = false, upBuild = false;
-            bool leftDeadZone = false, rightDeadZone = false, upDeadZone = false, downDeadZone = false;
+            bool leftDeadZone = false, rightDeadZone = false, upDeadZone = false, downDeadZone = false, diagLeftUp = false,
+                diagLeftDown = false, diagRightUp = false, diagRightDown = false;
             bool[] tempbool = new bool[4];
 
             if (position == 0)
@@ -1081,14 +1082,110 @@ namespace kursa4
                     j_edge_l = tempbool[1];
                     rightDeadZone = tempbool[4];
                     leftDeadZone = tempbool[5];
+                    diagLeftDown = tempbool[11];
+                    diagLeftUp = tempbool[9];
+                    diagRightDown = tempbool[10];
+                    diagRightUp = tempbool[8];
 
                     if (j_edge_r && rightDeadZone)
                     {
-                        rightBuild = true;
+                        if (j != 7)
+                        {
+                            if (compships[i, j + 3] != 1 && (diagRightDown || diagRightUp))
+                            {
+                                if (diagRightUp && diagRightDown)
+                                {
+                                    string right = "right";
+                                    
+                                    if (CheckedAroundShip(i,j,3,right))
+                                    {
+                                        rightBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (i == 0 && !diagRightUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (i == 9 && !diagRightDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string right = "right";
+                                    
+                                        if (CheckedAroundShip(i,j,3,right))
+                                        {
+                                            rightBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string right = "right";
+                                    
+                            if (CheckedAroundShip(i,j,3,right))
+                            {
+                                rightBuild = true;
+                            }
+                        }
                     }
                     else if (j_edge_l && leftDeadZone)
                     {
-                        leftBuild = true;
+                        if (j != 2)
+                        {
+                            if (compships[i, j - 3] != 1 && (diagLeftUp || diagLeftDown))
+                            {
+                                if (diagLeftDown && diagLeftUp)
+                                {
+                                    string left = "left";
+                                    
+                                    if (CheckedAroundShip(i,j,3,left))
+                                    {
+                                        leftBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (i == 0 && !diagLeftUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (i == 9 && !diagLeftDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string left = "left";
+                                    
+                                        if (CheckedAroundShip(i,j,3,left))
+                                        {
+                                            leftBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string left = "left";
+                                    
+                            if (CheckedAroundShip(i,j,3,left))
+                            {
+                                leftBuild = true;
+                            }
+                        }
                     }
 
                     if (leftBuild)
@@ -1102,7 +1199,7 @@ namespace kursa4
                         compships[i, j - 1] = 1;
                         compships[i, j - 2] = 1;
 
-                        if (compships[i, j - 3] == 0)
+                        if (j != 2 && compships[i, j - 3] == 0)
                         {
                             compships[i, j - 3] = 2;
                         }
@@ -1119,7 +1216,7 @@ namespace kursa4
                             compships[i - 1, j - 1] = 2;
                             compships[i - 1, j - 2] = 2;
 
-                            if (compships[i - 1, j - 3] == 0)
+                            if (j != 2 && compships[i - 1, j - 3] == 0)
                             {
                                 compships[i - 1, j - 3] = 2;
                             }
@@ -1137,7 +1234,7 @@ namespace kursa4
                             compships[i + 1, j - 1] = 2;
                             compships[i + 1, j - 2] = 2;
 
-                            if (compships[i + 1, j - 3] == 0)
+                            if (j != 2 && compships[i + 1, j - 3] == 0)
                             {
                                 compships[i + 1, j - 3] = 2;
                             }
@@ -1154,7 +1251,7 @@ namespace kursa4
                         compships[i, j + 1] = 1;
                         compships[i, j + 2] = 1;
 
-                        if (compships[i, j + 3] == 0)
+                        if (j != 7 && compships[i, j + 3] == 0)
                         {
                             compships[i, j + 3] = 2;
                         }
@@ -1171,7 +1268,7 @@ namespace kursa4
                             compships[i - 1, j + 1] = 2;
                             compships[i - 1, j + 2] = 2;
 
-                            if (compships[i - 1, j + 3] == 0)
+                            if (j != 7 && compships[i - 1, j + 3] == 0)
                             {
                                 compships[i - 1, j + 3] = 2;
                             }
@@ -1189,7 +1286,7 @@ namespace kursa4
                             compships[i + 1, j + 1] = 2;
                             compships[i + 1, j + 2] = 2;
 
-                            if (compships[i + 1, j + 3] == 0)
+                            if (j != 7 && compships[i + 1, j + 3] == 0)
                             {
                                 compships[i + 1, j + 3] = 2;
                             }
@@ -1209,14 +1306,110 @@ namespace kursa4
                     j_edge_l = tempbool[1];
                     rightDeadZone = tempbool[4];
                     leftDeadZone = tempbool[5];
+                    diagLeftDown = tempbool[11];
+                    diagLeftUp = tempbool[9];
+                    diagRightDown = tempbool[10];
+                    diagRightUp = tempbool[8];
 
                     if (j_edge_r && rightDeadZone)
                     {
-                        rightBuild = true;
+                        if (j != 8)
+                        {
+                            if (compships[i, j + 2] != 1 && (diagRightDown || diagRightUp))
+                            {
+                                if (diagRightUp && diagRightDown)
+                                {
+                                    string right = "right";
+                                    
+                                    if (CheckedAroundShip(i,j,2,right))
+                                    {
+                                        rightBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (i == 0 && !diagRightUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (i == 9 && !diagRightDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string right = "right";
+                                    
+                                        if (CheckedAroundShip(i,j,2,right))
+                                        {
+                                            rightBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string right = "right";
+                                    
+                            if (CheckedAroundShip(i,j,2,right))
+                            {
+                                rightBuild = true;
+                            }
+                        }
                     }
                     else if (j_edge_l && leftDeadZone)
                     {
-                        leftBuild = true;
+                        if (j != 1)
+                        {
+                            if (compships[i, j - 2] != 1 && (diagLeftUp || diagLeftDown))
+                            {
+                                if (diagLeftDown && diagLeftUp)
+                                {
+                                    string left = "left";
+                                    
+                                    if (CheckedAroundShip(i,j,2,left))
+                                    {
+                                        leftBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (i == 0 && !diagLeftUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (i == 9 && !diagLeftDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string left = "left";
+                                    
+                                        if (CheckedAroundShip(i,j,2,left))
+                                        {
+                                            leftBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string left = "left";
+                                    
+                            if (CheckedAroundShip(i,j,2,left))
+                            {
+                                leftBuild = true;
+                            }
+                        }
                     }
 
                     if (leftBuild)
@@ -1229,7 +1422,7 @@ namespace kursa4
 
                         compships[i, j - 1] = 1;
 
-                        if (compships[i, j - 2] == 0)
+                        if (j != 1 && compships[i, j - 2] == 0)
                         {
                             compships[i, j - 2] = 2;
                         }
@@ -1244,7 +1437,7 @@ namespace kursa4
                             compships[i - 1, j] = 2;
                             compships[i - 1, j - 1] = 2;
 
-                            if (compships[i - 1, j - 2] == 0)
+                            if (j != 1 && compships[i - 1, j - 2] == 0)
                             {
                                 compships[i - 1, j - 2] = 2;
                             }
@@ -1260,7 +1453,7 @@ namespace kursa4
                             compships[i + 1, j] = 2;
                             compships[i + 1, j - 1] = 2;
 
-                            if (compships[i + 1, j - 2] == 0)
+                            if (j != 1 && compships[i + 1, j - 2] == 0)
                             {
                                 compships[i + 1, j - 2] = 2;
                             }
@@ -1276,7 +1469,7 @@ namespace kursa4
 
                         compships[i, j + 1] = 1;
 
-                        if (compships[i, j + 2] == 0)
+                        if (j != 8 && compships[i, j + 2] == 0)
                         {
                             compships[i, j + 2] = 2;
                         }
@@ -1291,7 +1484,7 @@ namespace kursa4
                             compships[i - 1, j] = 2;
                             compships[i - 1, j + 1] = 2;
 
-                            if (compships[i - 1, j + 2] == 0)
+                            if (j != 8 && compships[i - 1, j + 2] == 0)
                             {
                                 compships[i - 1, j + 2] = 2;
                             }
@@ -1307,7 +1500,7 @@ namespace kursa4
                             compships[i + 1, j] = 2;
                             compships[i + 1, j + 1] = 2;
 
-                            if (compships[i + 1, j + 2] == 0)
+                            if (j != 8 && compships[i + 1, j + 2] == 0)
                             {
                                 compships[i + 1, j + 2] = 2;
                             }
@@ -1322,53 +1515,55 @@ namespace kursa4
 
                 if (count > 5)
                 {
-                    bool[] trues = new bool[8];
-                    
-                    if (j != 9 && compships[i, j + 1] != 1)
-                    {
-                        trues[0] = true;
-                    }
+                    tempbool = checked_edges(i, j, 9, 1);
+                    diagLeftDown = tempbool[11];
+                    diagLeftUp = tempbool[9];
+                    diagRightDown = tempbool[10];
+                    diagRightUp = tempbool[8];
 
-                    if (i != 9 && compships[i + 1, j] != 1)
-                    {
-                        trues[1] = true;
-                    }
-
-                    if (j != 0 && compships[i, j - 1] != 1)
-                    {
-                        trues[2] = true;
-                    }
-
-                    if (i != 0 && compships[i - 1, j] != 1)
-                    {
-                        trues[3] = true;
-                    }
-
-                    //
-                    if (j != 9 && i != 9 && compships[i + 1, j + 1] != 1)
-                    {
-                        trues[4] = true;
-                    }
-
-                    if (i != 0 && j != 0 && compships[i - 1, j - 1] != 1)
-                    {
-                        trues[5] = true;
-                    }
-
-                    if (j != 0 && i != 9 && compships[i + 1, j - 1] != 1)
-                    {
-                        trues[6] = true;
-                    }
-
-                    if (i != 0 && j != 9 && compships[i - 1, j + 1] != 1)
-                    {
-                        trues[7] = true;
-                    }
-
-                    if (trues[0] && trues[1] && trues[2] && trues[3] && trues[4]
-                        && trues[5] && trues[6] && trues[7])
+                    if (diagLeftDown && diagLeftUp && diagRightDown && diagRightUp)
                     {
                         compships[i, j] = 1;
+
+                        if (i != 0)
+                        {
+                            compships[i - 1, j] = 2;
+
+                            if (j != 0)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                        }
+
+                        if (i != 9)
+                        {
+                            compships[i + 1, j] = 2;
+
+                            if (j != 0)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                        }
+
+                        if (j != 9)
+                        {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            compships[i, j - 1] = 2;
+                        }
                     }
                     else
                     {
@@ -1481,14 +1676,110 @@ namespace kursa4
                     i_edge_d = tempbool[3];
                     upDeadZone = tempbool[6];
                     downDeadZone = tempbool[7];
+                    diagLeftDown = tempbool[11];
+                    diagLeftUp = tempbool[9];
+                    diagRightDown = tempbool[10];
+                    diagRightUp = tempbool[8];
 
                     if (i_edge_u && downDeadZone)
                     {
-                        upBuild = true;
+                        if (i != 2)
+                        {
+                            if (compships[i - 3, j] != 1 && (diagLeftUp || diagRightUp))
+                            {
+                                if (diagLeftUp && diagRightUp)
+                                {
+                                    string up = "up";
+                                    
+                                    if (CheckedAroundShip(i,j,3,up))
+                                    {
+                                        upBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (j == 0 && !diagLeftUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (j == 9 && !diagRightUp)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string up = "up";
+                                    
+                                        if (CheckedAroundShip(i,j,3,up))
+                                        {
+                                            upBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string up = "up";
+                                    
+                            if (CheckedAroundShip(i,j,3,up))
+                            {
+                                upBuild = true;
+                            }
+                        }
                     }
                     else if (i_edge_d && upDeadZone)
                     {
-                        downBuild = true;
+                         if (i != 7)
+                        {
+                            if (compships[i + 3, j] != 1 && (diagLeftDown || diagRightDown))
+                            {
+                                if (diagLeftDown && diagRightDown)
+                                {
+                                    string down = "down";
+                                    
+                                    if (CheckedAroundShip(i,j,3,down))
+                                    {
+                                        downBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (j == 0 && !diagLeftDown)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (j == 9 && !diagRightDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string down = "down";
+                                    
+                                        if (CheckedAroundShip(i,j,3,down))
+                                        {
+                                            downBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string down = "down";
+                                    
+                            if (CheckedAroundShip(i,j,3,down))
+                            {
+                                downBuild = true;
+                            }
+                        }
                     }
 
                     if (upBuild)
@@ -1502,7 +1793,7 @@ namespace kursa4
                         compships[i - 1, j] = 1;
                         compships[i - 2, j] = 1;
 
-                        if (compships[i - 3, j] == 0)
+                        if (i != 2 && compships[i - 3, j] == 0)
                         {
                             compships[i - 3, j] = 2;
                         }
@@ -1519,7 +1810,7 @@ namespace kursa4
                             compships[i - 1, j - 1] = 2;
                             compships[i - 2, j - 1] = 2;
 
-                            if (compships[i - 3, j - 1] == 0)
+                            if (i != 2 && compships[i - 3, j - 1] == 0)
                             {
                                 compships[i - 3, j - 1] = 2;
                             }
@@ -1537,7 +1828,7 @@ namespace kursa4
                             compships[i - 1, j + 1] = 2;
                             compships[i - 2, j + 1] = 2;
 
-                            if (compships[i - 3, j + 1] == 0)
+                            if (i != 2 && compships[i - 3, j + 1] == 0)
                             {
                                 compships[i - 3, j + 1] = 2;
                             }
@@ -1554,7 +1845,7 @@ namespace kursa4
                         compships[i + 1, j] = 1;
                         compships[i + 2, j] = 1;
 
-                        if (compships[i + 3, j] == 0)
+                        if (i != 7 && compships[i + 3, j] == 0)
                         {
                             compships[i + 3, j] = 2;
                         }
@@ -1571,7 +1862,7 @@ namespace kursa4
                             compships[i + 1, j - 1] = 2;
                             compships[i + 2, j - 1] = 2;
 
-                            if (compships[i + 3, j - 1] == 0)
+                            if (i != 7 && compships[i + 3, j - 1] == 0)
                             {
                                 compships[i + 3, j - 1] = 2;
                             }
@@ -1589,7 +1880,7 @@ namespace kursa4
                             compships[i + 1, j + 1] = 2;
                             compships[i + 2, j + 1] = 2;
 
-                            if (compships[i + 3, j + 1] == 0)
+                            if (i != 7 && compships[i + 3, j + 1] == 0)
                             {
                                 compships[i + 3, j + 1] = 2;
                             }
@@ -1610,14 +1901,111 @@ namespace kursa4
                     i_edge_d = tempbool[3];
                     upDeadZone = tempbool[6];
                     downDeadZone = tempbool[7];
+                    diagLeftDown = tempbool[11];
+                    diagLeftUp = tempbool[9];
+                    diagRightDown = tempbool[10];
+                    diagRightUp = tempbool[8];
 
                     if (i_edge_u && downDeadZone)
                     {
-                        upBuild = true;
+                        if (i != 1)
+                        {
+                            if (compships[i - 2, j] != 1 && (diagLeftUp || diagRightUp))
+                            {
+                                if (diagLeftUp && diagRightUp)
+                                {
+                                    string up = "up";
+                                    
+                                    if (CheckedAroundShip(i,j,2,up))
+                                    {
+                                        upBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (j == 0 && !diagLeftUp)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (j == 9 && !diagRightUp)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string up = "up";
+                                    
+                                        if (CheckedAroundShip(i,j,2,up))
+                                        {
+                                            upBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string up = "up";
+                                    
+                            if (CheckedAroundShip(i,j,2,up))
+                            {
+                                upBuild = true;
+                            }
+                        }
+                        
                     }
                     else if (i_edge_d && upDeadZone)
                     {
-                        downBuild = true;
+                        if (i != 8)
+                        {
+                            if (compships[i + 2, j] != 1 && (diagLeftDown || diagRightDown))
+                            {
+                                if (diagLeftDown && diagRightDown)
+                                {
+                                    string down = "down";
+                                    
+                                    if (CheckedAroundShip(i,j,2,down))
+                                    {
+                                        downBuild = true;
+                                    }
+                                }
+                                else
+                                {
+                                    bool fCheck = false, secCheck = false;
+                                    if (j == 0 && !diagLeftDown)
+                                    {
+                                        fCheck = true;
+                                    }
+
+                                    if (j == 9 && !diagRightDown)
+                                    {
+                                        secCheck = true;
+                                    }
+
+                                    if (fCheck || secCheck)
+                                    {
+                                        string down = "down";
+                                    
+                                        if (CheckedAroundShip(i,j,2,down))
+                                        {
+                                            downBuild = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string down = "down";
+                                    
+                            if (CheckedAroundShip(i,j,2,down))
+                            {
+                                downBuild = true;
+                            }
+                        }
                     }
 
                     if (upBuild)
@@ -1630,7 +2018,7 @@ namespace kursa4
 
                         compships[i - 1, j] = 1;
 
-                        if (compships[i - 2, j] == 0)
+                        if (i != 1 && compships[i - 2, j] == 0)
                         {
                             compships[i - 2, j] = 2;
                         }
@@ -1645,7 +2033,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                             compships[i - 1, j - 1] = 2;
 
-                            if (compships[i - 2, j - 1] == 0)
+                            if (i != 1 && compships[i - 2, j - 1] == 0)
                             {
                                 compships[i - 2, j - 1] = 2;
                             }
@@ -1661,7 +2049,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                             compships[i - 1, j + 1] = 2;
 
-                            if (compships[i - 2, j + 1] == 0)
+                            if (i != 1 && compships[i - 2, j + 1] == 0)
                             {
                                 compships[i - 2, j + 1] = 2;
                             }
@@ -1677,7 +2065,7 @@ namespace kursa4
 
                         compships[i + 1, j] = 1;
 
-                        if (compships[i + 2, j] == 0)
+                        if (i != 8 && compships[i + 2, j] == 0)
                         {
                             compships[i + 2, j] = 2;
                         }
@@ -1692,7 +2080,7 @@ namespace kursa4
                             compships[i, j - 1] = 2;
                             compships[i + 1, j - 1] = 2;
 
-                            if (compships[i + 2, j - 1] == 0)
+                            if (i != 8 && compships[i + 2, j - 1] == 0)
                             {
                                 compships[i + 2, j - 1] = 2;
                             }
@@ -1708,7 +2096,7 @@ namespace kursa4
                             compships[i, j + 1] = 2;
                             compships[i + 1, j + 1] = 2;
 
-                            if (compships[i + 2, j + 1] == 0)
+                            if (i != 8 && compships[i + 2, j + 1] == 0)
                             {
                                 compships[i + 2, j + 1] = 2;
                             }
@@ -1723,53 +2111,49 @@ namespace kursa4
 
                 if (count > 5)
                 {
-                    bool[] trues = new bool[8];
-
-                    if (j != 9 && compships[i, j + 1] != 1)
-                    {
-                        trues[0] = true;
-                    }
-
-                    if (i != 9 && compships[i + 1, j] != 1)
-                    {
-                        trues[1] = true;
-                    }
-
-                    if (j != 0 && compships[i, j - 1] != 1)
-                    {
-                        trues[2] = true;
-                    }
-
-                    if (i != 0 && compships[i - 1, j] != 1)
-                    {
-                        trues[3] = true;
-                    }
-
-                    //
-                    if (j != 9 && i != 9 && compships[i + 1, j + 1] != 1)
-                    {
-                        trues[4] = true;
-                    }
-
-                    if (i != 0 && j != 0 && compships[i - 1, j - 1] != 1)
-                    {
-                        trues[5] = true;
-                    }
-
-                    if (j != 0 && i != 9 && compships[i + 1, j - 1] != 1)
-                    {
-                        trues[6] = true;
-                    }
-
-                    if (i != 0 && j != 9 && compships[i - 1, j + 1] != 1)
-                    {
-                        trues[7] = true;
-                    }
-
-                    if (trues[0] && trues[1] && trues[2] && trues[3] && trues[4]
-                        && trues[5] && trues[6] && trues[7])
+                    if (diagLeftDown && diagLeftUp && diagRightDown && diagRightUp)
                     {
                         compships[i, j] = 1;
+
+                        if (i != 0)
+                        {
+                            compships[i - 1, j] = 2;
+
+                            if (j != 0)
+                            {
+                                compships[i - 1, j - 1] = 2;
+                            }
+
+                            if (j != 9)
+                            {
+                                compships[i - 1, j + 1] = 2;
+                            }
+                        }
+
+                        if (i != 9)
+                        {
+                            compships[i + 1, j] = 2;
+
+                            if (j != 0)
+                            {
+                                compships[i + 1, j - 1] = 2;
+                            }
+
+                            if (j != 9)
+                            {
+                                compships[i + 1, j + 1] = 2;
+                            }
+                        }
+
+                        if (j != 9)
+                        {
+                            compships[i, j + 1] = 2;
+                        }
+
+                        if (j != 0)
+                        {
+                            compships[i, j - 1] = 2;
+                        }
                     }
                     else
                     {
@@ -1782,7 +2166,7 @@ namespace kursa4
 
         private bool[] checked_edges(int i, int j, int cc, int cc2) //TODO доделать проверки для 3 и 2х палубников, сделать отдельные горизонтальнеые проверки
         {
-            bool[] tempbool = new bool[8];
+            bool[] tempbool = new bool[12];
 
             if (cc == 6)
             {
@@ -1811,92 +2195,623 @@ namespace kursa4
             }
             else if (cc == 7)
             {
-                if (j < cc)
+                if (j > 2 && i > 0 && compships[i - 1, j - 3] == 0)
+                {
+                    tempbool[9] = true; //левый верхний угол 
+                }
+
+                if (j > 2 && i < 9 && compships[i + 1, j - 3] == 0)
+                {
+                    tempbool[11] = true; //левый нижний угол
+                }
+                
+                if (j < 7 && i > 0 && compships[i - 1, j + 3] == 0)
+                {
+                    tempbool[8] = true; //правый верхний угол
+                }
+
+                if (j < 7 && i < 9 && compships[i + 1, j + 3] == 0)
+                {
+                    tempbool[10] = true; //правый нижний угол
+                }
+                
+                if (j <= cc)
                 {
                     tempbool[0] = true;
                 }
                 
-                if (j < 7 && i > 0 && i < 9 && compships[i, j + 1] == 0 && compships[i, j + 2] == 0 && compships[i - 1,j + 3] == 0 && compships[i + 1, j + 3] == 0)
+                if (j < 8 && compships[i, j + 1] == 0 && compships[i, j + 2] == 0)
                 {
                     tempbool[4] = true;
                 }
 
-                if (j > cc2)
+                if (j >= cc2)
                 {
                     tempbool[1] = true;
                 }
 
-                if (j > 2 && i > 0 && i < 9 && compships[i, j - 1] == 0 && compships[i, j - 2] == 0 && compships[i - 1,j - 3] == 0 && compships[i + 1, j - 3] == 0)
+                if (j > 1 && compships[i, j - 1] == 0 && compships[i, j - 2] == 0)
                 {
                     tempbool[5] = true;
                 }
 
-                if (i > cc2)
+                if (i >= cc2)
                 {
                     tempbool[2] = true;
                 }
                 
-                if (i < 7 && j > 0 && j < 9 && compships[i + 1, j] == 0 && compships[i + 2, j] == 0 && compships[i + 3, j - 1] == 0 && compships[i + 3, j + 1] == 0)
+                if (i < 8 && compships[i + 1, j] == 0 && compships[i + 2, j] == 0)
                 {
                     tempbool[6] = true;
                 }
 
-                if (i < cc)
+                if (i <= cc)
                 {
                     tempbool[3] = true;
                 }
 
-                if (i > 2 && j > 0 && j < 9 && compships[i - 1, j] == 0 && compships[i - 2, j] == 0  && compships[i - 3, j - 1] == 0 && compships[i - 3, j + 1] == 0)
+                if (i > 1 && compships[i - 1, j] == 0 && compships[i - 2, j] == 0)
                 {
                     tempbool[7] = true;
                 }
-                
+
             }
             else if (cc == 8)
             {
-                if (j < cc)
+                if (j <= cc)
                 {
                     tempbool[0] = true;
                 }
                 
-                if (j < 8 && i > 0 && i < 9 && compships[i, j + 1] == 0 && compships[i - 1,j + 2] == 0 && compships[i + 1, j + 2] == 0)
+                if (j < 9 && compships[i, j + 1] == 0)
                 {
                     tempbool[4] = true;
                 }
 
-                if (j > cc2)
+                if (j < 8 && i > 0 && compships[i - 1, j + 2] == 0)
+                {
+                    tempbool[8] = true; //правый верхний угол
+                }
+
+                if (j < 8 && i < 9 && compships[i + 1, j + 2] == 0)
+                {
+                    tempbool[10] = true; //правый нижний угол
+                }
+
+                if (j >= cc2)
                 {
                     tempbool[1] = true;
                 }
 
-                if (j > 1 && i > 0 && i < 9 && compships[i, j - 1] == 0 && compships[i - 1,j - 2] == 0 && compships[i + 1, j - 2] == 0)
+                if (j > 0 && compships[i, j - 1] == 0)
                 {
                     tempbool[5] = true;
                 }
 
-                if (i > cc2)
+                if (j > 1 && i > 0 && compships[i - 1, j - 2] == 0)
+                {
+                    tempbool[9] = true; //левый верхний угол 
+                }
+
+                if (j > 1 && i < 9 && compships[i + 1, j - 2] == 0)
+                {
+                    tempbool[11] = true; //левый нижний угол
+                }
+
+                if (i >= cc2)
                 {
                     tempbool[2] = true;
                 }
                 
-                if (i < 8 && j > 0 && j < 9 && compships[i + 1, j] == 0 && compships[i + 2, j - 1] == 0 && compships[i + 2, j + 1] == 0)
+                if (i < 9 && compships[i + 1, j] == 0)
                 {
                     tempbool[6] = true;
                 }
 
-                if (i < cc)
+                if (i <= cc)
                 {
                     tempbool[3] = true;
                 }
 
-                if (i > 1 && j > 0 && j < 9 && compships[i - 1, j] == 0 && compships[i - 2, j - 1] == 0 && compships[i - 2, j + 1] == 0)
+                if (i > 0 && compships[i - 1, j] == 0)
                 {
                     tempbool[7] = true;
                 }
 
             }
-            
+            else if (cc == 9)
+            {
+                if (i != 9 && j != 0 && compships[i + 1, j - 1] != 1)
+                {
+                    tempbool[9] = true; //лево-вверх
+                }
+                else if (i == 9 || j == 0)
+                {
+                    tempbool[9] = true;
+                }
+
+                if (i != 9 && j != 9 && compships[i + 1, j + 1] != 1)
+                {
+                    tempbool[8] = true; //право-вверх
+                }
+                else if (i == 9 || j == 9)
+                {
+                    tempbool[8] = true;
+                }
+
+                if (i != 0 && j != 0 && compships[i - 1, j - 1] != 1)
+                {
+                    tempbool[11] = true; //лево-низ
+                }
+                else if (i == 0 || j == 0)
+                {
+                    tempbool[11] = true;
+                }
+
+                if (i != 0 && j != 9 && compships[i - 1, j + 1] != 1)
+                {
+                    tempbool[10] = true; //право-низ
+                }
+                else if (i == 0 || j == 9)
+                {
+                    tempbool[10] = true;
+                }
+            }
             return tempbool;
+        } //Сделать для однопалубника проверки по диагонали
+
+        private bool CheckedAroundShip(int i, int j,int flag,string navigate)
+        {
+            bool[] truesarr = new bool[7];
+            
+            if (flag == 2 && navigate == "left")
+            {
+                if (i != 0 && compships[i - 1,j] != 1) //вверх
+                {
+                    truesarr[0] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[1] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 9 && compships[i,j + 1] != 1) //вправо
+                {
+                    truesarr[2] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j - 1] != 1) //влево-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (j != 9 && i != 0 && compships[i - 1, j + 1] != 1) //вправо вверх
+                {
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && i != 9 && compships[i + 1, j + 1] != 1) //вправо вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 2 && navigate == "right")
+            {
+                if (i != 0 && compships[i - 1,j] != 1) //вверх
+                {
+                    truesarr[0] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+                
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[1] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[2] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j + 1] != 1) //вправо-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j + 1] != 1) //вправо-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (j != 0 && i != 0 && compships[i - 1, j - 1] != 1) //влево-вверх
+                {
+                    truesarr[5] = true;
+                }
+
+                if (j != 0 && i != 9 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 2 && navigate == "up")
+            {
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[0] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && compships[i, j + 1] != 1) //вправо
+                {
+                    truesarr[1] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[2] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i - 1, j - 1] != 1) //влево-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (j != 9 && compships[i - 1, j + 1] != 1) //вправо-вверх
+                {
+                    truesarr[4] = true;
+                }
+
+                if (i != 9 && j != 0 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[5] = true;
+                }
+
+                if (i != 9 && j != 9 && compships[i + 1, j + 1] != 1) //вправо-вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 2 && navigate == "down")
+            {
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[0] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && compships[i, j + 1] != 1) //вправо
+                {
+                    truesarr[1] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j] != 1) //вверх
+                {
+                    truesarr[2] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[3] = true;
+                }
+
+                if (j != 9 && compships[i + 1, j + 1] != 1) //вправо-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (i != 0 && j != 0 && compships[i - 1, j - 1] != 1) //вверх-влево
+                {
+                    truesarr[5] = true;
+                }
+
+                if (i != 0 && j != 9 && compships[i - 1, j + 1] != 1) //вверх-вправо
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 3 && navigate == "left")
+            {
+                if (i != 0 && compships[i - 1,j] != 1) //вверх
+                {
+                    truesarr[0] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[1] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 9 && compships[i,j + 1] != 1) //вправо
+                {
+                    truesarr[2] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j - 1] != 1 && compships[i - 1, j - 2] != 1) //влево-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j - 1] != 1 && compships[i + 1, j - 2] != 1) //влево-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (j != 9 && i != 0 && compships[i - 1, j + 1] != 1) //вправо вверх
+                {
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && i != 9 && compships[i + 1, j + 1] != 1) //вправо вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 3 && navigate == "right")
+            {
+                if (i != 0 && compships[i - 1,j] != 1) //вверх
+                {
+                    truesarr[0] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+                
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[1] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[2] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j + 1] != 1 && compships[i - 1, j + 2] != 1) //вправо-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j + 1] != 1 && compships[i + 1, j + 2] != 1) //вправо-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (j != 0 && i != 0 && compships[i - 1, j - 1] != 1) //влево-вверх
+                {
+                    truesarr[5] = true;
+                }
+
+                if (j != 0 && i != 9 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 3 && navigate == "up")
+            {
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[0] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && compships[i, j + 1] != 1) //вправо
+                {
+                    truesarr[1] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 9 && compships[i + 1, j] != 1) //вниз
+                {
+                    truesarr[2] = true;
+                }
+                else if (i == 9)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i - 1, j - 1] != 1 && compships[i - 2, j - 1] != 1) //влево-вверх
+                {
+                    truesarr[3] = true;
+                }
+
+                if (j != 9 && compships[i - 1, j + 1] != 1 && compships[i - 2, j + 1] != 1) //вправо-вверх
+                {
+                    truesarr[4] = true;
+                }
+
+                if (i != 9 && j != 0 && compships[i + 1, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[5] = true;
+                }
+
+                if (i != 9 && j != 9 && compships[i + 1, j + 1] != 1) //вправо-вниз
+                {
+                    truesarr[6] = true;
+                }
+            }
+            else if (flag == 3 && navigate == "down")
+            {
+                if (j != 0 && compships[i, j - 1] != 1) //влево
+                {
+                    truesarr[0] = true;
+                }
+                else if (j == 0)
+                {
+                    truesarr[0] = true;
+                    truesarr[3] = true;
+                    truesarr[5] = true;
+                }
+
+                if (j != 9 && compships[i, j + 1] != 1) //вправо
+                {
+                    truesarr[1] = true;
+                }
+                else if (j == 9)
+                {
+                    truesarr[1] = true;
+                    truesarr[4] = true;
+                    truesarr[6] = true;
+                }
+
+                if (i != 0 && compships[i - 1, j] != 1) //вверх
+                {
+                    truesarr[2] = true;
+                }
+                else if (i == 0)
+                {
+                    truesarr[2] = true;
+                    truesarr[5] = true;
+                    truesarr[6] = true;
+                }
+
+                if (j != 0 && compships[i + 1, j - 1] != 1 && compships[i + 2, j - 1] != 1) //влево-вниз
+                {
+                    truesarr[3] = true;
+                }
+
+                if (j != 9 && compships[i + 1, j + 1] != 1 && compships[i + 2, j + 1] != 1) //вправо-вниз
+                {
+                    truesarr[4] = true;
+                }
+
+                if (i != 0 && j != 0 && compships[i - 1, j - 1] != 1) //вверх-влево
+                {
+                    truesarr[5] = true;
+                }
+
+                if (i != 0 && j != 9 && compships[i - 1, j + 1] != 1) //вверх-вправо
+                {
+                    truesarr[6] = true;
+                }
+            }
+            
+            if (truesarr[0] && truesarr[1] && truesarr[2] && truesarr[3]
+                && truesarr[4] && truesarr[5] && truesarr[6])
+            {
+                return true;
+            }
+            
+            return false;
         }
         
         private void show_unvisible()
