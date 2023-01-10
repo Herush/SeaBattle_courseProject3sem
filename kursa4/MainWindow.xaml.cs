@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO.Pipes;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -2162,9 +2163,9 @@ namespace kursa4
                     }
                 }
             }
-        } //TODO доделать однопалубники и прихуевертить горизонтальные проверки в расстановку кораблей
+        }
 
-        private bool[] checked_edges(int i, int j, int cc, int cc2) //TODO доделать проверки для 3 и 2х палубников, сделать отдельные горизонтальнеые проверки
+        private bool[] checked_edges(int i, int j, int cc, int cc2)
         {
             bool[] tempbool = new bool[12];
 
@@ -2358,7 +2359,7 @@ namespace kursa4
                 }
             }
             return tempbool;
-        } //Сделать для однопалубника проверки по диагонали
+        }
 
         private bool CheckedAroundShip(int i, int j,int flag,string navigate)
         {
@@ -2848,11 +2849,11 @@ namespace kursa4
                 if ((string)ttship.Tag == "destroyed")
                 {
                     originalHit[0] = -1;
-                    comphit();
+                    loopComphit = true;
                 }
                 else
                 {
-                    catch_ship = ttship;   
+                    catch_ship = ttship;
                 }
             }
         }
@@ -2939,255 +2940,510 @@ namespace kursa4
         }
 
         private int[] originalHit = new int[2];
-        
-        private void comphit() //TODO бывает не считывает попадания
+        private int csds = 0;
+
+        private void comphit() //TODO то же что и в if_hit
         {
             if (originalHit[0] == -1)
             {
-                originalHit[0] = ran.Next(0, 9);
-                originalHit[1] = ran.Next(0, 9);
+                originalHit[0] = ran.Next(10);
+                originalHit[1] = ran.Next(10);
+            }
+
+            if (csds == 0)
+            {
+                originalHit[0] = 4;
+                originalHit[1] = 5;
+                csds++;
+            } else if (csds == 1)
+            {
+                originalHit[0] = 0;
+                originalHit[1] = 1;
+                csds++;
             }
 
             int i = originalHit[0];
             int j = originalHit[1];
 
-            var blue = new SolidColorBrush(Colors.Blue);
-            var red = new SolidColorBrush(Colors.Firebrick);
-
-            check_hit(cells[i,j]);
-            if (cells[i, j].Background != blue && cells[i, j].Background != red)
+            if (tryHitShip)
             {
-                if (hitShip)
-                {
-                    cells[i, j].Background = blue;
-                    hit_on_ship();
-                    if_hit(i, j);
-                }
-                else
-                {
-                    cells[i, j].Background = red;
-                }
+                if_no_hit(i,j);
+            }
+            else if (reverse)
+            {
+                if_hit(i,j);
             }
             else
             {
-                originalHit[0] = -1;
-                comphit();
+                check_hit(cells[i, j]);
             }
-        }
 
-        private int position_hit = 0;
-        private bool rightway = true, leftway = true, upway = true, downway = true;
-        
-        private void if_hit(int i, int j) //TODO при попадании по краблю бывает ложно ставит непопадание 
-        {
-            if (hitShip)
+            if (((string)cells[i, j].Tag != "miss" && (string)cells[i,j].Tag != "hit"))
             {
-                bool jEdgeR = false,jEdgeL = false,iEdgeU = false,iEdgeD = false;
-                hitShip = false;
-                int[] lie = new int[4];
-
-                if (j == 9)
+                if (hitShip)
                 {
-                    jEdgeR = true;
-                }
-
-                if (j == 0)
-                {
-                    jEdgeL = true;
-                }
-
-                if (i == 0)
-                {
-                    iEdgeU = true;
-                }
-
-                if (i == 9)
-                {
-                    iEdgeD = true;
-                }
-
-                int luck = 0;
-
-                if (position_hit == 0)
-                {
-                    if (jEdgeR || !rightway)
+                    cells[i, j].Background = new SolidColorBrush(Colors.Blue);;
+                    cells[i, j].Tag = "hit";
+                    hit_on_ship();
+                    if (!kill1ship)
                     {
-                        lie[1] = 1;
-                    }
-                    
-                    if (jEdgeL || !leftway)
-                    {
-                        lie[0] = 1;
-                    }
-                    
-                    if (iEdgeU || !upway)
-                    {
-                        lie[2] = 1;
-                    }
-
-                    if (iEdgeD || !downway)
-                    {
-                        lie[3] = 1;
-                    }
-                    
-                    
-                    luck = ran.Next(0, 3);
-
-                    while (lie[luck] == 1)
-                    {
-                        luck = ran.Next(0, 3);
+                        if_hit(i, j);
                     }
                 }
-                else if (position_hit == 1)
+                else
                 {
-                    if (jEdgeL)
-                    {
-                        i = originalHit[0];
-                        j = originalHit[1];
-                        
-                        luck = 1;
-                    }
-                    else
-                    {
-                        luck = 0;
-                    }
-                } 
-                else if (position_hit == 2)
-                {
-                    if (jEdgeR)
-                    {
-                        i = originalHit[0];
-                        j = originalHit[1];
-                        
-                        luck = 0;
-                    }
-                    else
-                    {
-                        luck = 1;
-                    }
+                    cells[i, j].Background = new SolidColorBrush(Colors.Firebrick);
+                    cells[i, j].Tag = "miss";
                 }
-                else if (position_hit == 3)
-                {
-                    if (iEdgeU)
-                    {
-                        i = originalHit[0];
-                        j = originalHit[1];
-                        
-                        luck = 3;
-                    }
-                    else
-                    {
-                        luck = 2;
-                    }
-                }
-                else if (position_hit == 4)
-                {
-                    if (iEdgeD)
-                    {
-                        i = originalHit[0];
-                        j = originalHit[1];
-                        
-                        luck = 2;
-                    }
-                    else
-                    {
-                        luck = 3;
-                    }
-                }
+            }
+            else if (!tryHitShip)
+            {
+                originalHit[0] = -1;
+                loopComphit = true;
+            }
+
+            killShip = false;
+            kill1ship = false;
+        }
+
+        private int[] positionsOfHit = new int[4];
+        private bool firstShot = true;
+        private bool tryHitShip = false;
+        private bool jL = true, jR = true, iU = true, iD = true;
+        private int reverseJ = 0, reverseI = 0;
+        private bool reverse = false, loopIf_hit = true;
+        
+        private void if_hit(int i, int j) //TODO Тотальная хуебесия, сидеть хуярить дебагом до починки
+        {
+            hitShip = false;
+            bool thisRun = false;
+            int I = 0, J = 0;
+
+            I = i;
+            J = j;
+            
+            while (loopIf_hit)
+            {
+                loopIf_hit = false;
                 
-                
-                if (luck == 0)
+                if (J == 0)
                 {
-                    check_hit(cells[i, j - 1]);
-                    if (hitShip)
+                    jL = false;
+                }
+
+                if (J == 9)
+                {
+                    jR = false;
+                }
+
+                if (I == 0)
+                {
+                    iU = false;
+                }
+
+                if (I == 9)
+                {
+                    iD = false;
+                }
+
+                if (firstShot)
+                {
+                    firstShot = false;
+
+
+                    int luck = 0;
+
+                    while (luck != 5)
                     {
-                        cells[i, j - 1].Background = new SolidColorBrush(Colors.Blue);
-                        hit_on_ship();
-                        position_hit = 1;
-                        if_hit(i, j - 1);
+                        luck = ran.Next(4);
+
+                        if (luck == 0 && iU)
+                        {
+                            luck = 5;
+                            check_hit(cells[I - 1, J]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                positionsOfHit[0] = 1;
+                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                loopIf_hit = true;
+                                I--;
+                            }
+                            else
+                            {
+                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[0] = 2;
+                                tryHitShip = true;
+                            }
+                        }
+
+                        if (luck == 1 && jR)
+                        {
+                            luck = 5;
+                            check_hit(cells[I, J + 1]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                positionsOfHit[1] = 1;
+                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                J++;
+                                loopIf_hit = true;
+                            }
+                            else
+                            {
+                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[1] = 2;
+                                tryHitShip = true;
+                            }
+                        }
+
+                        if (luck == 2 && iD)
+                        {
+                            luck = 5;
+                            check_hit(cells[I + 1, J]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                positionsOfHit[2] = 1;
+                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                I++;
+                                loopIf_hit = true;
+                            }
+                            else
+                            {
+                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[2] = 2;
+                                tryHitShip = true;
+                            }
+                        }
+
+                        if (luck == 3 && jL)
+                        {
+                            luck = 5;
+                            check_hit(cells[I, J - 1]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                positionsOfHit[3] = 1;
+                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                J--;
+                                loopIf_hit = true;
+                            }
+                            else
+                            {
+                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[3] = 2;
+                                tryHitShip = true;
+                            }
+                        }
                     }
-                    else if (position_hit == 1)
+                }
+                else
+                {
+                    if (iU)
                     {
-                        position_hit = 2;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        if (positionsOfHit[0] == 1 || (reverseI == 2 && !thisRun))
+                        {
+                            check_hit(cells[I - 1, J]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                if (!killShip)
+                                {
+                                    I--;
+                                    loopIf_hit = true;
+                                }
+                            }
+                            else
+                            {
+                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[0] = 2;
+                                reverseI = 1;
+                                reverse = true;
+                                loopIf_hit = false;
+                                thisRun = true;
+                            }
+                        }
+                    }
+                    else if (!iU && positionsOfHit[0] == 1)
+                    {
+                        positionsOfHit[0] = 2;
+                        reverseI = 1;
+                        reverse = true;
+                        I = originalHit[0];
+                        J = originalHit[1];
+                        loopIf_hit = true;
                     }
                     else
                     {
-                        leftway = false;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        positionsOfHit[0] = 2;
                     }
-                }
-                else if (luck == 1)
-                {
-                    check_hit(cells[i, j + 1]);
-                    if (hitShip)
+
+                    if (jR)
                     {
-                        cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
-                        hit_on_ship();
-                        position_hit = 2;
-                        if_hit(i, j + 1);
+                        if (positionsOfHit[1] == 1 || (reverseJ == 2 && !thisRun))
+                        {
+                            check_hit(cells[I, J + 1]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                if (!killShip)
+                                {
+                                    J++;
+                                    loopIf_hit = true;
+                                }
+                            }
+                            else
+                            {
+                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[1] = 2;
+                                reverseJ = 1;
+                                reverse = true;
+                                loopIf_hit = false;
+                                thisRun = true;
+                            }
+                        }
                     }
-                    else if (position_hit == 2)
+                    else if (!jR && positionsOfHit[1] == 1)
                     {
-                        position_hit = 1;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        positionsOfHit[1] = 2;
+                        reverseJ = 1;
+                        reverse = true;
+                        I = originalHit[0];
+                        J = originalHit[1];
+                        loopIf_hit = true;
                     }
                     else
                     {
-                        rightway = false;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        positionsOfHit[1] = 2;
+                    }
+
+                    if (iD)
+                    {
+                        if (positionsOfHit[2] == 1 || (reverseI == 1 && !thisRun))
+                        {
+                            check_hit(cells[I + 1, J]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                if (!killShip)
+                                {
+                                    I++;
+                                    loopIf_hit = true;
+                                }
+                            }
+                            else
+                            {
+                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[2] = 2;
+                                reverseI = 2;
+                                reverse = true;
+                                loopIf_hit = false;
+                                thisRun = true;
+                            }
+                        }
+                    }
+                    else if (!iD && positionsOfHit[2] == 1)
+                    {
+                        positionsOfHit[2] = 2;
+                        reverseI = 2;
+                        reverse = true;
+                        I = originalHit[0];
+                        J = originalHit[1];
+                        loopIf_hit = true;
+                    }
+                    else
+                    {
+                        positionsOfHit[2] = 2;
+                    }
+
+                    if (jL)
+                    {
+                        if (positionsOfHit[3] == 1 || (reverseJ == 1 && !thisRun))
+                        {
+                            check_hit(cells[I, J - 1]);
+                            if (hitShip)
+                            {
+                                hitShip = false;
+                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
+                                cells[I, J].Tag = "hit";
+                                hit_on_ship();
+                                if (!killShip)
+                                {
+                                    J--;
+                                    loopIf_hit = true;
+                                }
+                            }
+                            else
+                            {
+                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Firebrick);
+                                cells[I, J].Tag = "miss";
+                                positionsOfHit[3] = 2;
+                                reverseJ = 2;
+                                reverse = true;
+                                loopIf_hit = false;
+                            }
+                        }
+                    }
+                    else if (!jL && positionsOfHit[3] == 1)
+                    {
+                        positionsOfHit[3] = 2;
+                        reverseJ = 2;
+                        reverse = true;
+                        I = originalHit[0];
+                        J = originalHit[1];
+                        loopIf_hit = true;
+                    }
+                    else
+                    {
+                        positionsOfHit[3] = 2;
                     }
                 }
-                else if (luck == 2)
+            }
+
+            killShip = false;
+        }
+
+        private void if_no_hit(int i, int j)
+        {
+            int luck = 0;
+            luck = ran.Next(4);
+
+            while (luck != 5)
+            {
+                if (iU && luck == 0 && positionsOfHit[0] != 2)
                 {
-                    check_hit(cells[i - 1, j]);
+                    check_hit(cells[i - 1,j]);
+                    luck = 5;
                     if (hitShip)
                     {
+                        hitShip = false;
                         cells[i - 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        cells[i, j].Tag = "hit";
+                        positionsOfHit[0] = 1;
+                        tryHitShip = false;
                         hit_on_ship();
-                        position_hit = 3;
-                        if_hit(i - 1, j);
-                    }
-                    else if (position_hit == 3)
-                    {
-                        position_hit = 4;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        if_hit(i - 1,j);
                     }
                     else
                     {
-                        upway = false;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i - 1, j].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i, j].Tag = "miss";
+                        positionsOfHit[0] = 2;
                     }
                 }
-                else if (luck == 3)
+                else if (jR && luck == 1 && positionsOfHit[1] != 2)
                 {
-                    check_hit(cells[i + 1, j]);
+                    check_hit(cells[i,j + 1]);
+                    luck = 5;
                     if (hitShip)
                     {
-                        cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        hitShip = false;
+                        positionsOfHit[1] = 1;
+                        cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
+                        cells[i, j].Tag = "hit";
+                        tryHitShip = false;
                         hit_on_ship();
-                        position_hit = 4;
-                        if_hit(i + 1, j);
-                    }
-                    else if (position_hit == 4)
-                    {
-                        position_hit = 3;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        if_hit(i,j + 1);
                     }
                     else
                     {
-                        downway = false;
-                        cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i, j + 1].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i, j].Tag = "miss";
+                        positionsOfHit[1] = 2;
                     }
+                }
+                else if (iD && luck == 2 && positionsOfHit[2] != 2)
+                {
+                    check_hit(cells[i + 1,j]);
+                    luck = 5;
+                    if (hitShip)
+                    {
+                        hitShip = false;
+                        positionsOfHit[2] = 1;
+                        cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        cells[i, j].Tag = "hit";
+                        tryHitShip = false;
+                        hit_on_ship();
+                        if_hit(i + 1,j);
+                    }
+                    else
+                    {
+                        cells[i + 1, j].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i, j].Tag = "miss";
+                        positionsOfHit[2] = 2;
+                    }
+                }
+                else if (jL && luck == 3 && positionsOfHit[3] != 2)
+                {
+                    check_hit(cells[i,j - 1]);
+                    luck = 5;
+                    if (hitShip)
+                    {
+                        hitShip = false;
+                        positionsOfHit[3] = 1;
+                        cells[i, j - 1].Background = new SolidColorBrush(Colors.Blue);
+                        cells[i, j].Tag = "hit";
+                        tryHitShip = false;
+                        hit_on_ship();
+                        if_hit(i,j - 1);
+                    }
+                    else
+                    {
+                        cells[i, j - 1].Background = new SolidColorBrush(Colors.Firebrick);
+                        cells[i, j].Tag = "miss";
+                        positionsOfHit[3] = 2;
+                    }
+                }
+                else
+                {                        
+                    luck = ran.Next(4);
                 }
             }
         }
 
+        private bool loopComphit = true;
+        
         private void field_with_comphits()
         {
             field.Visibility = Visibility.Hidden;
-            originalHit[0] = -1;
-            comphit();
+            if (!tryHitShip && !reverse)
+            {
+                originalHit[0] = -1;
+            }
+
+            loopComphit = true;
+            while (loopComphit)
+            {
+                loopComphit = false;
+                loopIf_hit = true;
+                comphit();
+            }
+
             show_unvisible2();
         }
 
@@ -3279,19 +3535,33 @@ namespace kursa4
             }
             else if ((string)catch_ship.Content != "Корабль уничтожен")
             {
+                kill1ship = true;
                 delete_ship();
             }
         }
 
+        private bool kill1ship = false;
+        private bool killShip = false;
+        
         private void delete_ship()
         {
             catch_ship.Content = "Корабль уничтожен";
             catch_ship.Tag = "destroyed";
 
-            position_hit = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                positionsOfHit[i] = 0;
+            }
+
+            tryHitShip = false;
+            reverse = false;
+            reverseI = 0;
+            reverseJ = 0;
             originalHit[0] = -1;
             hitShip = false;
-            comphit();
+            loopComphit = true;
+            firstShot = true;
+            killShip = true;
         } 
 
         private void check_hitplayer(Button ttemp)
