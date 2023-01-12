@@ -2915,14 +2915,15 @@ namespace kursa4
             }
         }
 
-        
+        private int playerHits = 0;
         private bool hit = false;
+
         private void GameCellClick(object sender, RoutedEventArgs e)
         {
             Button ttemp = sender as Button;
             check_hitplayer(ttemp);
 
-            if ((string)ttemp.Tag != "false" && (string)ttemp.Tag != "true")
+            if ((string)ttemp.Tag != "false" && (string)ttemp.Tag != "true" && !endGame)
             {
                 if (!hit)
                 {
@@ -2935,33 +2936,80 @@ namespace kursa4
                     ttemp.Background = new SolidColorBrush(Colors.Blue);
                     ttemp.Tag = "true";
                     hit = false;
+                    playerHits++;
+                    if (playerHits == 20)
+                    {
+                        Win();
+                    }
                 }
             }
         }
 
         private int[] originalHit = new int[2];
-        private int csds = 0;
+        private int csds = -1;
+        private bool hitTrue = false;
 
-        private void comphit() //TODO то же что и в if_hit
+        private void comphit() //TODO из 4 попыток, один раз не добило корабль и попав в корабль поставило красный цвет
         {
             if (originalHit[0] == -1)
             {
                 originalHit[0] = ran.Next(10);
                 originalHit[1] = ran.Next(10);
+                csds++;
             }
 
             if (csds == 0)
             {
-                originalHit[0] = 4;
-                originalHit[1] = 5;
-                csds++;
-            } else if (csds == 1)
-            {
                 originalHit[0] = 0;
                 originalHit[1] = 1;
-                csds++;
             }
-
+            else if (csds == 1)
+            {
+                originalHit[0] = 0;
+                originalHit[1] = 7;
+            }
+            else if (csds == 2)
+            {
+                originalHit[0] = 0;
+                originalHit[1] = 9;
+            }
+            else if (csds == 3)
+            {
+                originalHit[0] = 2;
+                originalHit[1] = 1;
+            }
+            else if (csds == 4)
+            {
+                originalHit[0] = 2;
+                originalHit[1] = 5;
+            }
+            else if (csds == 5)
+            {
+                originalHit[0] = 2;
+                originalHit[1] = 7;
+            }
+            else if (csds == 6)
+            {
+                originalHit[0] = 4;
+                originalHit[1] = 0;
+            }
+            else if (csds == 7)
+            {
+                originalHit[0] = 4;
+                originalHit[1] = 3;
+            }
+            else if (csds == 8)
+            {
+                originalHit[0] = 4;
+                originalHit[1] = 5;
+            }
+            else if (csds == 9)
+            {
+                originalHit[0] = 4;
+                originalHit[1] = 7;
+            }
+            
+            
             int i = originalHit[0];
             int j = originalHit[1];
 
@@ -2999,9 +3047,16 @@ namespace kursa4
             else if (!tryHitShip)
             {
                 originalHit[0] = -1;
+                hitShip = false;
                 loopComphit = true;
             }
 
+            if (hitTrue)
+            {
+                tryHitShip = false;
+                hitTrue = false;
+            }
+            
             killShip = false;
             kill1ship = false;
         }
@@ -3012,8 +3067,70 @@ namespace kursa4
         private bool jL = true, jR = true, iU = true, iD = true;
         private int reverseJ = 0, reverseI = 0;
         private bool reverse = false, loopIf_hit = true;
+
+        private void CheckLayWays(int i, int j)
+        {
+            if (iU && (string)cells[i - 1, j].Tag == "miss")
+            {
+                positionsOfHit[0] = 2;
+            }
+            
+            if (jR && (string)cells[i, j + 1].Tag == "miss")
+            {
+                positionsOfHit[1] = 2;
+            }
+            
+            if (iD && (string)cells[i + 1, j].Tag == "miss")
+            {
+                positionsOfHit[2] = 2;
+            }
+            
+            if (jL && (string)cells[i, j - 1].Tag == "miss")
+            {
+                positionsOfHit[3] = 2;
+            }
+        }
         
-        private void if_hit(int i, int j) //TODO Тотальная хуебесия, сидеть хуярить дебагом до починки
+        private void CheckHitEdges(int I, int J)
+        {
+            if (J == 0)
+            {
+                jL = false;
+            } else
+            {
+                jL = true;
+            }
+
+            if (J == 9)
+            {
+                jR = false;
+            }
+            else
+            {
+                jR = true;
+            }
+
+            if (I == 0)
+            {
+                iU = false;
+            }
+            else
+            {
+                iU = true;
+            }
+
+            if (I == 9)
+            {
+                iD = false;
+            }
+            else
+            {
+                iD = true;
+            }
+
+        }
+        
+        private void if_hit(int i, int j)
         {
             hitShip = false;
             bool thisRun = false;
@@ -3021,30 +3138,13 @@ namespace kursa4
 
             I = i;
             J = j;
-            
+
             while (loopIf_hit)
             {
-                loopIf_hit = false;
+                CheckHitEdges(I,J);
+                CheckLayWays(I,J);
                 
-                if (J == 0)
-                {
-                    jL = false;
-                }
-
-                if (J == 9)
-                {
-                    jR = false;
-                }
-
-                if (I == 0)
-                {
-                    iU = false;
-                }
-
-                if (I == 9)
-                {
-                    iD = false;
-                }
+                loopIf_hit = false;
 
                 if (firstShot)
                 {
@@ -3066,15 +3166,18 @@ namespace kursa4
                                 hitShip = false;
                                 positionsOfHit[0] = 1;
                                 cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I - 1, J].Tag = "hit";
                                 hit_on_ship();
-                                loopIf_hit = true;
-                                I--;
+                                if (!killShip)
+                                {
+                                    loopIf_hit = true;
+                                    I--;
+                                }
                             }
                             else
                             {
                                 cells[I - 1, J].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I - 1, J].Tag = "miss";
                                 positionsOfHit[0] = 2;
                                 tryHitShip = true;
                             }
@@ -3089,15 +3192,18 @@ namespace kursa4
                                 hitShip = false;
                                 positionsOfHit[1] = 1;
                                 cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I, J + 1].Tag = "hit";
                                 hit_on_ship();
-                                J++;
-                                loopIf_hit = true;
+                                if (!killShip)
+                                {
+                                    J++;
+                                    loopIf_hit = true;
+                                }
                             }
                             else
                             {
                                 cells[I, J + 1].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I, J + 1].Tag = "miss";
                                 positionsOfHit[1] = 2;
                                 tryHitShip = true;
                             }
@@ -3112,15 +3218,18 @@ namespace kursa4
                                 hitShip = false;
                                 positionsOfHit[2] = 1;
                                 cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I + 1, J].Tag = "hit";
                                 hit_on_ship();
-                                I++;
-                                loopIf_hit = true;
+                                if (!killShip)
+                                {
+                                    I++;
+                                    loopIf_hit = true;
+                                }
                             }
                             else
                             {
                                 cells[I + 1, J].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I + 1, J].Tag = "miss";
                                 positionsOfHit[2] = 2;
                                 tryHitShip = true;
                             }
@@ -3135,15 +3244,18 @@ namespace kursa4
                                 hitShip = false;
                                 positionsOfHit[3] = 1;
                                 cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I, J - 1].Tag = "hit";
                                 hit_on_ship();
-                                J--;
-                                loopIf_hit = true;
+                                if (!killShip)
+                                {
+                                    J--;
+                                    loopIf_hit = true;
+                                }
                             }
                             else
                             {
                                 cells[I, J - 1].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I, J - 1].Tag = "miss";
                                 positionsOfHit[3] = 2;
                                 tryHitShip = true;
                             }
@@ -3161,7 +3273,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I - 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
                                 {
@@ -3172,7 +3284,7 @@ namespace kursa4
                             else
                             {
                                 cells[I - 1, J].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I - 1, J].Tag = "miss";
                                 positionsOfHit[0] = 2;
                                 reverseI = 1;
                                 reverse = true;
@@ -3204,7 +3316,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I, J + 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
                                 {
@@ -3215,7 +3327,7 @@ namespace kursa4
                             else
                             {
                                 cells[I, J + 1].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I, J + 1].Tag = "miss";
                                 positionsOfHit[1] = 2;
                                 reverseJ = 1;
                                 reverse = true;
@@ -3247,7 +3359,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I + 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
                                 {
@@ -3258,7 +3370,7 @@ namespace kursa4
                             else
                             {
                                 cells[I + 1, J].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I + 1, J].Tag = "miss";
                                 positionsOfHit[2] = 2;
                                 reverseI = 2;
                                 reverse = true;
@@ -3290,7 +3402,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
-                                cells[I, J].Tag = "hit";
+                                cells[I, J - 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
                                 {
@@ -3301,7 +3413,7 @@ namespace kursa4
                             else
                             {
                                 cells[I, J - 1].Background = new SolidColorBrush(Colors.Firebrick);
-                                cells[I, J].Tag = "miss";
+                                cells[I, J - 1].Tag = "miss";
                                 positionsOfHit[3] = 2;
                                 reverseJ = 2;
                                 reverse = true;
@@ -3330,6 +3442,8 @@ namespace kursa4
 
         private void if_no_hit(int i, int j)
         {
+            CheckHitEdges(i,j);
+            
             int luck = 0;
             luck = ran.Next(4);
 
@@ -3343,16 +3457,19 @@ namespace kursa4
                     {
                         hitShip = false;
                         cells[i - 1, j].Background = new SolidColorBrush(Colors.Blue);
-                        cells[i, j].Tag = "hit";
+                        cells[i - 1, j].Tag = "hit";
                         positionsOfHit[0] = 1;
-                        tryHitShip = false;
+                        hitTrue = true;
                         hit_on_ship();
-                        if_hit(i - 1,j);
+                        if (!killShip)
+                        {
+                            if_hit(i - 1, j);
+                        }
                     }
                     else
                     {
                         cells[i - 1, j].Background = new SolidColorBrush(Colors.Firebrick);
-                        cells[i, j].Tag = "miss";
+                        cells[i - 1, j].Tag = "miss";
                         positionsOfHit[0] = 2;
                     }
                 }
@@ -3365,15 +3482,18 @@ namespace kursa4
                         hitShip = false;
                         positionsOfHit[1] = 1;
                         cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
-                        cells[i, j].Tag = "hit";
-                        tryHitShip = false;
+                        cells[i, j + 1].Tag = "hit";
+                        hitTrue = true;
                         hit_on_ship();
-                        if_hit(i,j + 1);
+                        if (!killShip)
+                        {
+                            if_hit(i, j + 1);
+                        }
                     }
                     else
                     {
                         cells[i, j + 1].Background = new SolidColorBrush(Colors.Firebrick);
-                        cells[i, j].Tag = "miss";
+                        cells[i, j + 1].Tag = "miss";
                         positionsOfHit[1] = 2;
                     }
                 }
@@ -3386,15 +3506,18 @@ namespace kursa4
                         hitShip = false;
                         positionsOfHit[2] = 1;
                         cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
-                        cells[i, j].Tag = "hit";
-                        tryHitShip = false;
+                        cells[i + 1, j].Tag = "hit";
+                        hitTrue = true;
                         hit_on_ship();
-                        if_hit(i + 1,j);
+                        if (!killShip)
+                        {
+                            if_hit(i + 1, j);
+                        }
                     }
                     else
                     {
                         cells[i + 1, j].Background = new SolidColorBrush(Colors.Firebrick);
-                        cells[i, j].Tag = "miss";
+                        cells[i + 1, j].Tag = "miss";
                         positionsOfHit[2] = 2;
                     }
                 }
@@ -3407,15 +3530,18 @@ namespace kursa4
                         hitShip = false;
                         positionsOfHit[3] = 1;
                         cells[i, j - 1].Background = new SolidColorBrush(Colors.Blue);
-                        cells[i, j].Tag = "hit";
-                        tryHitShip = false;
+                        cells[i, j - 1].Tag = "hit";
+                        hitTrue = true;
                         hit_on_ship();
-                        if_hit(i,j - 1);
+                        if (!killShip)
+                        {
+                            if_hit(i,j - 1);
+                        }
                     }
                     else
                     {
                         cells[i, j - 1].Background = new SolidColorBrush(Colors.Firebrick);
-                        cells[i, j].Tag = "miss";
+                        cells[i, j - 1].Tag = "miss";
                         positionsOfHit[3] = 2;
                     }
                 }
@@ -3424,6 +3550,8 @@ namespace kursa4
                     luck = ran.Next(4);
                 }
             }
+
+            killShip = false;
         }
 
         private bool loopComphit = true;
@@ -3437,7 +3565,7 @@ namespace kursa4
             }
 
             loopComphit = true;
-            while (loopComphit)
+             while (loopComphit)
             {
                 loopComphit = false;
                 loopIf_hit = true;
@@ -3560,8 +3688,10 @@ namespace kursa4
             originalHit[0] = -1;
             hitShip = false;
             loopComphit = true;
+            hitTrue = false;
             firstShot = true;
             killShip = true;
+            LoseEvent();
         } 
 
         private void check_hitplayer(Button ttemp)
@@ -3680,5 +3810,144 @@ namespace kursa4
             arrShipPosition[18] = 0;
             arrShipPosition[19] = 0;
         }
+
+        
+        
+        private void LoseEvent()
+        {
+            if ((string)Ship1_1.Tag == "destroyed" && (string)Ship1_2.Tag == "destroyed" &&
+                (string)Ship1_3.Tag == "destroyed" && (string)Ship1_4.Tag == "destroyed" &&
+                (string)Ship2_1.Tag == "destroyed" && (string)Ship2_2.Tag == "destroyed" &&
+                (string)Ship2_3.Tag == "destroyed" && (string)Ship3_1.Tag == "destroyed" &&
+                (string)Ship3_2.Tag == "destroyed" && (string)Ship4.Tag == "destroyed")
+            {
+                Lose();
+            }
+        }
+
+        private void Win()
+        {
+            ButtonContinue.Visibility = Visibility.Hidden;
+            ButtonPlaceShips.Visibility = Visibility.Hidden;
+            ButtonShowCompShips.Visibility = Visibility.Hidden;
+            ButtonContinueWin.Visibility = Visibility.Visible;
+            ButtonMainMenu.Visibility = Visibility.Visible;
+            endGame = true;
+        }
+
+        private bool endGame = false;
+        
+        private void Lose()
+        {
+            ButtonContinue.Visibility = Visibility.Hidden;
+            ButtonPlaceShips.Visibility = Visibility.Hidden;
+            ButtonShowCompShips.Visibility = Visibility.Hidden;
+            ButtonContinueLose.Visibility = Visibility.Visible;
+            ButtonMainMenu.Visibility = Visibility.Visible;
+            loopComphit = false;
+            endGame = true;
+        }
+
+        private bool flag = false;
+        private void ButtonContinueWin_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!flag)
+            {
+                Ship4.Visibility = Visibility.Visible;
+                Ship3_1.Visibility = Visibility.Visible;
+                Ship3_2.Visibility = Visibility.Visible;
+                Ship2_1.Visibility = Visibility.Visible;
+                Ship2_2.Visibility = Visibility.Visible;
+                Ship2_3.Visibility = Visibility.Visible;
+                Ship1_1.Visibility = Visibility.Visible;
+                Ship1_2.Visibility = Visibility.Visible;
+                Ship1_3.Visibility = Visibility.Visible;
+                Ship1_4.Visibility = Visibility.Visible;
+                
+                field.Visibility = Visibility.Visible;
+                GameField.Visibility = Visibility.Hidden;
+                flag = true;
+            }
+            else
+            {
+                Ship4.Visibility = Visibility.Hidden;
+                Ship3_1.Visibility = Visibility.Hidden;
+                Ship3_2.Visibility = Visibility.Hidden;
+                Ship2_1.Visibility = Visibility.Hidden;
+                Ship2_2.Visibility = Visibility.Hidden;
+                Ship2_3.Visibility = Visibility.Hidden;
+                Ship1_1.Visibility = Visibility.Hidden;
+                Ship1_2.Visibility = Visibility.Hidden;
+                Ship1_3.Visibility = Visibility.Hidden;
+                Ship1_4.Visibility = Visibility.Hidden;
+
+                field.Visibility = Visibility.Hidden;
+                GameField.Visibility = Visibility.Visible;
+                flag = false;
+            }
+        }
+
+        private void ButtonContinueLose_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!flag)
+            {
+                Ship4.Visibility = Visibility.Hidden;
+                Ship3_1.Visibility = Visibility.Hidden;
+                Ship3_2.Visibility = Visibility.Hidden;
+                Ship2_1.Visibility = Visibility.Hidden;
+                Ship2_2.Visibility = Visibility.Hidden;
+                Ship2_3.Visibility = Visibility.Hidden;
+                Ship1_1.Visibility = Visibility.Hidden;
+                Ship1_2.Visibility = Visibility.Hidden;
+                Ship1_3.Visibility = Visibility.Hidden;
+                Ship1_4.Visibility = Visibility.Hidden;
+
+                field.Visibility = Visibility.Hidden;
+                GameField.Visibility = Visibility.Visible;
+                flag = true;
+            }
+            else
+            {
+                Ship4.Visibility = Visibility.Visible;
+                Ship3_1.Visibility = Visibility.Visible;
+                Ship3_2.Visibility = Visibility.Visible;
+                Ship2_1.Visibility = Visibility.Visible;
+                Ship2_2.Visibility = Visibility.Visible;
+                Ship2_3.Visibility = Visibility.Visible;
+                Ship1_1.Visibility = Visibility.Visible;
+                Ship1_2.Visibility = Visibility.Visible;
+                Ship1_3.Visibility = Visibility.Visible;
+                Ship1_4.Visibility = Visibility.Visible;
+                
+                field.Visibility = Visibility.Visible;
+                GameField.Visibility = Visibility.Hidden;
+                flag = false;
+            }
+        }
+
+        private void ButtonMainMenu_OnClick(object sender, RoutedEventArgs e)
+        {
+            ImageBrush myBrush = new ImageBrush();
+            myBrush.ImageSource = new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\temp_background.png"));
+            canvas.Background = myBrush;
+            
+            Ship4.Visibility = Visibility.Hidden;
+            Ship3_1.Visibility = Visibility.Hidden;
+            Ship3_2.Visibility = Visibility.Hidden;
+            Ship2_1.Visibility = Visibility.Hidden;
+            Ship2_2.Visibility = Visibility.Hidden;
+            Ship2_3.Visibility = Visibility.Hidden;
+            Ship1_1.Visibility = Visibility.Hidden;
+            Ship1_2.Visibility = Visibility.Hidden;
+            Ship1_3.Visibility = Visibility.Hidden;
+            Ship1_4.Visibility = Visibility.Hidden;
+            
+            field.Visibility = Visibility.Hidden;
+            GameField.Visibility = Visibility.Hidden;
+            ButtonContinueLose.Visibility = Visibility.Hidden;
+            ButtonContinueWin.Visibility = Visibility.Hidden;
+            ButtonPlay.Visibility = Visibility.Visible;
+        }
     }
+    
 }

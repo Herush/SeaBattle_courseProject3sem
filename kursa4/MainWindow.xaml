@@ -41,6 +41,15 @@
                   
                   <Button x:Name="ButtonPlaceShips" Height="50" Width="200" Content="Расставить все корабли" HorizontalAlignment="Left" 
                           VerticalAlignment="Bottom" Margin="30" Click="ButtonPlaceShips_OnClick" FontSize="15" Visibility="Hidden"/>
+                  
+                  <Button x:Name="ButtonContinueWin" Height="50" Width="200" Content="Переключиться на другое поле" HorizontalAlignment="Right"
+                          VerticalAlignment="Top" Margin="20" Click="ButtonContinueWin_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Button x:Name="ButtonContinueLose" Height="50" Width="200" Content="Переключиться на другое поле" HorizontalAlignment="Right"
+                          VerticalAlignment="Top" Margin="20" Click="ButtonContinueLose_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Button x:Name="ButtonMainMenu" Height="50" Width="200" Content="Выйти в главное меню" HorizontalAlignment="Center"
+                          VerticalAlignment="Top" Margin="10" Click="ButtonMainMenu_OnClick" FontSize="15" Visibility="Hidden"></Button>
            </Grid>
            
            <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
