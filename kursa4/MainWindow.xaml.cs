@@ -30,14 +30,14 @@ namespace kursa4
 
         public MainWindow()
         {
-            InitializeComponent();
             cells = new Border[10, 10];
             game_cells = new Button[10, 10];
-            DrawField();
+            InitializeComponent();
         }
 
         private void ButtonPlay_OnClick(object sender, RoutedEventArgs e)
         {
+            DrawField();
             Application.Current.MainWindow.Height = 800;
             Application.Current.MainWindow.Width = 1200;
             ImageBrush myBrush = new ImageBrush();
@@ -120,7 +120,6 @@ namespace kursa4
             }
 
         }
-
 
         private void OnDragLeave(object sender, DragEventArgs e)
         {
@@ -853,10 +852,8 @@ namespace kursa4
             }
         }
 
-
-        private void ButtonResetShips_OnClick(object sender, RoutedEventArgs e)
+        private void ReplaceShip()
         {
-
             Canvas.SetTop(Ship4, 0);
             Canvas.SetLeft(Ship4, 0);
             Ship4.Tag = "untouched";
@@ -896,7 +893,12 @@ namespace kursa4
             Canvas.SetTop(Ship1_4, 480);
             Canvas.SetLeft(Ship1_4, 225);
             Ship1_4.Tag = "untouched";
+        }
+        
 
+        private void ButtonResetShips_OnClick(object sender, RoutedEventArgs e)
+        { 
+            ReplaceShip();
         }
 
         private void gameField()
@@ -3026,7 +3028,7 @@ namespace kursa4
                 check_hit(cells[i, j]);
             }
 
-            if (((string)cells[i, j].Tag != "miss" && (string)cells[i,j].Tag != "hit"))
+            if ((string)cells[i, j].Tag != "miss" && (string)cells[i,j].Tag != "hit" && (string)cells[i,j].Tag != "deadzone")
             {
                 if (hitShip)
                 {
@@ -3070,22 +3072,22 @@ namespace kursa4
 
         private void CheckLayWays(int i, int j)
         {
-            if (iU && (string)cells[i - 1, j].Tag == "miss")
+            if (iU && ((string)cells[i - 1, j].Tag == "miss" || (string)cells[i - 1,j].Tag == "deadzone"))
             {
                 positionsOfHit[0] = 2;
             }
             
-            if (jR && (string)cells[i, j + 1].Tag == "miss")
+            if (jR && ((string)cells[i, j + 1].Tag == "miss" || (string)cells[i,j + 1].Tag == "deadzone"))
             {
                 positionsOfHit[1] = 2;
             }
             
-            if (iD && (string)cells[i + 1, j].Tag == "miss")
+            if (iD && ((string)cells[i + 1, j].Tag == "miss" || (string)cells[i + 1,j].Tag == "deadzone"))
             {
                 positionsOfHit[2] = 2;
             }
             
-            if (jL && (string)cells[i, j - 1].Tag == "miss")
+            if (jL && ((string)cells[i, j - 1].Tag == "miss" || (string)cells[i,j - 1].Tag == "deadzone"))
             {
                 positionsOfHit[3] = 2;
             }
@@ -3157,7 +3159,7 @@ namespace kursa4
                     {
                         luck = ran.Next(4);
 
-                        if (luck == 0 && iU)
+                        if (luck == 0 && iU && positionsOfHit[0] != 2)
                         {
                             luck = 5;
                             check_hit(cells[I - 1, J]);
@@ -3183,7 +3185,7 @@ namespace kursa4
                             }
                         }
 
-                        if (luck == 1 && jR)
+                        if (luck == 1 && jR && positionsOfHit[1] != 2)
                         {
                             luck = 5;
                             check_hit(cells[I, J + 1]);
@@ -3209,7 +3211,7 @@ namespace kursa4
                             }
                         }
 
-                        if (luck == 2 && iD)
+                        if (luck == 2 && iD && positionsOfHit[2] != 2)
                         {
                             luck = 5;
                             check_hit(cells[I + 1, J]);
@@ -3235,7 +3237,7 @@ namespace kursa4
                             }
                         }
 
-                        if (luck == 3 && jL)
+                        if (luck == 3 && jL && positionsOfHit[3] != 2)
                         {
                             luck = 5;
                             check_hit(cells[I, J - 1]);
@@ -3442,13 +3444,14 @@ namespace kursa4
 
         private void if_no_hit(int i, int j)
         {
-            CheckHitEdges(i,j);
-            
             int luck = 0;
             luck = ran.Next(4);
 
             while (luck != 5)
             {
+                CheckHitEdges(i,j);
+                CheckLayWays(i,j);
+                
                 if (iU && luck == 0 && positionsOfHit[0] != 2)
                 {
                     check_hit(cells[i - 1,j]);
@@ -3681,6 +3684,8 @@ namespace kursa4
                 positionsOfHit[i] = 0;
             }
 
+            AddDeadZoneForHit();
+            
             tryHitShip = false;
             reverse = false;
             reverseI = 0;
@@ -3947,7 +3952,449 @@ namespace kursa4
             ButtonContinueLose.Visibility = Visibility.Hidden;
             ButtonContinueWin.Visibility = Visibility.Hidden;
             ButtonPlay.Visibility = Visibility.Visible;
+            ButtonMainMenu.Visibility = Visibility.Hidden;
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    cells[i, j] = null;
+                    game_cells[i,j] = null;
+                    compships[i, j] = 0;
+                }
+            }
+            
+            ReplaceShip();
+            DestroyShips();
         }
+
+        private void DestroyShips()
+        {
+            Ship4.Content = "ЧЕТЫРЁХПАЛУБНИК";
+            Ship3_1.Content = "ТРЁХПАЛУБНИК";
+            Ship3_2.Content = "ТРЁХПАЛУБНИК";
+            Ship2_1.Content = "ДВУХПАЛУБНИК";
+            Ship2_2.Content = "ДВУХПАЛУБНИК";
+            Ship2_3.Content = "ДВУХПАЛУБНИК";
+            Ship1_1.Content = "КАТЕР";
+            Ship1_2.Content = "КАТЕР";
+            Ship1_3.Content = "КАТЕР";
+            Ship1_4.Content = "КАТЕР";
+
+            Ship4.IsHitTestVisible = true;
+            Ship3_1.IsHitTestVisible = true;
+            Ship3_2.IsHitTestVisible = true;
+            Ship2_1.IsHitTestVisible = true;
+            Ship2_2.IsHitTestVisible = true;
+            Ship2_3.IsHitTestVisible = true;
+            Ship1_1.IsHitTestVisible = true;
+            Ship1_2.IsHitTestVisible = true;
+            Ship1_3.IsHitTestVisible = true;
+            Ship1_4.IsHitTestVisible = true;
+
+            playerHits = 0;
+            count = 0;
+            endGame = false;
+        }
+
+        private void AddDeadZoneForHit()
+        {
+            int[] tempIndex = new int[2];
+            
+            tempIndex = FindCellOnPosition();
+
+            int i = tempIndex[0];
+            int j = tempIndex[1];
+            
+            bool L = false;
+            bool U = false;
+            bool R = false;
+            bool D = false;
+
+            if (catch_ship == Ship1_1 || catch_ship == Ship1_2 || catch_ship == Ship1_3 || catch_ship == Ship1_4)
+            {
+                if (j != 0)
+                {
+                    cells[i, j - 1].Tag = "deadzone";
+                    L = true;
+                }
+
+                if (j != 9)
+                {
+                    cells[i, j + 1].Tag = "deadzone";
+                    R = true;
+                }
+
+                if (i != 0)
+                {
+                    cells[i - 1, j].Tag = "deadzone";
+                    U = true;
+                }
+
+                if (i != 9)
+                {
+                    cells[i + 1, j].Tag = "deadzone";
+                    D = true;
+                }
+                    
+                if (L && U)
+                {
+                    cells[i - 1, j - 1].Tag = "deadzone";
+                }
+
+                if (U && R)
+                {
+                    cells[i - 1, j + 1].Tag = "deadzone";
+                }
+
+                if (R && D)
+                {
+                    cells[i + 1, j + 1].Tag = "deadzone";
+                }
+                    
+                if (L && D)
+                {
+                    cells[i + 1, j - 1].Tag = "deadzone";
+                }
+            }
+
+            if (j != 9 && (string)cells[i, j + 1].Tag == "hit")
+            {
+                if (catch_ship == Ship4)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j + 3 != 9)
+                    {
+                        cells[i, j + 4].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                        cells[i - 1, j + 2].Tag = "deadzone";
+                        cells[i - 1, j + 3].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 1, j].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        cells[i + 1, j + 2].Tag = "deadzone";
+                        cells[i + 1, j + 3].Tag = "deadzone";
+                        D = true;
+                    }
+
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 4].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 1, j + 4].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                    }
+                    
+                } 
+                else if (catch_ship == Ship3_1 || catch_ship == Ship3_2)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j + 2 != 9)
+                    {
+                        cells[i, j + 3].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                        cells[i - 1, j + 2].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 1, j].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        cells[i + 1, j + 2].Tag = "deadzone";
+                        D = true;
+                    }
+                    
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 3].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 1, j + 3].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                    }
+                }
+                else if (catch_ship == Ship2_1 || catch_ship == Ship2_2 || catch_ship == Ship2_3)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j + 1 != 9)
+                    {
+                        cells[i, j + 2].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 1, j].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        D = true;
+                    }
+                    
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 2].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 1, j + 2].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                    }
+                }
+
+            } 
+            else if (i != 9 && (string)cells[i + 1, j].Tag == "hit")
+            {
+                if (catch_ship == Ship4)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                        cells[i + 2, j - 1].Tag = "deadzone";
+                        cells[i + 3, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j != 9)
+                    {
+                        cells[i, j + 1].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        cells[i + 2, j + 1].Tag = "deadzone";
+                        cells[i + 3, j + 1].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 4, j].Tag = "deadzone";
+                        D = true;
+                    }
+
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 4, j + 1].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 4, j - 1].Tag = "deadzone";
+                    }
+                    
+                } 
+                else if (catch_ship == Ship3_1 || catch_ship == Ship3_2)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                        cells[i + 2, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j != 9)
+                    {
+                        cells[i, j + 1].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        cells[i + 2, j + 1].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 3, j].Tag = "deadzone";
+                        D = true;
+                    }
+
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 3, j + 1].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 3, j - 1].Tag = "deadzone";
+                    }
+                }
+                else if (catch_ship == Ship2_1 || catch_ship == Ship2_2 || catch_ship == Ship2_3)
+                {
+                    if (j != 0)
+                    {
+                        cells[i, j - 1].Tag = "deadzone";
+                        cells[i + 1, j - 1].Tag = "deadzone";
+                        L = true;
+                    }
+
+                    if (j != 9)
+                    {
+                        cells[i, j + 1].Tag = "deadzone";
+                        cells[i + 1, j + 1].Tag = "deadzone";
+                        R = true;
+                    }
+
+                    if (i != 0)
+                    {
+                        cells[i - 1, j].Tag = "deadzone";
+                        U = true;
+                    }
+
+                    if (i != 9)
+                    {
+                        cells[i + 2, j].Tag = "deadzone";
+                        D = true;
+                    }
+
+                    if (L && U)
+                    {
+                        cells[i - 1, j - 1].Tag = "deadzone";
+                    }
+
+                    if (U && R)
+                    {
+                        cells[i - 1, j + 1].Tag = "deadzone";
+                    }
+
+                    if (R && D)
+                    {
+                        cells[i + 2, j + 1].Tag = "deadzone";
+                    }
+                    
+                    if (L && D)
+                    {
+                        cells[i + 2, j - 1].Tag = "deadzone";
+                    }
+                }
+            }
+        }
+        
+        private int[] FindCellOnPosition()
+        {
+            int[] tempIndex = new int[2];
+            double positionShipX = 0, positionShipY = 0;
+            var catchShip = catch_ship;
+
+            positionShipX = Canvas.GetLeft(catchShip);
+            positionShipY = Canvas.GetTop(catchShip);
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    if (positionShipX == Canvas.GetLeft(cells[i, j]) + (window.ActualWidth - field.ActualWidth) / 2 && 
+                        positionShipY == Canvas.GetTop(cells[i, j])  + (window.ActualHeight - field.ActualHeight) / 2)
+                    {
+                        tempIndex[0] = i;
+                        tempIndex[1] = j;
+                    }
+                }
+            }
+
+            return tempIndex;
+        }
+        
     }
+    
     
 }
