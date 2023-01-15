@@ -24,11 +24,8 @@
                   <Canvas x:Name="GameField" Visibility="Hidden" Height="600" Width="600"
                           HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
                   
-                  <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
-                          VerticalAlignment="Center" Height="100" Width="400" Click="ButtonPlay_OnClick" FontSize="40"/>
-                  
-                  <Button x:Name="ButtonStartGame" Height="50" Width="200" Content="Закончить расстановку" HorizontalAlignment="Center"
-                          VerticalAlignment="Top"  Click="ButtonStartGame_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                   <Button x:Name="ButtonStartGame" Height="50" Width="200" Content="Закончить расстановку" HorizontalAlignment="Center"
+                           VerticalAlignment="Top"  Click="ButtonStartGame_OnClick" FontSize="15" Visibility="Hidden"></Button>
                   
                   <Button x:Name="ButtonResetShips" Height="50" Width="200" Content="Сбросить все корабли" HorizontalAlignment="Right"
                           VerticalAlignment="Center" Click="ButtonResetShips_OnClick" FontSize="15" Visibility="Hidden"></Button>
@@ -50,27 +47,88 @@
                   
                   <Button x:Name="ButtonMainMenu" Height="50" Width="200" Content="Выйти в главное меню" HorizontalAlignment="Center"
                           VerticalAlignment="Top" Margin="10" Click="ButtonMainMenu_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                  
+                  <Canvas x:Name="Instructions2"  Visibility="Hidden" Height="600" Width="600"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <Canvas.Background>
+                          <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Instructions2.png"></ImageBrush>
+                      </Canvas.Background>
+                  </Canvas>
+                  
+                  <Button x:Name="ButtonInstruction2" Content="Правила расстановки" HorizontalAlignment="Center" 
+                          VerticalAlignment="Top" Margin="500,0,0,0" Height="50" Width="200" Visibility="Hidden" Click="ButtonInstruction2_OnClick" FontSize="15"/>
+                  
+                  
+                  <Canvas x:Name="Winner"  Visibility="Hidden" Height="600" Width="300"
+                          HorizontalAlignment="Left" VerticalAlignment="Center">
+                          <Canvas.Background>
+                                  <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Win.png"></ImageBrush>
+                          </Canvas.Background>
+                  </Canvas>
+                  
+                  <Canvas x:Name="Loser"  Visibility="Hidden" Height="600" Width="300"
+                          HorizontalAlignment="Left" VerticalAlignment="Center">
+                          <Canvas.Background>
+                                  <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Lose.png"></ImageBrush>
+                          </Canvas.Background>
+                  </Canvas>
+                  
+                  <Button x:Name="ButtonInstruction3" Content="Правила попаданий" HorizontalAlignment="Right" 
+                          VerticalAlignment="Top" Margin="0,20,40,0" Height="50" Width="200" Visibility="Hidden" Click="ButtonInstruction3_OnClick" FontSize="15"/>
+                  
+                  <Canvas x:Name="Instruction3"  Visibility="Hidden" Height="300" Width="300"
+                          HorizontalAlignment="Right" VerticalAlignment="Center">
+                          <Canvas.Background>
+                                  <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Instructions3.png"></ImageBrush>
+                          </Canvas.Background>
+                  </Canvas>
+                  
+                  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                          
+                          <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonPlay_OnClick" FontSize="40"/>
+                          
+                          <Button x:Name="ButtonInstruction" Background="AliceBlue" Content="Как играть?" HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonInstruction_OnClick" FontSize="40"/>
+                          
+                          <Button x:Name="ButtonCloseApp" Background="AliceBlue" Content="Выход" HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonCloseApp_OnClick" FontSize="40"/>
+                          
+                  </StackPanel>
+                  
+                  <Canvas x:Name="Instructions"  Visibility="Hidden" Height="300" Width="303"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                          <Canvas.Background>
+                                  <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Instructions.png"></ImageBrush>
+                          </Canvas.Background>
+                          
+                          <Button x:Name="ButtonCloseInstructions" Visibility="Hidden" Canvas.Right="5" Canvas.Top="5"
+                                  Height="30" Width="30" Click="ButtonCloseInstructions_OnClick" FontSize="40">
+                                  <Image Source="C:\Users\halop\RiderProjects\kursa4\kursa4\Close.png"></Image>
+                          </Button>
+                  </Canvas>
+                  
            </Grid>
            
            <Label x:Name="Ship4" Height="60" Width="240" Canvas.Left="0" Canvas.Top="0" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-                  BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown"  Visibility="Hidden" > ЧЕТЫРЁХПАЛУБНИК </Label>
+                  BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown"  Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ЧЕТЫРЁХПАЛУБНИК </Label>
         <Label x:Name="Ship3_1" Height="60" Width="180" Canvas.Left="0" Canvas.Top="80" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ТРЁХПАЛУБНИК </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ТРЁХПАЛУБНИК </Label>
         <Label x:Name="Ship3_2" Height="60" Width="180" Canvas.Left="0" Canvas.Top="160" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ТРЁХПАЛУБНИК </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ТРЁХПАЛУБНИК </Label>
         <Label x:Name="Ship2_1" Height="60" Width="120" Canvas.Left="0" Canvas.Top="240" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ДВУХПАЛУБНИК </Label>
         <Label x:Name="Ship2_2" Height="60" Width="120" Canvas.Left="0" Canvas.Top="320" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ДВУХПАЛУБНИК </Label>
         <Label x:Name="Ship2_3" Height="60" Width="120" Canvas.Left="0" Canvas.Top="400" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > ДВУХПАЛУБНИК </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > ДВУХПАЛУБНИК </Label>
         <Label x:Name="Ship1_1" Height="60" Width="60" Tag = "blocked" Canvas.Left="0" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > КАТЕР </Label>
         <Label x:Name="Ship1_2" Height="60" Width="60" Tag = "blocked" Canvas.Left="75" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > КАТЕР </Label>
         <Label x:Name="Ship1_3" Height="60" Width="60" Tag = "blocked" Canvas.Left="150" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > КАТЕР </Label>
         <Label x:Name="Ship1_4" Height="60" Width="60" Tag = "blocked" Canvas.Left="225" Canvas.Top="480" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="Blue" 
-               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" > КАТЕР </Label>
+               BorderThickness="2" PreviewMouseDown="Ship_OnMouseDown" Visibility="Hidden" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" > КАТЕР </Label>
     </Canvas>
 </Window>

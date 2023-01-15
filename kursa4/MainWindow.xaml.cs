@@ -63,11 +63,17 @@ namespace kursa4
             Ship1_3.LayoutTransform = new RotateTransform(0);
             Ship1_4.Visibility = Visibility.Visible;
             Ship1_4.LayoutTransform = new RotateTransform(0);
+
+            ButtonCloseApp.Visibility = Visibility.Hidden;
+            ButtonInstruction2.Visibility = Visibility.Visible;
+            ButtonCloseInstructions.Visibility = Visibility.Hidden;
+            Instructions.Visibility = Visibility.Hidden;
+            ButtonInstruction.Visibility = Visibility.Hidden;
             ButtonPlay.Visibility = Visibility.Hidden;
             field.Visibility = Visibility.Visible;
             ButtonStartGame.Visibility = Visibility.Visible;
             ButtonResetShips.Visibility = Visibility.Visible;
-            ButtonPlaceShips.Visibility = Visibility.Visible;
+            /*ButtonPlaceShips.Visibility = Visibility.Visible;*/
         }
 
         private void DrawField()
@@ -128,7 +134,7 @@ namespace kursa4
                 _poinOfDrag = sender as Border;
                 point_true = false;
             }
-        } //TODO при быстром перемещении корабля хавается не та клетка, может зайти в deadzone корябля UPD. Всё ещё похуй :D 
+        }
 
         private void OnPreviewDrop(object sender, DragEventArgs e)
         {
@@ -209,7 +215,7 @@ namespace kursa4
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
             }
-            else if (tship.Name == "Ship2_2")
+            else if (tship.Name == "Ship2_3")
             {
                 Canvas.SetTop(this.dragobject, 400);
                 Canvas.SetLeft(this.dragobject, 0);
@@ -593,6 +599,7 @@ namespace kursa4
         {
             this.dragobject = sender as UIElement;
             this.tship = sender as Label;
+            int[] tempIndex = new int[2];
             if (this.dragobject != null)
             {
                 if (e.GetPosition(canvas).X > (grid.ActualWidth - 600) / 2 &&
@@ -600,7 +607,8 @@ namespace kursa4
                     e.GetPosition(canvas).Y > (grid.ActualHeight - 600) / 2 &&
                     e.GetPosition(canvas).Y < grid.ActualHeight - (grid.ActualHeight - 600) / 2)
                 {
-                    point_true = true;
+                    tempIndex = FindCellOnPosition(this.tship);
+                    _poinOfDrag = cells[tempIndex[0], tempIndex[1]];
                 }
 
                 RotateTransform trnsf = tship.LayoutTransform as RotateTransform;
@@ -893,6 +901,17 @@ namespace kursa4
             Canvas.SetTop(Ship1_4, 480);
             Canvas.SetLeft(Ship1_4, 225);
             Ship1_4.Tag = "untouched";
+            
+            Ship4.LayoutTransform = new RotateTransform(0);
+            Ship3_1.LayoutTransform = new RotateTransform(0);
+            Ship3_2.LayoutTransform = new RotateTransform(0);
+            Ship2_1.LayoutTransform = new RotateTransform(0);
+            Ship2_2.LayoutTransform = new RotateTransform(0);
+            Ship2_3.LayoutTransform = new RotateTransform(0);
+            Ship1_1.LayoutTransform = new RotateTransform(0);
+            Ship1_2.LayoutTransform = new RotateTransform(0);
+            Ship1_3.LayoutTransform = new RotateTransform(0);
+            Ship1_4.LayoutTransform = new RotateTransform(0);
         }
         
 
@@ -905,6 +924,8 @@ namespace kursa4
         {
             ButtonStartGame.Visibility = Visibility.Hidden;
             ButtonResetShips.Visibility = Visibility.Hidden;
+            ButtonInstruction2.Visibility = Visibility.Hidden;
+            ButtonInstruction3.Visibility = Visibility.Visible;
 
             Ship4.IsHitTestVisible = false;
             Ship3_1.IsHitTestVisible = false;
@@ -975,6 +996,13 @@ namespace kursa4
             }
         }
 
+        private int[] compShip4 = new int[8];
+        private int[] compShip3_1 = new int[6];
+        private int[] compShip3_2 = new int[6];
+        private int[] compShip2_1 = new int[4];
+        private int[] compShip2_2 = new int[4];
+        private int[] compShip2_3 = new int[4];
+
         private void compship_generator(int i, int j)
         {
             bool j_edge_l = false, i_edge_u = false, i_edge_d = false, j_edge_r = false, leftBuild = false, downBuild = false, rightBuild = false, upBuild = false;
@@ -990,6 +1018,8 @@ namespace kursa4
                     j_edge_r = tempbool[0];
 
                     compships[i, j] = 1;
+                    compShip4[0] = i;
+                    compShip4[1] = j;
 
                     if (!j_edge_r)
                     {
@@ -1008,6 +1038,13 @@ namespace kursa4
                         compships[i, j - 3] = 1;
                         compships[i, j - 4] = 2;
 
+                        compShip4[2] = i;
+                        compShip4[3] = j - 1;
+                        compShip4[4] = i;
+                        compShip4[5] = j - 2;
+                        compShip4[6] = i;
+                        compShip4[7] = j - 3;
+                        
                         if (i != 9)
                         {
                             if (j != 9)
@@ -1047,6 +1084,13 @@ namespace kursa4
                         compships[i, j + 2] = 1;
                         compships[i, j + 3] = 1;
                         compships[i, j + 4] = 2;
+                        
+                        compShip4[2] = i;
+                        compShip4[3] = j + 1;
+                        compShip4[4] = i;
+                        compShip4[5] = j + 2;
+                        compShip4[6] = i;
+                        compShip4[7] = j + 3;
 
                         if (i != 9)
                         {
@@ -1194,6 +1238,26 @@ namespace kursa4
                     if (leftBuild)
                     {
                         compships[i, j] = 1;
+
+                        if (count == 1)
+                        {
+                            compShip3_1[0] = i;
+                            compShip3_1[1] = j;
+                            compShip3_1[2] = i;
+                            compShip3_1[3] = j - 1;
+                            compShip3_1[4] = i;
+                            compShip3_1[5] = j - 2;
+                        }
+                        else
+                        {
+                            compShip3_2[0] = i;
+                            compShip3_2[1] = j;
+                            compShip3_2[2] = i;
+                            compShip3_2[3] = j - 1;
+                            compShip3_2[4] = i;
+                            compShip3_2[5] = j - 2;
+                        }
+                        
                         if (j != 9 && compships[i, j + 1] == 0)
                         {
                             compships[i, j + 1] = 2;
@@ -1246,6 +1310,26 @@ namespace kursa4
                     else if (rightBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 1)
+                        {
+                            compShip3_1[0] = i;
+                            compShip3_1[1] = j;
+                            compShip3_1[2] = i;
+                            compShip3_1[3] = j + 1;
+                            compShip3_1[4] = i;
+                            compShip3_1[5] = j + 2;
+                        }
+                        else
+                        {
+                            compShip3_2[0] = i;
+                            compShip3_2[1] = j;
+                            compShip3_2[2] = i;
+                            compShip3_2[3] = j + 1;
+                            compShip3_2[4] = i;
+                            compShip3_2[5] = j + 2;
+                        }
+                        
                         if (j != 0 && compships[i, j - 1] == 0)
                         {
                             compships[i, j - 1] = 2;
@@ -1418,6 +1502,27 @@ namespace kursa4
                     if (leftBuild)
                     {
                         compships[i, j] = 1;
+
+                        if (count == 3)
+                        {
+                            compShip2_1[0] = i;
+                            compShip2_1[1] = j;
+                            compShip2_1[2] = i;
+                            compShip2_1[3] = j - 1;
+                        } else if (count == 4)
+                        {
+                            compShip2_2[0] = i;
+                            compShip2_2[1] = j;
+                            compShip2_2[2] = i;
+                            compShip2_2[3] = j - 1;
+                        } else if (count == 5)
+                        {
+                            compShip2_3[0] = i;
+                            compShip2_3[1] = j;
+                            compShip2_3[2] = i;
+                            compShip2_3[3] = j - 1;
+                        }
+
                         if (j != 9 && compships[i, j + 1] == 0)
                         {
                             compships[i, j + 1] = 2;
@@ -1465,6 +1570,27 @@ namespace kursa4
                     else if (rightBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 3)
+                        {
+                            compShip2_1[0] = i;
+                            compShip2_1[1] = j;
+                            compShip2_1[2] = i;
+                            compShip2_1[3] = j + 1;
+                        } else if (count == 4)
+                        {
+                            compShip2_2[0] = i;
+                            compShip2_2[1] = j;
+                            compShip2_2[2] = i;
+                            compShip2_2[3] = j + 1;
+                        } else if (count == 5)
+                        {
+                            compShip2_3[0] = i;
+                            compShip2_3[1] = j;
+                            compShip2_3[2] = i;
+                            compShip2_3[3] = j + 1;
+                        }
+                        
                         if (j != 0 && compships[i, j - 1] == 0)
                         {
                             compships[i, j - 1] = 2;
@@ -1588,6 +1714,8 @@ namespace kursa4
                     }
 
                     compships[i, j] = 1;
+                    compShip4[0] = i;
+                    compShip4[1] = j;
 
                     if (downBuild)
                     {
@@ -1600,6 +1728,13 @@ namespace kursa4
                         compships[i + 2, j] = 1;
                         compships[i + 3, j] = 1;
                         compships[i + 4, j] = 2;
+                        
+                        compShip4[2] = i + 1;
+                        compShip4[3] = j;
+                        compShip4[4] = i + 2;
+                        compShip4[5] = j;
+                        compShip4[6] = i + 3;
+                        compShip4[7] = j;
 
                         if (j != 9)
                         {
@@ -1641,6 +1776,13 @@ namespace kursa4
                         compships[i - 3, j] = 1;
                         compships[i - 4, j] = 2;
 
+                        compShip4[2] = i - 1;
+                        compShip4[3] = j;
+                        compShip4[4] = i - 2;
+                        compShip4[5] = j;
+                        compShip4[6] = i - 3;
+                        compShip4[7] = j;
+                        
                         if (j != 9)
                         {
                             if (i != 9)
@@ -1788,6 +1930,26 @@ namespace kursa4
                     if (upBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 1)
+                        {
+                            compShip3_1[0] = i;
+                            compShip3_1[1] = j;
+                            compShip3_1[2] = i - 1;
+                            compShip3_1[3] = j;
+                            compShip3_1[4] = i - 2;
+                            compShip3_1[5] = j;
+                        }
+                        else
+                        {
+                            compShip3_2[0] = i;
+                            compShip3_2[1] = j;
+                            compShip3_2[2] = i - 1;
+                            compShip3_2[3] = j;
+                            compShip3_2[4] = i - 2;
+                            compShip3_2[5] = j;
+                        }
+                        
                         if (i != 9 && compships[i + 1, j] == 0)
                         {
                             compships[i + 1, j] = 2;
@@ -1840,6 +2002,26 @@ namespace kursa4
                     else if (downBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 1)
+                        {
+                            compShip3_1[0] = i;
+                            compShip3_1[1] = j;
+                            compShip3_1[2] = i + 1;
+                            compShip3_1[3] = j;
+                            compShip3_1[4] = i + 2;
+                            compShip3_1[5] = j;
+                        }
+                        else
+                        {
+                            compShip3_2[0] = i;
+                            compShip3_2[1] = j;
+                            compShip3_2[2] = i + 1;
+                            compShip3_2[3] = j;
+                            compShip3_2[4] = i + 2;
+                            compShip3_2[5] = j;
+                        }
+                        
                         if (i != 0 && compships[i - 1, j] == 0)
                         {
                             compships[i - 1, j] = 2;
@@ -2014,6 +2196,27 @@ namespace kursa4
                     if (upBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 3)
+                        {
+                            compShip2_1[0] = i;
+                            compShip2_1[1] = j;
+                            compShip2_1[2] = i - 1;
+                            compShip2_1[3] = j;
+                        } else if (count == 4)
+                        {
+                            compShip2_2[0] = i;
+                            compShip2_2[1] = j;
+                            compShip2_2[2] = i - 1;
+                            compShip2_2[3] = j;
+                        } else if (count == 5)
+                        {
+                            compShip2_3[0] = i;
+                            compShip2_3[1] = j;
+                            compShip2_3[2] = i - 1;
+                            compShip2_3[3] = j;
+                        }
+                        
                         if (i != 9 && compships[i + 1, j] == 0)
                         {
                             compships[i + 1, j] = 2;
@@ -2061,6 +2264,27 @@ namespace kursa4
                     else if (downBuild)
                     {
                         compships[i, j] = 1;
+                        
+                        if (count == 3)
+                        {
+                            compShip2_1[0] = i;
+                            compShip2_1[1] = j;
+                            compShip2_1[2] = i + 1;
+                            compShip2_1[3] = j;
+                        } else if (count == 4)
+                        {
+                            compShip2_2[0] = i;
+                            compShip2_2[1] = j;
+                            compShip2_2[2] = i + 1;
+                            compShip2_2[3] = j;
+                        } else if (count == 5)
+                        {
+                            compShip2_3[0] = i;
+                            compShip2_3[1] = j;
+                            compShip2_3[2] = i + 1;
+                            compShip2_3[3] = j;
+                        }
+                        
                         if (i != 0 && compships[i - 1, j] == 0)
                         {
                             compships[i - 1, j] = 2;
@@ -2830,11 +3054,12 @@ namespace kursa4
             Ship1_3.Visibility = Visibility.Hidden;
             Ship1_4.Visibility = Visibility.Hidden;
 
+            ButtonInstruction3.Visibility = Visibility.Visible;
             ButtonPlaceShips.Visibility = Visibility.Hidden;
             ButtonContinue.Visibility = Visibility.Hidden;
             field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Visible;
-            ButtonShowCompShips.Visibility = Visibility.Visible;
+            ButtonShowCompShips.Visibility = Visibility.Hidden;
         }
 
         private void check_hit_of_ship(Border ttemp, Label ttship)
@@ -2939,6 +3164,7 @@ namespace kursa4
                     ttemp.Tag = "true";
                     hit = false;
                     playerHits++;
+                    HitOnCompShip(ttemp);
                     if (playerHits == 20)
                     {
                         Win();
@@ -2947,11 +3173,166 @@ namespace kursa4
             }
         }
 
-        private int[] originalHit = new int[2];
-        private int csds = -1;
-        private bool hitTrue = false;
+        private int[] hitOnCompCapacity = new int[6];
 
-        private void comphit() //TODO из 4 попыток, один раз не добило корабль и попав в корабль поставило красный цвет
+        private void HitOnCompShip(Button ttemp)
+        {
+            int[] tempInd = new int[2];
+            tempInd = find_name_gbutton(ttemp);
+            bool hitOnComp = false;
+
+            int tCount = 1;
+            for (int i = 0; i < 8; i+=2)
+            {
+                if (tempInd[1] == compShip4[tCount] && tempInd[0] == compShip4[i])
+                {
+                    if (hitOnCompCapacity[0] == 3)
+                    {
+                        DeleteCompShip(compShip4, 8);
+                    }
+                    else
+                    {
+                        hitOnCompCapacity[0]++;
+                        hitOnComp = true;
+                    }
+                }
+                tCount += 2;
+            }
+
+            tCount = 1;
+            if (!hitOnComp)
+            {
+                for (int i = 0; i < 6; i+=2)
+                {
+
+                    if (tempInd[1] == compShip3_1[tCount] && tempInd[0] == compShip3_1[i])
+                    {
+                        if (hitOnCompCapacity[1] == 2)
+                        {
+                            DeleteCompShip(compShip3_1, 6);
+                        }
+                        else
+                        {
+                            hitOnCompCapacity[1]++;
+                            hitOnComp = true;
+                        }
+                    }
+                    
+                    tCount += 2;
+                }
+            }
+
+            tCount = 1;
+            if (!hitOnComp)
+            {
+                for (int i = 0; i < 6; i+=2)
+                {
+
+                    if (tempInd[1] == compShip3_2[tCount] && tempInd[0] == compShip3_2[i])
+                    {
+                        if (hitOnCompCapacity[2] == 2)
+                        {
+                            DeleteCompShip(compShip3_2, 6);
+                        }
+                        else
+                        {
+                            hitOnCompCapacity[2]++;
+                            hitOnComp = true;
+                        }
+                    }
+                    
+                    tCount += 2;
+                }
+            }
+
+            tCount = 1;
+            if (!hitOnComp)
+            {
+                for (int i = 0; i < 4; i+=2)
+                {
+
+                    if (tempInd[1] == compShip2_1[tCount] && tempInd[0] == compShip2_1[i])
+                    {
+                        if (hitOnCompCapacity[3] == 1)
+                        {
+                            DeleteCompShip(compShip2_1, 4);
+                        }
+                        else
+                        {
+                            hitOnCompCapacity[3]++;
+                            hitOnComp = true;
+                        }
+                    }
+                    
+                    tCount += 2;
+                }
+            }
+
+            tCount = 1;
+            if (!hitOnComp)
+            {
+                for (int i = 0; i < 4; i+=2)
+                {
+                    if (tempInd[1] == compShip2_2[tCount] && tempInd[0] == compShip2_2[i])
+                    {
+                        if (hitOnCompCapacity[4] == 1)
+                        {
+                            DeleteCompShip(compShip2_2, 4); 
+                        }
+                        else
+                        {
+                            hitOnCompCapacity[4]++;
+                            hitOnComp = true;
+                        }
+                    }
+                    
+                    tCount += 2;
+                }
+            }
+
+            tCount = 1;
+            if (!hitOnComp)
+            {
+                for (int i = 0; i < 4; i+=2)
+                {
+                    if (tempInd[1] == compShip2_3[tCount] && tempInd[0] == compShip2_3[i])
+                    {
+                        if (hitOnCompCapacity[5] == 1)
+                        {
+                            DeleteCompShip(compShip2_3, 4);
+                        }
+                        else
+                        {
+                            hitOnCompCapacity[5]++;
+                            hitOnComp = true;
+                        }
+                    }
+                    
+                    tCount += 2;
+                }
+            }
+            
+            if (!hitOnComp)
+            {
+                DeleteCompShip(tempInd, 2);
+            }
+        }
+
+        private void DeleteCompShip(int[] tempCS, int tCount)
+        {
+            int ttCount = 1;
+            for (int i = 0; i < tCount; i+=2)
+            {
+                game_cells[tempCS[i], tempCS[ttCount]].Background = new SolidColorBrush(Colors.Gray);
+                ttCount += 2;
+            }
+        }
+        
+        private int[] originalHit = new int[2];
+        private bool hitTrue = false;
+        private int csds = 0;
+        
+        private void comphit()
         {
             if (originalHit[0] == -1)
             {
@@ -2960,58 +3341,20 @@ namespace kursa4
                 csds++;
             }
 
-            if (csds == 0)
-            {
-                originalHit[0] = 0;
-                originalHit[1] = 1;
-            }
-            else if (csds == 1)
-            {
-                originalHit[0] = 0;
-                originalHit[1] = 7;
-            }
-            else if (csds == 2)
-            {
-                originalHit[0] = 0;
-                originalHit[1] = 9;
-            }
-            else if (csds == 3)
+            if (csds == 1)
             {
                 originalHit[0] = 2;
-                originalHit[1] = 1;
-            }
-            else if (csds == 4)
+                originalHit[1] = 2;
+            } else if (csds == 2)
             {
-                originalHit[0] = 2;
-                originalHit[1] = 5;
-            }
-            else if (csds == 5)
-            {
-                originalHit[0] = 2;
-                originalHit[1] = 7;
-            }
-            else if (csds == 6)
+                originalHit[0] = 6;
+                originalHit[1] = 2;
+            } else if (csds == 3)
             {
                 originalHit[0] = 4;
-                originalHit[1] = 0;
+                originalHit[1] = 2;
             }
-            else if (csds == 7)
-            {
-                originalHit[0] = 4;
-                originalHit[1] = 3;
-            }
-            else if (csds == 8)
-            {
-                originalHit[0] = 4;
-                originalHit[1] = 5;
-            }
-            else if (csds == 9)
-            {
-                originalHit[0] = 4;
-                originalHit[1] = 7;
-            }
-            
-            
+
             int i = originalHit[0];
             int j = originalHit[1];
 
@@ -3069,26 +3412,51 @@ namespace kursa4
         private bool jL = true, jR = true, iU = true, iD = true;
         private int reverseJ = 0, reverseI = 0;
         private bool reverse = false, loopIf_hit = true;
+        private bool reverseFromCheckLayWays = false;
 
         private void CheckLayWays(int i, int j)
         {
             if (iU && ((string)cells[i - 1, j].Tag == "miss" || (string)cells[i - 1,j].Tag == "deadzone"))
             {
+                if (positionsOfHit[0] == 1)
+                {
+                    reverseI = 1;
+                    reverse = true;
+                    reverseFromCheckLayWays = true;
+                }
                 positionsOfHit[0] = 2;
             }
             
             if (jR && ((string)cells[i, j + 1].Tag == "miss" || (string)cells[i,j + 1].Tag == "deadzone"))
             {
+                if (positionsOfHit[1] == 1)
+                {
+                    reverseJ = 1;
+                    reverse = true;
+                    reverseFromCheckLayWays = true;
+                }
                 positionsOfHit[1] = 2;
             }
             
             if (iD && ((string)cells[i + 1, j].Tag == "miss" || (string)cells[i + 1,j].Tag == "deadzone"))
             {
+                if (positionsOfHit[2] == 1)
+                {
+                    reverseI = 2;
+                    reverse = true;
+                    reverseFromCheckLayWays = true;
+                }
                 positionsOfHit[2] = 2;
             }
             
             if (jL && ((string)cells[i, j - 1].Tag == "miss" || (string)cells[i,j - 1].Tag == "deadzone"))
             {
+                if (positionsOfHit[3] == 1)
+                {
+                    reverseJ = 2;
+                    reverse = true;
+                    reverseFromCheckLayWays = true;
+                }
                 positionsOfHit[3] = 2;
             }
         }
@@ -3145,6 +3513,13 @@ namespace kursa4
             {
                 CheckHitEdges(I,J);
                 CheckLayWays(I,J);
+
+                if (reverseFromCheckLayWays)
+                {
+                    reverseFromCheckLayWays = false;
+                    I = originalHit[0];
+                    J = originalHit[1];
+                }
                 
                 loopIf_hit = false;
 
@@ -3591,6 +3966,9 @@ namespace kursa4
             Ship1_3.Visibility = Visibility.Visible;
             Ship1_4.Visibility = Visibility.Visible;
 
+            Instruction3.Visibility = Visibility.Hidden;
+            instructionFlag2 = false;
+            ButtonInstruction3.Visibility = Visibility.Hidden;
             ButtonContinue.Visibility = Visibility.Visible;
             field.Visibility = Visibility.Visible;
             GameField.Visibility = Visibility.Hidden;
@@ -3676,9 +4054,15 @@ namespace kursa4
         
         private void delete_ship()
         {
-            catch_ship.Content = "Корабль уничтожен";
+            if ((string)catch_ship.Content == "КАТЕР")
+            {
+                catch_ship.FontSize = 10;
+            }
+            catch_ship.Content = "ЗАТОНУЛ";
             catch_ship.Tag = "destroyed";
 
+            catch_ship.Background = new SolidColorBrush(Colors.Gray);
+            
             for (int i = 0; i < 4; i++)
             {
                 positionsOfHit[i] = 0;
@@ -3832,11 +4216,13 @@ namespace kursa4
 
         private void Win()
         {
+            Winner.Visibility = Visibility.Visible;
             ButtonContinue.Visibility = Visibility.Hidden;
             ButtonPlaceShips.Visibility = Visibility.Hidden;
             ButtonShowCompShips.Visibility = Visibility.Hidden;
             ButtonContinueWin.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Visible;
+            ButtonInstruction3.Visibility = Visibility.Hidden;
             endGame = true;
         }
 
@@ -3844,11 +4230,13 @@ namespace kursa4
         
         private void Lose()
         {
+            Loser.Visibility = Visibility.Visible;
             ButtonContinue.Visibility = Visibility.Hidden;
             ButtonPlaceShips.Visibility = Visibility.Hidden;
             ButtonShowCompShips.Visibility = Visibility.Hidden;
             ButtonContinueLose.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Visible;
+            ButtonInstruction3.Visibility = Visibility.Hidden;
             loopComphit = false;
             endGame = true;
         }
@@ -3935,7 +4323,10 @@ namespace kursa4
             ImageBrush myBrush = new ImageBrush();
             myBrush.ImageSource = new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\temp_background.png"));
             canvas.Background = myBrush;
-            
+
+            ButtonInstruction.Visibility = Visibility.Visible;
+            Winner.Visibility = Visibility.Hidden;
+            Loser.Visibility = Visibility.Hidden;
             Ship4.Visibility = Visibility.Hidden;
             Ship3_1.Visibility = Visibility.Hidden;
             Ship3_2.Visibility = Visibility.Hidden;
@@ -3947,6 +4338,9 @@ namespace kursa4
             Ship1_3.Visibility = Visibility.Hidden;
             Ship1_4.Visibility = Visibility.Hidden;
             
+            ButtonCloseApp.Visibility = Visibility.Visible;
+            flag = false;
+            ButtonContinue.Visibility = Visibility.Hidden;
             field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Hidden;
             ButtonContinueLose.Visibility = Visibility.Hidden;
@@ -3962,6 +4356,16 @@ namespace kursa4
                     game_cells[i,j] = null;
                     compships[i, j] = 0;
                 }
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                hitCapacity[i] = 0;
+            }
+            
+            for (int i = 0; i < 6; i++)
+            {
+                hitOnCompCapacity[i] = 0;
             }
             
             ReplaceShip();
@@ -4001,7 +4405,7 @@ namespace kursa4
         {
             int[] tempIndex = new int[2];
             
-            tempIndex = FindCellOnPosition();
+            tempIndex = FindCellOnPosition(catch_ship);
 
             int i = tempIndex[0];
             int j = tempIndex[1];
@@ -4369,11 +4773,11 @@ namespace kursa4
             }
         }
         
-        private int[] FindCellOnPosition()
+        private int[] FindCellOnPosition(Label tttship)
         {
             int[] tempIndex = new int[2];
             double positionShipX = 0, positionShipY = 0;
-            var catchShip = catch_ship;
+            var catchShip = tttship;
 
             positionShipX = Canvas.GetLeft(catchShip);
             positionShipY = Canvas.GetTop(catchShip);
@@ -4393,7 +4797,110 @@ namespace kursa4
 
             return tempIndex;
         }
+
+        private void ButtonInstruction_OnClick(object sender, RoutedEventArgs e)
+        {
+            Instructions.Visibility = Visibility.Visible;
+            ButtonCloseInstructions.Visibility = Visibility.Visible;
+        }
+
+        private void ButtonCloseInstructions_OnClick(object sender, RoutedEventArgs e)
+        {
+            Instructions.Visibility = Visibility.Hidden;
+            ButtonCloseInstructions.Visibility = Visibility.Hidden;
+        }
+
+        private bool instructionFlag = false;
         
+        private void ButtonInstruction2_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!instructionFlag)
+            {
+                Instructions2.Visibility = Visibility.Visible;
+                instructionFlag = true;
+                HiddenIf();
+            }
+            else
+            {
+                Instructions2.Visibility = Visibility.Hidden;
+                instructionFlag = false;
+                Ship4.Visibility = Visibility.Visible;
+                Ship3_1.Visibility = Visibility.Visible;
+                Ship3_2.Visibility = Visibility.Visible;
+                Ship2_1.Visibility = Visibility.Visible;
+                Ship2_2.Visibility = Visibility.Visible;
+                Ship2_3.Visibility = Visibility.Visible;
+                Ship1_1.Visibility = Visibility.Visible;
+                Ship1_2.Visibility = Visibility.Visible;
+                Ship1_3.Visibility = Visibility.Visible;
+                Ship1_4.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void HiddenIf()
+        {
+            if ((string)Ship4.Tag == "touched")
+            {
+                Ship4.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship3_1.Tag == "touched")
+            {
+                Ship3_1.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship3_2.Tag == "touched")
+            {
+                Ship3_2.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship2_1.Tag == "touched")
+            {
+                Ship2_1.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship2_2.Tag == "touched")
+            {
+                Ship2_2.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship2_3.Tag == "touched")
+            {
+                Ship2_3.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship1_1.Tag == "touched")
+            {
+                Ship1_1.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship1_2.Tag == "touched")
+            {
+                Ship1_2.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship1_3.Tag == "touched")
+            {
+                Ship1_3.Visibility = Visibility.Hidden;
+            }
+            if ((string)Ship1_4.Tag == "touched")
+            {
+                Ship1_4.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void ButtonCloseApp_OnClick(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+
+        private bool instructionFlag2 = false;
+        private void ButtonInstruction3_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!instructionFlag2)
+            {
+                Instruction3.Visibility = Visibility.Visible;
+                instructionFlag2 = true;
+            }
+            else
+            {
+                Instruction3.Visibility = Visibility.Hidden;
+                instructionFlag2 = false;
+            }
+        }
     }
     
     
