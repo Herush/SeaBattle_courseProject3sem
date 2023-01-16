@@ -4394,6 +4394,10 @@ namespace kursa4
             Ship1_2.Visibility = Visibility.Hidden;
             Ship1_3.Visibility = Visibility.Hidden;
             Ship1_4.Visibility = Visibility.Hidden;
+            Ship1_1.FontSize = 13;
+            Ship1_2.FontSize = 13;
+            Ship1_3.FontSize = 13;
+            Ship1_4.FontSize = 13;
             
             ButtonCloseApp.Visibility = Visibility.Visible;
             flag = false;
@@ -4483,7 +4487,7 @@ namespace kursa4
             bool R = false;
             bool D = false;
 
-            if (catch_ship == Ship1_1 || catch_ship == Ship1_2 || catch_ship == Ship1_3 || catch_ship == Ship1_4) //TODO быстро пофиксить индексы
+            if (catch_ship == Ship1_1 || catch_ship == Ship1_2 || catch_ship == Ship1_3 || catch_ship == Ship1_4)
             {
                 if (j != 0)
                 {
@@ -4713,7 +4717,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i < 6)
+                    if (i + 3 != 9)
                     {
                         cells[i + 4, j].Tag = "deadzone";
                         D = true;
@@ -4764,7 +4768,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i < 7)
+                    if (i + 2 != 9)
                     {
                         cells[i + 3, j].Tag = "deadzone";
                         D = true;
@@ -4812,7 +4816,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i < 8)
+                    if (i + 1 != 9)
                     {
                         cells[i + 2, j].Tag = "deadzone";
                         D = true;
@@ -4902,6 +4906,16 @@ namespace kursa4
                 Ship1_2.Visibility = Visibility.Visible;
                 Ship1_3.Visibility = Visibility.Visible;
                 Ship1_4.Visibility = Visibility.Visible;
+                Ship4.IsHitTestVisible = true;
+                Ship3_1.IsHitTestVisible = true;
+                Ship3_2.IsHitTestVisible = true;
+                Ship2_1.IsHitTestVisible = true;
+                Ship2_2.IsHitTestVisible = true;
+                Ship2_3.IsHitTestVisible = true;
+                Ship1_1.IsHitTestVisible = true;
+                Ship1_2.IsHitTestVisible = true;
+                Ship1_3.IsHitTestVisible = true;
+                Ship1_4.IsHitTestVisible = true;
             }
         }
 
@@ -4911,41 +4925,81 @@ namespace kursa4
             {
                 Ship4.Visibility = Visibility.Hidden;
             }
+            else
+            {
+                Ship4.IsHitTestVisible = false;
+            }
             if ((string)Ship3_1.Tag == "touched")
             {
                 Ship3_1.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Ship3_1.IsHitTestVisible = false;
             }
             if ((string)Ship3_2.Tag == "touched")
             {
                 Ship3_2.Visibility = Visibility.Hidden;
             }
+            else
+            {
+                Ship3_2.IsHitTestVisible = false;
+            }
             if ((string)Ship2_1.Tag == "touched")
             {
                 Ship2_1.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Ship2_1.IsHitTestVisible = false;
             }
             if ((string)Ship2_2.Tag == "touched")
             {
                 Ship2_2.Visibility = Visibility.Hidden;
             }
+            else
+            {
+                Ship2_2.IsHitTestVisible = false;
+            }
             if ((string)Ship2_3.Tag == "touched")
             {
                 Ship2_3.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Ship2_3.IsHitTestVisible = false;
             }
             if ((string)Ship1_1.Tag == "touched")
             {
                 Ship1_1.Visibility = Visibility.Hidden;
             }
+            else
+            {
+                Ship1_1.IsHitTestVisible = false;
+            }
             if ((string)Ship1_2.Tag == "touched")
             {
                 Ship1_2.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Ship1_2.IsHitTestVisible = false;
             }
             if ((string)Ship1_3.Tag == "touched")
             {
                 Ship1_3.Visibility = Visibility.Hidden;
             }
+            else
+            {
+                Ship1_3.IsHitTestVisible = false;
+            }
             if ((string)Ship1_4.Tag == "touched")
             {
                 Ship1_4.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Ship1_4.IsHitTestVisible = false;
             }
         }
 
