@@ -13,4 +13,3 @@ C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.GenerateResou
 C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.CoreCompileInputs.cache
 C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.exe
 C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.pdb
-C:\Users\halop\RiderProjects\kursa4\kursa4\obj\Debug\kursa4.csproj.SuggestedBindingRedirects.cache

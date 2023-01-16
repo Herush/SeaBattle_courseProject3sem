@@ -169,22 +169,32 @@ namespace kursa4
 
             result = false;
 
+            ship_collision();
+            
             if (this._poinOfDrag != null && this.dragobject != null && result)
             {
                 place_ship(this._poinOfDrag);
             }
             else if (result && this.dragobject != null)
             {
-                replace_ship();
+                if (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth / 2) || 
+                     Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
+                     || Canvas.GetTop(this.dragobject) < (window.ActualHeight - field.ActualHeight) / 2 || 
+                     Canvas.GetTop(this.dragobject) > window.ActualHeight - (window.ActualHeight - field.ActualHeight) / 2)
+                {
+                    place_ship(_poinOfDrag);
+                }
+                else
+                {
+
+                    replace_ship();
+                }
             }
-            
-            
-            if (this.dragobject != null &&  (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth/2) || 
-                Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
-                || Canvas.GetTop(this.dragobject) > field.ActualHeight + (window.ActualHeight/8) || 
-                Canvas.GetTop(this.dragobject) < window.ActualHeight / 2 - 600))
+
+            if (this.dragobject != null)
             {
-                replace_ship();
+                double test1 = Canvas.GetLeft(this.dragobject);
+                double test2 = Canvas.GetTop(this.dragobject);
             }
 
             _poinOfDrag = null;
@@ -395,6 +405,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
                     {
@@ -403,6 +414,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ДВУХПАЛУБНИК")
                     {
@@ -411,6 +423,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "КАТЕР")
                     {
@@ -418,6 +431,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                 }
                 else if ((string)ttemp.Tag == "critical_8.." || (string)ttemp.Name == "Border_89" ||
@@ -430,6 +444,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
                     {
@@ -438,6 +453,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ДВУХПАЛУБНИК")
                     {
@@ -445,6 +461,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "КАТЕР")
                     {
@@ -452,6 +469,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                 }
                 else if ((string)ttemp.Tag == "critical_7.." || (string)ttemp.Name == "Border_79" ||
@@ -464,6 +482,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
                     {
@@ -471,6 +490,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "ДВУХПАЛУБНИК")
                     {
@@ -478,6 +498,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                     else if ((string)tship.Content == "КАТЕР")
                     {
@@ -485,6 +506,7 @@ namespace kursa4
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                         Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                         tship.Tag = "touched";
+                        tship.LayoutTransform = new RotateTransform(90);
                     }
                 }
                 else
@@ -493,16 +515,18 @@ namespace kursa4
                     Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
                     Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                     tship.Tag = "touched";
+                    tship.LayoutTransform = new RotateTransform(90);
                 }
             }
 
             result = false;
             ship_collision();
-
+            
             if (result)
             {
                 replace_ship();
             }
+            result = false;
 
             if (tship == Ship1_1)
             {
@@ -638,6 +662,11 @@ namespace kursa4
                     _poinOfDrag = cells[tempIndex[0], tempIndex[1]];
                 }
 
+                if (tship != null)
+                {
+                    this.tship.Tag = "untouched";
+                }
+
                 RotateTransform trnsf = tship.LayoutTransform as RotateTransform;
 
                 if (tship != null && trnsf != null && trnsf.Angle == 90)
@@ -745,14 +774,7 @@ namespace kursa4
             bool isKeyRelease = Keyboard.IsKeyUp(Key.R);
             if (this.dragobject != null && (string)tship.Content != "КАТЕР" && isKeyPressed && mayroll)
             {
-                if (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth/2) || 
-                     Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
-                     || Canvas.GetTop(this.dragobject) > field.ActualHeight + (window.ActualHeight/8) || 
-                     Canvas.GetTop(this.dragobject) < window.ActualHeight / 2 - 600)
-                {
-                    this.tship.Tag = "untouched";
-                }
-                
+
                 if (!situtation)
                 {
                     tship.LayoutTransform = new RotateTransform(90);
@@ -4461,7 +4483,7 @@ namespace kursa4
             bool R = false;
             bool D = false;
 
-            if (catch_ship == Ship1_1 || catch_ship == Ship1_2 || catch_ship == Ship1_3 || catch_ship == Ship1_4)
+            if (catch_ship == Ship1_1 || catch_ship == Ship1_2 || catch_ship == Ship1_3 || catch_ship == Ship1_4) //TODO быстро пофиксить индексы
             {
                 if (j != 0)
                 {
@@ -4691,7 +4713,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i != 9)
+                    if (i < 6)
                     {
                         cells[i + 4, j].Tag = "deadzone";
                         D = true;
@@ -4742,7 +4764,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i != 9)
+                    if (i < 7)
                     {
                         cells[i + 3, j].Tag = "deadzone";
                         D = true;
@@ -4790,7 +4812,7 @@ namespace kursa4
                         U = true;
                     }
 
-                    if (i != 9)
+                    if (i < 8)
                     {
                         cells[i + 2, j].Tag = "deadzone";
                         D = true;
@@ -4947,6 +4969,7 @@ namespace kursa4
                 instructionFlag2 = false;
             }
         }
+        
     }
     
     

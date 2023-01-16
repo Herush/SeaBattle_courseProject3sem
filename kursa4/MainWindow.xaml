@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:kursa4"
         mc:Ignorable="d"
-        Title="MorskoyBOY" Height="800" Width="1200"
+        Title="Морской Бой" Height="800" Width="1200"
         MinHeight="800" MinWidth="1200"
         SizeChanged="MainWindow_OnSizeChanged">
     
@@ -16,7 +16,7 @@
             <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\temp_background.png"></ImageBrush>
         </Canvas.Background>
            
-           <Grid x:Name="grid" Height="800" Width="1200" >
+           <Grid x:Name="grid" Height="800" Width="1200" AllowDrop="True" PreviewDrop="OnPreviewDrop">
                   
                   <Canvas x:Name="field"  Visibility="Hidden" DragOver = "Ship_MouseMove"
                           Height="600" Width="600"
