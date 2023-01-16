@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Data;
 using System.IO.Pipes;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -26,22 +27,48 @@ namespace kursa4
     public partial class MainWindow
     {
         private Border[,] cells;
+        private Border[,] killArr;
         private int[,] compships = new int[10,10];
 
         public MainWindow()
         {
             cells = new Border[10, 10];
             game_cells = new Button[10, 10];
+            killArr = new Border[10, 10];
             InitializeComponent();
         }
 
+        private void FillImageSource()
+        {
+            ImageBrush myBrush = new ImageBrush();
+            myBrush.ImageSource = (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\Kill.png")));
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    killArr[i, j] = new Border();
+                    killArr[i, j].Background = myBrush;
+                    killArr[i, j].Visibility = Visibility.Hidden;
+                    killArr[i, j].Height = 60;
+                    killArr[i, j].Width = 60;
+                    Canvas.SetLeft(killArr[i, j], 0 + j * 60);
+                    Canvas.SetTop(killArr[i, j], 0 + i * 60);
+                    KillField.Children.Add(killArr[i, j]);
+                    cells[i, j].Name = "KillArr_" + i.ToString() + j.ToString();
+                }
+            }
+        }
+        
+        private bool startGame = false;
+        
         private void ButtonPlay_OnClick(object sender, RoutedEventArgs e)
         {
             DrawField();
             Application.Current.MainWindow.Height = 800;
-            Application.Current.MainWindow.Width = 1200;
+            Application.Current.MainWindow.Width = 1900;
+            Application.Current.MainWindow.MinWidth = 1900;
             ImageBrush myBrush = new ImageBrush();
-            //myBrush.ImageSource = (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\GameField.jpg")));
+            myBrush.ImageSource = (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\GameField.jpg")));
             canvas.Background = myBrush;
             Ship4.Visibility = Visibility.Visible;
             Ship4.LayoutTransform = new RotateTransform(0);
@@ -63,7 +90,9 @@ namespace kursa4
             Ship1_3.LayoutTransform = new RotateTransform(0);
             Ship1_4.Visibility = Visibility.Visible;
             Ship1_4.LayoutTransform = new RotateTransform(0);
-
+            
+            ButtonField();
+            FillImageSource();
             ButtonCloseApp.Visibility = Visibility.Hidden;
             ButtonInstruction2.Visibility = Visibility.Visible;
             ButtonCloseInstructions.Visibility = Visibility.Hidden;
@@ -177,10 +206,10 @@ namespace kursa4
             }
             else if (result && this.dragobject != null)
             {
-                if (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth / 2) || 
-                     Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
+                if (_poinOfDrag != null && (Canvas.GetLeft(this.dragobject) > (window.ActualWidth - 1220) / 2 + 600  || 
+                     Canvas.GetLeft(this.dragobject) < (window.ActualWidth - 1220) / 2 
                      || Canvas.GetTop(this.dragobject) < (window.ActualHeight - field.ActualHeight) / 2 || 
-                     Canvas.GetTop(this.dragobject) > window.ActualHeight - (window.ActualHeight - field.ActualHeight) / 2)
+                     Canvas.GetTop(this.dragobject) > window.ActualHeight - (window.ActualHeight - field.ActualHeight) / 2))
                 {
                     place_ship(_poinOfDrag);
                 }
@@ -288,100 +317,100 @@ namespace kursa4
             {
                 if ((string)ttemp.Tag == "critical_..9")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         j -= 3;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         j -= 2;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         j -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
                 }
                 else if ((string)ttemp.Tag == "critical_..8")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         j -= 2;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         j -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
                 }
                 else if ((string)ttemp.Tag == "critical_..7")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         j -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                     }
                 }
@@ -389,7 +418,7 @@ namespace kursa4
                 {
                     temp = cells[i, j];
                     Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                    Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                    Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                     tship.Tag = "touched";
                 }
             }
@@ -398,38 +427,38 @@ namespace kursa4
                 if ((string)ttemp.Tag == "critical_9.." || (string)ttemp.Name == "Border_99" ||
                     (string)ttemp.Name == "Border_98" || (string)ttemp.Name == "Border_97")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         i -= 3;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         i -= 2;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         i -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
@@ -437,37 +466,37 @@ namespace kursa4
                 else if ((string)ttemp.Tag == "critical_8.." || (string)ttemp.Name == "Border_89" ||
                          (string)ttemp.Name == "Border_88" || (string)ttemp.Name == "Border_87")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         i -= 2;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         i -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
@@ -475,36 +504,36 @@ namespace kursa4
                 else if ((string)ttemp.Tag == "critical_7.." || (string)ttemp.Name == "Border_79" ||
                          (string)ttemp.Name == "Border_78" || (string)ttemp.Name == "Border_77")
                 {
-                    if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+                    if (tship.Width == 240)
                     {
                         i -= 1;
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+                    else if (tship.Width == 180)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+                    else if (tship.Width == 120)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
-                    else if ((string)tship.Content == "КАТЕР")
+                    else if (tship.Width == 60)
                     {
                         temp = cells[i, j];
                         Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                        Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                         tship.Tag = "touched";
                         tship.LayoutTransform = new RotateTransform(90);
                     }
@@ -513,7 +542,7 @@ namespace kursa4
                 {
                     temp = cells[i, j];
                     Canvas.SetTop(this.dragobject, Canvas.GetTop(temp) + (grid.Height - field.Height) / 2);
-                    Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
+                    Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (window.ActualWidth - 1220) / 2);
                     tship.Tag = "touched";
                     tship.LayoutTransform = new RotateTransform(90);
                 }
@@ -587,7 +616,7 @@ namespace kursa4
             int i = tarr[0];
             int j = tarr[1];
 
-            if ((string)tship.Content == "ЧЕТЫРЁХПАЛУБНИК")
+            if (tship.Width == 240)
             {
                 if (!situtation)
                 {
@@ -604,7 +633,7 @@ namespace kursa4
                     check_deadline(cells[i + 3, j]);
                 }
             }
-            else if ((string)tship.Content == "ТРЁХПАЛУБНИК")
+            else if (tship.Width == 180)
             {
                 if (!situtation)
                 {
@@ -619,7 +648,7 @@ namespace kursa4
                     check_deadline(cells[i + 2, j]);
                 }
             }
-            else if ((string)tship.Content == "ДВУХПАЛУБНИК")
+            else if (tship.Width == 120)
             {
                 if (!situtation)
                 {
@@ -632,7 +661,7 @@ namespace kursa4
                     check_deadline(cells[i + 1, j]);
                 }
             }
-            else if ((string)tship.Content == "КАТЕР")
+            else if (tship.Width == 60)
             {
                 check_deadline(cells[i, j]);
             }
@@ -653,8 +682,8 @@ namespace kursa4
             int[] tempIndex = new int[2];
             if (this.dragobject != null)
             {
-                if (e.GetPosition(canvas).X > (grid.ActualWidth - 600) / 2 &&
-                    e.GetPosition(canvas).X < grid.ActualWidth - (grid.ActualWidth - 600) / 2 &&
+                if (e.GetPosition(canvas).X < (grid.ActualWidth - 1220) / 2 + 600 &&
+                    e.GetPosition(canvas).X > (grid.ActualWidth - 1220) / 2 &&
                     e.GetPosition(canvas).Y > (grid.ActualHeight - 600) / 2 &&
                     e.GetPosition(canvas).Y < grid.ActualHeight - (grid.ActualHeight - 600) / 2)
                 {
@@ -687,6 +716,9 @@ namespace kursa4
         {
             grid.Width = window.ActualWidth;
             grid.Height = window.ActualHeight;
+            
+            grid2.Width = window.ActualWidth;
+            grid2.Height = window.ActualHeight;
             
             ReplaceShipsWhenSizeChanged();
         }
@@ -749,7 +781,7 @@ namespace kursa4
             double bordX = Canvas.GetLeft(bord);
             double bordY = Canvas.GetTop(bord);
             
-            Canvas.SetLeft(shipT,bordX + (grid.Width - field.Width) / 2);
+            Canvas.SetLeft(shipT,bordX + (grid.Width - 1220) / 2);
             Canvas.SetTop(shipT,bordY + (grid.Height - field.Height) / 2);
         }
 
@@ -772,7 +804,7 @@ namespace kursa4
 
             bool isKeyPressed = Keyboard.IsKeyDown(Key.R);
             bool isKeyRelease = Keyboard.IsKeyUp(Key.R);
-            if (this.dragobject != null && (string)tship.Content != "КАТЕР" && isKeyPressed && mayroll)
+            if (this.dragobject != null && tship.Width != 60 && isKeyPressed && mayroll)
             {
 
                 if (!situtation)
@@ -890,6 +922,7 @@ namespace kursa4
 
             if (check_all_ships())
             {
+                startGame = true;
                 ButtonField();
                 gameField();
             }
@@ -982,7 +1015,8 @@ namespace kursa4
             ButtonStartGame.Visibility = Visibility.Hidden;
             ButtonResetShips.Visibility = Visibility.Hidden;
             ButtonInstruction2.Visibility = Visibility.Hidden;
-            ButtonInstruction3.Visibility = Visibility.Visible;
+            KillField.Visibility = Visibility.Visible;
+            KillField2.Visibility = Visibility.Visible;
 
             Ship4.IsHitTestVisible = false;
             Ship3_1.IsHitTestVisible = false;
@@ -3100,23 +3134,7 @@ namespace kursa4
         
         private void show_unvisible()
         {
-            Ship4.Visibility = Visibility.Hidden;
-            Ship3_1.Visibility = Visibility.Hidden;
-            Ship3_2.Visibility = Visibility.Hidden;
-            Ship2_1.Visibility = Visibility.Hidden;
-            Ship2_2.Visibility = Visibility.Hidden;
-            Ship2_3.Visibility = Visibility.Hidden;
-            Ship1_1.Visibility = Visibility.Hidden;
-            Ship1_2.Visibility = Visibility.Hidden;
-            Ship1_3.Visibility = Visibility.Hidden;
-            Ship1_4.Visibility = Visibility.Hidden;
-
-            ButtonInstruction3.Visibility = Visibility.Visible;
-            ButtonPlaceShips.Visibility = Visibility.Hidden;
-            ButtonContinue.Visibility = Visibility.Hidden;
-            field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Visible;
-            ButtonShowCompShips.Visibility = Visibility.Hidden;
         }
 
         private void check_hit_of_ship(Border ttemp, Label ttship)
@@ -3207,7 +3225,7 @@ namespace kursa4
             Button ttemp = sender as Button;
             check_hitplayer(ttemp);
 
-            if ((string)ttemp.Tag != "false" && (string)ttemp.Tag != "true" && !endGame)
+            if ((string)ttemp.Tag != "false" && (string)ttemp.Tag != "true" && !endGame && startGame)
             {
                 if (!hit)
                 {
@@ -3245,7 +3263,7 @@ namespace kursa4
                 {
                     if (hitOnCompCapacity[0] == 3)
                     {
-                        DeleteCompShip(compShip4, 8);
+                        DeleteCompShip(compShip4, 8,ttemp);
                     }
                     else
                     {
@@ -3266,7 +3284,7 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[1] == 2)
                         {
-                            DeleteCompShip(compShip3_1, 6);
+                            DeleteCompShip(compShip3_1, 6,ttemp);
                         }
                         else
                         {
@@ -3289,7 +3307,7 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[2] == 2)
                         {
-                            DeleteCompShip(compShip3_2, 6);
+                            DeleteCompShip(compShip3_2, 6,ttemp);
                         }
                         else
                         {
@@ -3312,7 +3330,7 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[3] == 1)
                         {
-                            DeleteCompShip(compShip2_1, 4);
+                            DeleteCompShip(compShip2_1, 4,ttemp);
                         }
                         else
                         {
@@ -3334,7 +3352,7 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[4] == 1)
                         {
-                            DeleteCompShip(compShip2_2, 4); 
+                            DeleteCompShip(compShip2_2, 4,ttemp); 
                         }
                         else
                         {
@@ -3356,7 +3374,7 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[5] == 1)
                         {
-                            DeleteCompShip(compShip2_3, 4);
+                            DeleteCompShip(compShip2_3, 4,ttemp);
                         }
                         else
                         {
@@ -3371,17 +3389,145 @@ namespace kursa4
             
             if (!hitOnComp)
             {
-                DeleteCompShip(tempInd, 2);
+                DeleteCompShip(tempInd, 2,ttemp);
             }
         }
 
-        private void DeleteCompShip(int[] tempCS, int tCount)
+        
+        private int count1Ship = 0;
+        private void DeleteCompShip(int[] tempCS, int tCount, Button ttemp)
         {
-            int ttCount = 1;
-            for (int i = 0; i < tCount; i+=2)
+            if (tCount == 2)
             {
-                game_cells[tempCS[i], tempCS[ttCount]].Background = new SolidColorBrush(Colors.Gray);
-                ttCount += 2;
+                if (count1Ship == 0)
+                {
+                    Canvas.SetLeft(compRShip1_1,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip1_1, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip1_1.Visibility = Visibility.Visible;
+                } else if (count1Ship == 1)
+                {
+                    Canvas.SetLeft(compRShip1_2,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip1_2, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip1_2.Visibility = Visibility.Visible;
+                } else if (count1Ship == 2)
+                {
+                    Canvas.SetLeft(compRShip1_3,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip1_3, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip1_3.Visibility = Visibility.Visible;
+                } else if (count1Ship == 3)
+                {
+                    Canvas.SetLeft(compRShip1_4,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip1_4, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip1_4.Visibility = Visibility.Visible;
+                }
+            }
+
+            if (tempCS == compShip2_1)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_1.LayoutTransform = new RotateTransform(90);
+                    compRShip2_1.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip2_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_1.LayoutTransform = new RotateTransform(0);
+                    compRShip2_1.Visibility = Visibility.Visible;
+                }
+            }
+
+            if (tempCS == compShip2_2)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_2.LayoutTransform = new RotateTransform(90);
+                    compRShip2_2.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip2_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_2.LayoutTransform = new RotateTransform(0);
+                    compRShip2_2.Visibility = Visibility.Visible;
+                }
+            }
+            
+            if (tempCS == compShip2_3)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_3,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_3.LayoutTransform = new RotateTransform(90);
+                    compRShip2_3.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip2_3,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_3.LayoutTransform = new RotateTransform(0);
+                    compRShip2_3.Visibility = Visibility.Visible;
+                }
+            }
+            
+            if (tempCS == compShip3_1)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip3_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_1.LayoutTransform = new RotateTransform(90);
+                    compRShip3_1.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip3_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_1.LayoutTransform = new RotateTransform(0);
+                    compRShip3_1.Visibility = Visibility.Visible;
+                }
+            }
+            
+            if (tempCS == compShip3_2)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_2.LayoutTransform = new RotateTransform(90);
+                    compRShip3_2.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_2.LayoutTransform = new RotateTransform(0);
+                    compRShip3_2.Visibility = Visibility.Visible;
+                }
+            }
+            
+            if (tempCS == compShip4)
+            {
+                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip4.LayoutTransform = new RotateTransform(90);
+                    compRShip4.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip4.LayoutTransform = new RotateTransform(0);
+                    compRShip4.Visibility = Visibility.Visible;
+                }
             }
         }
         
@@ -3432,7 +3578,7 @@ namespace kursa4
             {
                 if (hitShip)
                 {
-                    cells[i, j].Background = new SolidColorBrush(Colors.Blue);;
+                    ifCompHitOnPlayerShip(i,j);
                     cells[i, j].Tag = "hit";
                     hit_on_ship();
                     if (!kill1ship)
@@ -3483,6 +3629,10 @@ namespace kursa4
                 }
                 positionsOfHit[0] = 2;
             }
+            else
+            {
+                positionsOfHit[0] = 0;
+            }
             
             if (jR && ((string)cells[i, j + 1].Tag == "miss" || (string)cells[i,j + 1].Tag == "deadzone"))
             {
@@ -3493,6 +3643,10 @@ namespace kursa4
                     reverseFromCheckLayWays = true;
                 }
                 positionsOfHit[1] = 2;
+            }
+            else
+            {
+                positionsOfHit[1] = 0;
             }
             
             if (iD && ((string)cells[i + 1, j].Tag == "miss" || (string)cells[i + 1,j].Tag == "deadzone"))
@@ -3505,6 +3659,10 @@ namespace kursa4
                 }
                 positionsOfHit[2] = 2;
             }
+            else
+            {
+                positionsOfHit[2] = 0;
+            }
             
             if (jL && ((string)cells[i, j - 1].Tag == "miss" || (string)cells[i,j - 1].Tag == "deadzone"))
             {
@@ -3515,6 +3673,10 @@ namespace kursa4
                     reverseFromCheckLayWays = true;
                 }
                 positionsOfHit[3] = 2;
+            }
+            else
+            {
+                positionsOfHit[3] = 0;
             }
         }
         
@@ -3599,7 +3761,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 positionsOfHit[0] = 1;
-                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I - 1,J);
                                 cells[I - 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3625,7 +3787,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 positionsOfHit[1] = 1;
-                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I,J + 1);
                                 cells[I, J + 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3651,7 +3813,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 positionsOfHit[2] = 1;
-                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I + 1,J);
                                 cells[I + 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3677,7 +3839,7 @@ namespace kursa4
                             {
                                 hitShip = false;
                                 positionsOfHit[3] = 1;
-                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I,J - 1);
                                 cells[I, J - 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3706,7 +3868,7 @@ namespace kursa4
                             if (hitShip)
                             {
                                 hitShip = false;
-                                cells[I - 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I - 1,J);
                                 cells[I - 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3749,7 +3911,7 @@ namespace kursa4
                             if (hitShip)
                             {
                                 hitShip = false;
-                                cells[I, J + 1].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I,J + 1);
                                 cells[I, J + 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3792,7 +3954,7 @@ namespace kursa4
                             if (hitShip)
                             {
                                 hitShip = false;
-                                cells[I + 1, J].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I + 1,J);
                                 cells[I + 1, J].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3835,7 +3997,7 @@ namespace kursa4
                             if (hitShip)
                             {
                                 hitShip = false;
-                                cells[I, J - 1].Background = new SolidColorBrush(Colors.Blue);
+                                ifCompHitOnPlayerShip(I,J - 1);
                                 cells[I, J - 1].Tag = "hit";
                                 hit_on_ship();
                                 if (!killShip)
@@ -3891,7 +4053,7 @@ namespace kursa4
                     if (hitShip)
                     {
                         hitShip = false;
-                        cells[i - 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        ifCompHitOnPlayerShip(i - 1,j);
                         cells[i - 1, j].Tag = "hit";
                         positionsOfHit[0] = 1;
                         hitTrue = true;
@@ -3916,7 +4078,7 @@ namespace kursa4
                     {
                         hitShip = false;
                         positionsOfHit[1] = 1;
-                        cells[i, j + 1].Background = new SolidColorBrush(Colors.Blue);
+                        ifCompHitOnPlayerShip(i,j + 1);
                         cells[i, j + 1].Tag = "hit";
                         hitTrue = true;
                         hit_on_ship();
@@ -3940,7 +4102,7 @@ namespace kursa4
                     {
                         hitShip = false;
                         positionsOfHit[2] = 1;
-                        cells[i + 1, j].Background = new SolidColorBrush(Colors.Blue);
+                        ifCompHitOnPlayerShip(i + 1,j);
                         cells[i + 1, j].Tag = "hit";
                         hitTrue = true;
                         hit_on_ship();
@@ -3964,7 +4126,7 @@ namespace kursa4
                     {
                         hitShip = false;
                         positionsOfHit[3] = 1;
-                        cells[i, j - 1].Background = new SolidColorBrush(Colors.Blue);
+                        ifCompHitOnPlayerShip(i,j - 1);
                         cells[i, j - 1].Tag = "hit";
                         hitTrue = true;
                         hit_on_ship();
@@ -3990,50 +4152,34 @@ namespace kursa4
         }
 
         private bool loopComphit = true;
+
+        private void ifCompHitOnPlayerShip(int i, int j)
+        {
+            killArr[i, j].Visibility = Visibility.Visible;
+        }
+        
+        
         
         private void field_with_comphits()
         {
-            field.Visibility = Visibility.Hidden;
             if (!tryHitShip && !reverse)
             {
                 originalHit[0] = -1;
             }
 
             loopComphit = true;
-             while (loopComphit)
+            while (loopComphit)
             {
                 loopComphit = false;
                 loopIf_hit = true;
                 comphit();
             }
-
-            show_unvisible2();
+            
         }
 
-        private void show_unvisible2()
-        {
-            Ship4.Visibility = Visibility.Visible;
-            Ship3_1.Visibility = Visibility.Visible;
-            Ship3_2.Visibility = Visibility.Visible;
-            Ship2_1.Visibility = Visibility.Visible;
-            Ship2_2.Visibility = Visibility.Visible;
-            Ship2_3.Visibility = Visibility.Visible;
-            Ship1_1.Visibility = Visibility.Visible;
-            Ship1_2.Visibility = Visibility.Visible;
-            Ship1_3.Visibility = Visibility.Visible;
-            Ship1_4.Visibility = Visibility.Visible;
-
-            Instruction3.Visibility = Visibility.Hidden;
-            instructionFlag2 = false;
-            ButtonInstruction3.Visibility = Visibility.Hidden;
-            ButtonContinue.Visibility = Visibility.Visible;
-            field.Visibility = Visibility.Visible;
-            GameField.Visibility = Visibility.Hidden;
-        }
-        
         private void hit_on_ship() 
         {
-            if (catch_ship.Name == "Ship4" && (string)catch_ship.Content != "Корабль уничтожен")
+            if (catch_ship.Name == "Ship4" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[0] == 3)
                 {
@@ -4044,7 +4190,7 @@ namespace kursa4
                     hitCapacity[0]++;
                 }
             }
-            else if (catch_ship.Name == "Ship3_1" && (string)catch_ship.Content != "Корабль уничтожен")
+            else if (catch_ship.Name == "Ship3_1" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[1] == 2)
                 {
@@ -4055,7 +4201,7 @@ namespace kursa4
                     hitCapacity[1]++;
                 }
             }
-            else if (catch_ship.Name == "Ship3_2" && (string)catch_ship.Content != "Корабль уничтожен")
+            else if (catch_ship.Name == "Ship3_2" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[2] == 2)
                 {
@@ -4066,7 +4212,7 @@ namespace kursa4
                     hitCapacity[2]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_1" && (string)catch_ship.Content != "Корабль уничтожен")
+            else if (catch_ship.Name == "Ship2_1" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[3] == 1)
                 {
@@ -4077,7 +4223,7 @@ namespace kursa4
                     hitCapacity[3]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_2" && (string)catch_ship.Content != "Корабль уничтожен")
+            else if (catch_ship.Name == "Ship2_2" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[4] == 1)
                 {
@@ -4088,7 +4234,7 @@ namespace kursa4
                     hitCapacity[4]++;
                 }
             }
-            else if (catch_ship.Name == "Ship2_3" && (string)catch_ship.Content != "Корабль уничтожен")
+            else if (catch_ship.Name == "Ship2_3" && (string)catch_ship.Tag != "destroyed")
             {
                 if (hitCapacity[5] == 1)
                 {
@@ -4099,7 +4245,7 @@ namespace kursa4
                     hitCapacity[5]++;
                 }
             }
-            else if ((string)catch_ship.Content != "Корабль уничтожен")
+            else if ((string)catch_ship.Tag != "destroyed")
             {
                 kill1ship = true;
                 delete_ship();
@@ -4111,14 +4257,7 @@ namespace kursa4
         
         private void delete_ship()
         {
-            if ((string)catch_ship.Content == "КАТЕР")
-            {
-                catch_ship.FontSize = 10;
-            }
-            catch_ship.Content = "ЗАТОНУЛ";
             catch_ship.Tag = "destroyed";
-
-            catch_ship.Background = new SolidColorBrush(Colors.Gray);
             
             for (int i = 0; i < 4; i++)
             {
@@ -4274,106 +4413,25 @@ namespace kursa4
         private void Win()
         {
             Winner.Visibility = Visibility.Visible;
-            ButtonContinue.Visibility = Visibility.Hidden;
             ButtonPlaceShips.Visibility = Visibility.Hidden;
             ButtonShowCompShips.Visibility = Visibility.Hidden;
-            ButtonContinueWin.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Visible;
-            ButtonInstruction3.Visibility = Visibility.Hidden;
             endGame = true;
         }
 
         private bool endGame = false;
-        
+
         private void Lose()
         {
             Loser.Visibility = Visibility.Visible;
-            ButtonContinue.Visibility = Visibility.Hidden;
             ButtonPlaceShips.Visibility = Visibility.Hidden;
             ButtonShowCompShips.Visibility = Visibility.Hidden;
-            ButtonContinueLose.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Visible;
-            ButtonInstruction3.Visibility = Visibility.Hidden;
             loopComphit = false;
             endGame = true;
         }
 
         private bool flag = false;
-        private void ButtonContinueWin_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (!flag)
-            {
-                Ship4.Visibility = Visibility.Visible;
-                Ship3_1.Visibility = Visibility.Visible;
-                Ship3_2.Visibility = Visibility.Visible;
-                Ship2_1.Visibility = Visibility.Visible;
-                Ship2_2.Visibility = Visibility.Visible;
-                Ship2_3.Visibility = Visibility.Visible;
-                Ship1_1.Visibility = Visibility.Visible;
-                Ship1_2.Visibility = Visibility.Visible;
-                Ship1_3.Visibility = Visibility.Visible;
-                Ship1_4.Visibility = Visibility.Visible;
-                
-                field.Visibility = Visibility.Visible;
-                GameField.Visibility = Visibility.Hidden;
-                flag = true;
-            }
-            else
-            {
-                Ship4.Visibility = Visibility.Hidden;
-                Ship3_1.Visibility = Visibility.Hidden;
-                Ship3_2.Visibility = Visibility.Hidden;
-                Ship2_1.Visibility = Visibility.Hidden;
-                Ship2_2.Visibility = Visibility.Hidden;
-                Ship2_3.Visibility = Visibility.Hidden;
-                Ship1_1.Visibility = Visibility.Hidden;
-                Ship1_2.Visibility = Visibility.Hidden;
-                Ship1_3.Visibility = Visibility.Hidden;
-                Ship1_4.Visibility = Visibility.Hidden;
-
-                field.Visibility = Visibility.Hidden;
-                GameField.Visibility = Visibility.Visible;
-                flag = false;
-            }
-        }
-
-        private void ButtonContinueLose_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (!flag)
-            {
-                Ship4.Visibility = Visibility.Hidden;
-                Ship3_1.Visibility = Visibility.Hidden;
-                Ship3_2.Visibility = Visibility.Hidden;
-                Ship2_1.Visibility = Visibility.Hidden;
-                Ship2_2.Visibility = Visibility.Hidden;
-                Ship2_3.Visibility = Visibility.Hidden;
-                Ship1_1.Visibility = Visibility.Hidden;
-                Ship1_2.Visibility = Visibility.Hidden;
-                Ship1_3.Visibility = Visibility.Hidden;
-                Ship1_4.Visibility = Visibility.Hidden;
-
-                field.Visibility = Visibility.Hidden;
-                GameField.Visibility = Visibility.Visible;
-                flag = true;
-            }
-            else
-            {
-                Ship4.Visibility = Visibility.Visible;
-                Ship3_1.Visibility = Visibility.Visible;
-                Ship3_2.Visibility = Visibility.Visible;
-                Ship2_1.Visibility = Visibility.Visible;
-                Ship2_2.Visibility = Visibility.Visible;
-                Ship2_3.Visibility = Visibility.Visible;
-                Ship1_1.Visibility = Visibility.Visible;
-                Ship1_2.Visibility = Visibility.Visible;
-                Ship1_3.Visibility = Visibility.Visible;
-                Ship1_4.Visibility = Visibility.Visible;
-                
-                field.Visibility = Visibility.Visible;
-                GameField.Visibility = Visibility.Hidden;
-                flag = false;
-            }
-        }
 
         private void ButtonMainMenu_OnClick(object sender, RoutedEventArgs e)
         {
@@ -4401,11 +4459,8 @@ namespace kursa4
             
             ButtonCloseApp.Visibility = Visibility.Visible;
             flag = false;
-            ButtonContinue.Visibility = Visibility.Hidden;
             field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Hidden;
-            ButtonContinueLose.Visibility = Visibility.Hidden;
-            ButtonContinueWin.Visibility = Visibility.Hidden;
             ButtonPlay.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Hidden;
 
@@ -4416,6 +4471,7 @@ namespace kursa4
                     cells[i, j] = null;
                     game_cells[i,j] = null;
                     compships[i, j] = 0;
+                    killArr[i, j] = null;
                 }
             }
 
@@ -4858,7 +4914,7 @@ namespace kursa4
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    if (positionShipX == Canvas.GetLeft(cells[i, j]) + (window.ActualWidth - field.ActualWidth) / 2 && 
+                    if (positionShipX == Canvas.GetLeft(cells[i, j]) + (window.ActualWidth - 1220) / 2 && 
                         positionShipY == Canvas.GetTop(cells[i, j])  + (window.ActualHeight - field.ActualHeight) / 2)
                     {
                         tempIndex[0] = i;
@@ -5010,20 +5066,7 @@ namespace kursa4
 
 
         private bool instructionFlag2 = false;
-        private void ButtonInstruction3_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (!instructionFlag2)
-            {
-                Instruction3.Visibility = Visibility.Visible;
-                instructionFlag2 = true;
-            }
-            else
-            {
-                Instruction3.Visibility = Visibility.Hidden;
-                instructionFlag2 = false;
-            }
-        }
-        
+
     }
     
     
