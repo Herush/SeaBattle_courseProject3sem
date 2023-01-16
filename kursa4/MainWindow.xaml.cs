@@ -177,6 +177,15 @@ namespace kursa4
             {
                 replace_ship();
             }
+            
+            
+            if (this.dragobject != null &&  (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth/2) || 
+                Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
+                || Canvas.GetTop(this.dragobject) > field.ActualHeight + (window.ActualHeight/8) || 
+                Canvas.GetTop(this.dragobject) < window.ActualHeight / 2 - 600))
+            {
+                replace_ship();
+            }
 
             _poinOfDrag = null;
             this.dragobject = null;
@@ -190,60 +199,70 @@ namespace kursa4
                 Canvas.SetTop(this.dragobject, 0);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship4.LayoutTransform = new RotateTransform(0);
             }
             else if (this.tship.Name == "Ship3_1")
             {
                 Canvas.SetTop(this.dragobject, 80);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship3_1.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship3_2")
             {
                 Canvas.SetTop(this.dragobject, 160);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship3_2.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship2_1")
             {
                 Canvas.SetTop(this.dragobject, 240);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship2_1.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship2_2")
             {
                 Canvas.SetTop(this.dragobject, 320);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship2_2.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship2_3")
             {
                 Canvas.SetTop(this.dragobject, 400);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship2_3.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship1_1")
             {
                 Canvas.SetTop(this.dragobject, 480);
                 Canvas.SetLeft(this.dragobject, 0);
                 tship.Tag = "untouched";
+                Ship1_1.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship1_2")
             {
                 Canvas.SetTop(this.dragobject, 480);
                 Canvas.SetLeft(this.dragobject, 75);
                 tship.Tag = "untouched";
+                Ship1_2.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship1_3")
             {
                 Canvas.SetTop(this.dragobject, 480);
                 Canvas.SetLeft(this.dragobject, 150);
                 tship.Tag = "untouched";
+                Ship1_3.LayoutTransform = new RotateTransform(0);
             }
             else if (tship.Name == "Ship1_4")
             {
                 Canvas.SetTop(this.dragobject, 480);
                 Canvas.SetLeft(this.dragobject, 225);
                 tship.Tag = "untouched";
+                Ship1_4.LayoutTransform = new RotateTransform(0);
             }
         }
 
@@ -475,6 +494,14 @@ namespace kursa4
                     Canvas.SetLeft(this.dragobject, Canvas.GetLeft(temp) + (grid.Width - field.Width) / 2);
                     tship.Tag = "touched";
                 }
+            }
+
+            result = false;
+            ship_collision();
+
+            if (result)
+            {
+                replace_ship();
             }
 
             if (tship == Ship1_1)
@@ -718,6 +745,14 @@ namespace kursa4
             bool isKeyRelease = Keyboard.IsKeyUp(Key.R);
             if (this.dragobject != null && (string)tship.Content != "КАТЕР" && isKeyPressed && mayroll)
             {
+                if (Canvas.GetLeft(this.dragobject) > window.ActualWidth - (field.ActualWidth/2) || 
+                     Canvas.GetLeft(this.dragobject) < field.ActualWidth - (window.ActualWidth / 2)
+                     || Canvas.GetTop(this.dragobject) > field.ActualHeight + (window.ActualHeight/8) || 
+                     Canvas.GetTop(this.dragobject) < window.ActualHeight / 2 - 600)
+                {
+                    this.tship.Tag = "untouched";
+                }
+                
                 if (!situtation)
                 {
                     tship.LayoutTransform = new RotateTransform(90);
@@ -4395,6 +4430,17 @@ namespace kursa4
             Ship1_2.IsHitTestVisible = true;
             Ship1_3.IsHitTestVisible = true;
             Ship1_4.IsHitTestVisible = true;
+
+            Ship4.Background = Brushes.Transparent;
+            Ship3_1.Background = Brushes.Transparent;
+            Ship3_2.Background = Brushes.Transparent;
+            Ship2_1.Background = Brushes.Transparent;
+            Ship2_2.Background = Brushes.Transparent;
+            Ship2_3.Background = Brushes.Transparent;
+            Ship1_1.Background = Brushes.Transparent;
+            Ship1_2.Background = Brushes.Transparent;
+            Ship1_3.Background = Brushes.Transparent;
+            Ship1_4.Background = Brushes.Transparent;
 
             playerHits = 0;
             count = 0;
