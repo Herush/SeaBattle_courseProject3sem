@@ -19,22 +19,16 @@
            <Grid x:Name="grid" Height="800" Width="1200" AllowDrop="True" PreviewDrop="OnPreviewDrop">
                   
                    <Button x:Name="ButtonStartGame" Height="50" Width="200" Content="Закончить расстановку" HorizontalAlignment="Center"
-                           VerticalAlignment="Top"  Click="ButtonStartGame_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                           VerticalAlignment="Top"  Click="ButtonStartGame_OnClick" Margin="0,5,0,0" FontSize="15" Visibility="Hidden"></Button>
                   
-                  <Button x:Name="ButtonResetShips" Height="50" Width="200" Content="Сбросить все корабли" HorizontalAlignment="Right"
-                          VerticalAlignment="Center" Click="ButtonResetShips_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                   <Button x:Name="ButtonResetShips" Height="50" Width="200" Content="Сбросить все корабли" HorizontalAlignment="Right"
+                           VerticalAlignment="Center" Click="ButtonResetShips_OnClick" Margin="0,0,20,0" FontSize="15" Visibility="Hidden"></Button>
                   
-                   <Button x:Name="ButtonShowCompShips" Height="50" Width="200" Content="Показать Враж. Корабли" HorizontalAlignment="Left" 
-                           VerticalAlignment="Top" Margin="30" Click="ButtonShowCompShips_OnClick" FontSize="15" Visibility="Hidden"/>
-                  
-                  <Button x:Name="ButtonPlaceShips" Height="50" Width="200" Content="Расставить все корабли" HorizontalAlignment="Left" 
-                          VerticalAlignment="Bottom" Margin="30" Click="ButtonPlaceShips_OnClick" FontSize="15" Visibility="Hidden"/>
-                  
-                  <Button x:Name="ButtonMainMenu" Height="50" Width="200" Content="Выйти в главное меню" HorizontalAlignment="Center"
-                          VerticalAlignment="Top" Margin="10" Click="ButtonMainMenu_OnClick" FontSize="15" Visibility="Hidden"></Button>
+                   <Button x:Name="ButtonMainMenu" Height="50" Width="200" Content="Выйти в главное меню" HorizontalAlignment="Center"
+                           VerticalAlignment="Top" Margin="10" Click="ButtonMainMenu_OnClick" FontSize="15" Visibility="Hidden"></Button>
                   
                    <Button x:Name="ButtonInstruction2" Content="Правила" HorizontalAlignment="Center" 
-                           VerticalAlignment="Top" Margin="500,0,0,0" Height="50" Width="200" Visibility="Hidden" Click="ButtonInstruction2_OnClick" FontSize="15"/>
+                           VerticalAlignment="Top" Margin="500,5,0,0" Height="50" Width="200" Visibility="Hidden" Click="ButtonInstruction2_OnClick" FontSize="15"/>
                   
                   
                   <Canvas x:Name="Winner"  Visibility="Hidden" Height="600" Width="300"
@@ -56,6 +50,9 @@
                           <Button x:Name="ButtonPlay" Background="AliceBlue" Content="Начать игру" HorizontalAlignment="Center" 
                                   VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonPlay_OnClick" FontSize="40"/>
                           
+                          <Button x:Name="ButtonRecords" Background="AliceBlue" Content="Рекорды" HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonRecords_OnClick" FontSize="40"/>
+                          
                           <Button x:Name="ButtonInstruction" Background="AliceBlue" Content="Как играть?" HorizontalAlignment="Center" 
                                   VerticalAlignment="Center" Margin="10" Height="100" Width="400" Click="ButtonInstruction_OnClick" FontSize="40"/>
                           
@@ -65,13 +62,17 @@
                   </StackPanel>
                   
                    <StackPanel x:Name="GameFields" Orientation="Horizontal" HorizontalAlignment="Center">
-                          <Canvas x:Name="field"  Visibility="Hidden" DragOver = "Ship_MouseMove"
-                                  Height="600" Width="600"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
+                           <Border x:Name = "Border1" BorderBrush="Olive" BorderThickness="5" Height="608" Width="608" Visibility="Hidden">
+                           <Canvas x:Name="field"  Visibility="Hidden" DragOver = "Ship_MouseMove"
+                                   Height="600" Width="600"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
+                           </Border>
                   
+                           <Border x:Name = "Border2" BorderBrush="Olive" BorderThickness="5" Margin="20,0,0,0" Height="608" Width="608" Visibility="Hidden">
                           <Canvas x:Name="GameField" Visibility="Hidden" Height="600" Width="600" AllowDrop="True" 
                                   DragOver = "Ship_MouseMove"
                                   Margin="20,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Center"></Canvas>
+                           </Border>
                           
                   </StackPanel>
                    
@@ -93,6 +94,17 @@
                                    <ImageBrush ImageSource="C:\Users\halop\RiderProjects\kursa4\kursa4\Instructions2.png"></ImageBrush>
                            </Canvas.Background>
                    </Canvas>
+                   
+                   
+                   <DockPanel VerticalAlignment="Center" x:Name="Leaderboards" Visibility="Hidden">
+                           <Border Height="520" Width="300" BorderBrush="Black" BorderThickness="3" DockPanel.Dock="Top">
+                                   <DataGrid x:Name="test3" Foreground="Black" AutoGenerateColumns="True" IsReadOnly="True" ItemsSource="{Binding}"
+                                             CanUserResizeRows="False" HorizontalScrollBarVisibility="Disabled">
+                                   </DataGrid>
+                           </Border>
+                           <Button Height="40" Width="200" Content="Назад" Click="ButtonBase_OnClick"/>
+                   </DockPanel>
+                   
                   
            </Grid>
            
@@ -182,3 +194,4 @@
             
     </Canvas>
 </Window>
+

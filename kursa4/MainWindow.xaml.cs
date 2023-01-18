@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.IO.Pipes;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Channels;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,13 +34,19 @@ namespace kursa4
     {
         private Border[,] cells;
         private Border[,] killArr;
+        private Border[,] killArr2;
         private int[,] compships = new int[10,10];
+        private string nameOfPlayer;
+        private Window InputName;
+        private TextBox Box;
 
         public MainWindow()
         {
             cells = new Border[10, 10];
             game_cells = new Button[10, 10];
             killArr = new Border[10, 10];
+            killArr2 = new Border[10, 10];
+            ListRecords = new List<RecordsData>();
             InitializeComponent();
         }
 
@@ -55,6 +67,17 @@ namespace kursa4
                     Canvas.SetTop(killArr[i, j], 0 + i * 60);
                     KillField.Children.Add(killArr[i, j]);
                     cells[i, j].Name = "KillArr_" + i.ToString() + j.ToString();
+                    
+                    
+                    killArr2[i, j] = new Border();
+                    killArr2[i, j].Background = myBrush;
+                    killArr2[i, j].Visibility = Visibility.Hidden;
+                    killArr2[i, j].Height = 60;
+                    killArr2[i, j].Width = 60;
+                    Canvas.SetLeft(killArr2[i, j], 0 + j * 60);
+                    Canvas.SetTop(killArr2[i, j], 0 + i * 60);
+                    KillField2.Children.Add(killArr2[i, j]);
+                    cells[i, j].Name = "KillArr_" + i.ToString() + j.ToString();
                 }
             }
         }
@@ -63,48 +86,109 @@ namespace kursa4
         
         private void ButtonPlay_OnClick(object sender, RoutedEventArgs e)
         {
-            DrawField();
-            Application.Current.MainWindow.Height = 800;
-            Application.Current.MainWindow.Width = 1900;
-            Application.Current.MainWindow.MinWidth = 1900;
-            ImageBrush myBrush = new ImageBrush();
-            myBrush.ImageSource = (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\GameField.jpg")));
-            canvas.Background = myBrush;
-            Ship4.Visibility = Visibility.Visible;
-            Ship4.LayoutTransform = new RotateTransform(0);
-            Ship3_1.Visibility = Visibility.Visible;
-            Ship3_1.LayoutTransform = new RotateTransform(0);
-            Ship3_2.Visibility = Visibility.Visible;
-            Ship3_2.LayoutTransform = new RotateTransform(0);
-            Ship2_1.Visibility = Visibility.Visible;
-            Ship2_1.LayoutTransform = new RotateTransform(0);
-            Ship2_2.Visibility = Visibility.Visible;
-            Ship2_2.LayoutTransform = new RotateTransform(0);
-            Ship2_3.Visibility = Visibility.Visible;
-            Ship2_3.LayoutTransform = new RotateTransform(0);
-            Ship1_1.Visibility = Visibility.Visible;
-            Ship1_1.LayoutTransform = new RotateTransform(0);
-            Ship1_2.Visibility = Visibility.Visible;
-            Ship1_2.LayoutTransform = new RotateTransform(0);
-            Ship1_3.Visibility = Visibility.Visible;
-            Ship1_3.LayoutTransform = new RotateTransform(0);
-            Ship1_4.Visibility = Visibility.Visible;
-            Ship1_4.LayoutTransform = new RotateTransform(0);
-            
-            ButtonField();
-            FillImageSource();
-            ButtonCloseApp.Visibility = Visibility.Hidden;
-            ButtonInstruction2.Visibility = Visibility.Visible;
-            ButtonCloseInstructions.Visibility = Visibility.Hidden;
-            Instructions.Visibility = Visibility.Hidden;
-            ButtonInstruction.Visibility = Visibility.Hidden;
-            ButtonPlay.Visibility = Visibility.Hidden;
-            field.Visibility = Visibility.Visible;
-            ButtonStartGame.Visibility = Visibility.Visible;
-            ButtonResetShips.Visibility = Visibility.Visible;
-            /*ButtonPlaceShips.Visibility = Visibility.Visible;*/
+            InputName = new Window();
+            InputName.Owner = window;
+            InputName.Height = 150;
+            InputName.Width = 300;
+
+            InputName.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            InputName.ResizeMode = ResizeMode.NoResize;
+            InputName.WindowStyle = WindowStyle.ToolWindow;
+
+            StackPanel NewPanel = new StackPanel();
+
+            Label InputYourName = new Label();
+            InputYourName.HorizontalContentAlignment = HorizontalAlignment.Center;
+            Box = new TextBox();
+            Box.Width = 200;
+            Box.Margin = new Thickness(10);
+            Button Ok = new Button();
+            Ok.Content = "Ок";
+            Ok.Height = 20;
+            Ok.Width = 40;
+            Ok.Click += Play;
+            Ok.Margin = new Thickness(20);
+            InputYourName.Content = "Введите свой никнейм";
+
+            NewPanel.Children.Add(InputYourName);
+            NewPanel.Children.Add(Box);
+            NewPanel.Children.Add(Ok);
+
+            InputName.Content = NewPanel;
+            InputName.ShowDialog();
         }
 
+        private void Play(object sender, RoutedEventArgs e)
+        {
+            bool ifEmpty = false;
+            for (int i = 0; i < Box.Text.Length; i++)
+            {
+                if (Box.Text[i] == ' ')
+                {
+                    ifEmpty = true;
+                }
+                else
+                {
+                    ifEmpty = false;
+                    i = Box.Text.Length;
+                }
+            }
+
+            if (Box.Text != "" && !ifEmpty)
+            {
+                nameOfPlayer = Box.Text;
+                InputName.Close();
+                DrawField();
+                Application.Current.MainWindow.Height = 800;
+                Application.Current.MainWindow.Width = 1900;
+                Application.Current.MainWindow.MinWidth = 1900;
+                ImageBrush myBrush = new ImageBrush();
+                myBrush.ImageSource =
+                    (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\GameField.jpg")));
+                canvas.Background = myBrush;
+                Ship4.Visibility = Visibility.Visible;
+                Ship4.LayoutTransform = new RotateTransform(0);
+                Ship3_1.Visibility = Visibility.Visible;
+                Ship3_1.LayoutTransform = new RotateTransform(0);
+                Ship3_2.Visibility = Visibility.Visible;
+                Ship3_2.LayoutTransform = new RotateTransform(0);
+                Ship2_1.Visibility = Visibility.Visible;
+                Ship2_1.LayoutTransform = new RotateTransform(0);
+                Ship2_2.Visibility = Visibility.Visible;
+                Ship2_2.LayoutTransform = new RotateTransform(0);
+                Ship2_3.Visibility = Visibility.Visible;
+                Ship2_3.LayoutTransform = new RotateTransform(0);
+                Ship1_1.Visibility = Visibility.Visible;
+                Ship1_1.LayoutTransform = new RotateTransform(0);
+                Ship1_2.Visibility = Visibility.Visible;
+                Ship1_2.LayoutTransform = new RotateTransform(0);
+                Ship1_3.Visibility = Visibility.Visible;
+                Ship1_3.LayoutTransform = new RotateTransform(0);
+                Ship1_4.Visibility = Visibility.Visible;
+                Ship1_4.LayoutTransform = new RotateTransform(0);
+
+                ButtonField();
+                FillImageSource();
+                Border1.Visibility = Visibility.Visible;
+                Border2.Visibility = Visibility.Visible;
+                ButtonRecords.Visibility = Visibility.Hidden;
+                ButtonCloseApp.Visibility = Visibility.Hidden;
+                ButtonInstruction2.Visibility = Visibility.Visible;
+                ButtonCloseInstructions.Visibility = Visibility.Hidden;
+                Instructions.Visibility = Visibility.Hidden;
+                ButtonInstruction.Visibility = Visibility.Hidden;
+                ButtonPlay.Visibility = Visibility.Hidden;
+                field.Visibility = Visibility.Visible;
+                ButtonStartGame.Visibility = Visibility.Visible;
+                ButtonResetShips.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                MessageBox.Show("Поле не может быть пустым!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning
+                    , MessageBoxResult.OK);
+            }
+        }
+        
         private void DrawField()
         {
             for (int i = 0; i < 10; ++i)
@@ -165,8 +249,58 @@ namespace kursa4
             }
         }
 
+        private void SetPointerInTemp()
+        {
+            result = false;
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    TempPlace(cells[i, j], this.tship);
+                    if (result)
+                    {
+                        temp = cells[i, j];
+                        this.enter_in_bord = true;
+                        
+                        i = 10;
+                        j = 10;
+                    }
+                }
+            }
+
+            if (!result)
+            {
+                temp = null;
+                this.enter_in_bord = false;
+            }
+        }
+
+        private int[] TryPointOfDrag()
+        {
+            int[] tI = new int[2];
+            
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    TempPlace(cells[i, j], this.tship);
+                    if (result)
+                    {
+                        tI[0] = i;
+                        tI[1] = j;
+                        
+                        i = 10;
+                        j = 10;
+                    }
+                }
+            }
+
+            return tI;
+        }
+        
         private void OnPreviewDrop(object sender, DragEventArgs e)
         {
+            SetPointerInTemp();
             tetetemop();
             dropped_function();
         }
@@ -181,6 +315,7 @@ namespace kursa4
 
         private void dropped_function()
         {
+            unDrag = false;
             ship_collision();
 
             if (this.dragobject != null && result)
@@ -219,11 +354,14 @@ namespace kursa4
                     replace_ship();
                 }
             }
-
-            if (this.dragobject != null)
+            else if (_poinOfDrag == null && this.dragobject != null && !this.enter_in_bord)
             {
-                double test1 = Canvas.GetLeft(this.dragobject);
-                double test2 = Canvas.GetTop(this.dragobject);
+                replace_ship();
+            }
+
+            if (this.dragobject != null && _poinOfDrag != null && !this.enter_in_bord) 
+            {
+                place_ship(_poinOfDrag);
             }
 
             _poinOfDrag = null;
@@ -612,58 +750,61 @@ namespace kursa4
 
         private void ship_collision()
         {
-            int[] tarr = find_temp_name(temp);
-            int i = tarr[0];
-            int j = tarr[1];
+            if (temp != null)
+            {
+                int[] tarr = find_temp_name(temp);
+                int i = tarr[0];
+                int j = tarr[1];
 
-            if (tship.Width == 240)
-            {
-                if (!situtation)
+                if (tship.Width == 240)
+                {
+                    if (!situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i, j + 1]);
+                        check_deadline(cells[i, j + 2]);
+                        check_deadline(cells[i, j + 3]);
+                    }
+                    else if (situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i + 1, j]);
+                        check_deadline(cells[i + 2, j]);
+                        check_deadline(cells[i + 3, j]);
+                    }
+                }
+                else if (tship.Width == 180)
+                {
+                    if (!situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i, j + 1]);
+                        check_deadline(cells[i, j + 2]);
+                    }
+                    else if (situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i + 1, j]);
+                        check_deadline(cells[i + 2, j]);
+                    }
+                }
+                else if (tship.Width == 120)
+                {
+                    if (!situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i, j + 1]);
+                    }
+                    else if (situtation)
+                    {
+                        check_deadline(cells[i, j]);
+                        check_deadline(cells[i + 1, j]);
+                    }
+                }
+                else if (tship.Width == 60)
                 {
                     check_deadline(cells[i, j]);
-                    check_deadline(cells[i, j + 1]);
-                    check_deadline(cells[i, j + 2]);
-                    check_deadline(cells[i, j + 3]);
                 }
-                else if (situtation)
-                {
-                    check_deadline(cells[i, j]);
-                    check_deadline(cells[i + 1, j]);
-                    check_deadline(cells[i + 2, j]);
-                    check_deadline(cells[i + 3, j]);
-                }
-            }
-            else if (tship.Width == 180)
-            {
-                if (!situtation)
-                {
-                    check_deadline(cells[i, j]);
-                    check_deadline(cells[i, j + 1]);
-                    check_deadline(cells[i, j + 2]);
-                }
-                else if (situtation)
-                {
-                    check_deadline(cells[i, j]);
-                    check_deadline(cells[i + 1, j]);
-                    check_deadline(cells[i + 2, j]);
-                }
-            }
-            else if (tship.Width == 120)
-            {
-                if (!situtation)
-                {
-                    check_deadline(cells[i, j]);
-                    check_deadline(cells[i, j + 1]);
-                }
-                else if (situtation)
-                {
-                    check_deadline(cells[i, j]);
-                    check_deadline(cells[i + 1, j]);
-                }
-            }
-            else if (tship.Width == 60)
-            {
-                check_deadline(cells[i, j]);
             }
         }
 
@@ -674,6 +815,8 @@ namespace kursa4
         private Border _poinOfDrag = null;
         private bool point_true = false;
         private bool result;
+        private double _positionMouseX;
+        private double _positionMouseY; 
 
         private void Ship_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -682,13 +825,16 @@ namespace kursa4
             int[] tempIndex = new int[2];
             if (this.dragobject != null)
             {
-                if (e.GetPosition(canvas).X < (grid.ActualWidth - 1220) / 2 + 600 &&
-                    e.GetPosition(canvas).X > (grid.ActualWidth - 1220) / 2 &&
-                    e.GetPosition(canvas).Y > (grid.ActualHeight - 600) / 2 &&
-                    e.GetPosition(canvas).Y < grid.ActualHeight - (grid.ActualHeight - 600) / 2)
+                _positionMouseX = Mouse.GetPosition(sender as IInputElement).X;
+                _positionMouseY = Mouse.GetPosition(sender as IInputElement).Y;
+
+                int[] tI = new int[2];
+                result = false;
+                tI = TryPointOfDrag();
+                
+                if (result)
                 {
-                    tempIndex = FindCellOnPosition(this.tship);
-                    _poinOfDrag = cells[tempIndex[0], tempIndex[1]];
+                    _poinOfDrag = cells[tI[0], tI[1]];
                 }
 
                 if (tship != null)
@@ -696,18 +842,24 @@ namespace kursa4
                     this.tship.Tag = "untouched";
                 }
 
-                RotateTransform trnsf = tship.LayoutTransform as RotateTransform;
-
-                if (tship != null && trnsf != null && trnsf.Angle == 90)
-                {
-                    situtation = true;
-                }
-                else if (tship != null && trnsf != null && trnsf.Angle == 0)
-                {
-                    situtation = false;
-                }
+                checkRotateShip();
 
                 DragDrop.DoDragDrop(this.dragobject, this.dragobject, DragDropEffects.All);
+            }
+        }
+
+
+        private void checkRotateShip()
+        {
+            RotateTransform trnsf = tship.LayoutTransform as RotateTransform;
+
+            if (tship != null && trnsf != null && trnsf.Angle == 90)
+            {
+                situtation = true;
+            }
+            else if (tship != null && trnsf != null && trnsf.Angle == 0)
+            {
+                situtation = false;
             }
         }
 
@@ -794,6 +946,7 @@ namespace kursa4
 
         bool situtation = false;
         bool mayroll = true;
+        private bool unDrag = false;
 
         private void Ship_MouseMove(object sender, DragEventArgs e)
         {
@@ -804,9 +957,8 @@ namespace kursa4
 
             bool isKeyPressed = Keyboard.IsKeyDown(Key.R);
             bool isKeyRelease = Keyboard.IsKeyUp(Key.R);
-            if (this.dragobject != null && tship.Width != 60 && isKeyPressed && mayroll)
+            if (this.dragobject != null && isKeyPressed && mayroll)
             {
-
                 if (!situtation)
                 {
                     tship.LayoutTransform = new RotateTransform(90);
@@ -828,8 +980,24 @@ namespace kursa4
 
             var position = e.GetPosition(canvas);
 
-            Canvas.SetTop(this.dragobject, position.Y + 10);
-            Canvas.SetLeft(this.dragobject, position.X + 10);
+            checkRotateShip();
+
+            if (situtation && !unDrag)
+            {
+                _positionMouseY = 60 - _positionMouseY;
+                unDrag = true;
+            }
+
+            if (!situtation)
+            {
+                Canvas.SetTop(this.dragobject, position.Y - _positionMouseY);
+                Canvas.SetLeft(this.dragobject, position.X - _positionMouseX);
+            }
+            else
+            {
+                Canvas.SetTop(this.dragobject, position.Y - _positionMouseX);
+                Canvas.SetLeft(this.dragobject, position.X - _positionMouseY);
+            }
         }
 
         private void check_ship_on_border(Border bord, Label ttship)
@@ -837,9 +1005,30 @@ namespace kursa4
             GeneralTransform t1 = bord.TransformToVisual(this);
             GeneralTransform t2 = ttship.TransformToVisual(this);
             Rect r1 = t1.TransformBounds(new Rect()
-                { X = 0, Y = 0, Width = bord.ActualWidth, Height = bord.ActualHeight });
+                { X = 0, Y = 0, Width = bord.ActualWidth + 5, Height = bord.ActualHeight + 5});
             Rect r2 = t2.TransformBounds(new Rect()
                 { X = 0, Y = 0, Width = ttship.ActualWidth, Height = ttship.ActualHeight });
+            result = r1.IntersectsWith(r2);
+        }
+        
+        private void TempPlace(Border bord, Label ttship)
+        {
+            GeneralTransform t1 = bord.TransformToVisual(this);
+            GeneralTransform t2 = ttship.TransformToVisual(this);
+            Rect r1 = t1.TransformBounds(new Rect()
+                { X = 0, Y = 0, Width = bord.ActualWidth - 25, Height = bord.ActualHeight - 25 });
+            Rect r2;
+            if (!situtation)
+            {
+                r2 = t2.TransformBounds(new Rect()
+                    { X = 5, Y = 5, Width = ttship.ActualWidth, Height = ttship.ActualHeight });
+            }
+            else
+            {
+                r2 = t2.TransformBounds(new Rect()
+                    { X = 5, Y = -5, Width = ttship.ActualWidth, Height = ttship.ActualHeight });
+            }
+
             result = r1.IntersectsWith(r2);
         }
 
@@ -1012,6 +1201,10 @@ namespace kursa4
 
         private void gameField()
         {
+            ImageBrush myBrush = new ImageBrush();
+            myBrush.ImageSource = (new BitmapImage(new Uri(@"C:\\Users\\halop\\RiderProjects\\kursa4\\kursa4\\GameFieldStart.jpg")));
+            canvas.Background = myBrush;
+            
             ButtonStartGame.Visibility = Visibility.Hidden;
             ButtonResetShips.Visibility = Visibility.Hidden;
             ButtonInstruction2.Visibility = Visibility.Hidden;
@@ -3235,7 +3428,6 @@ namespace kursa4
                 }
                 else if (hit)
                 {
-                    ttemp.Background = new SolidColorBrush(Colors.Blue);
                     ttemp.Tag = "true";
                     hit = false;
                     playerHits++;
@@ -3256,6 +3448,8 @@ namespace kursa4
             tempInd = find_name_gbutton(ttemp);
             bool hitOnComp = false;
 
+            killArr2[tempInd[0], tempInd[1]].Visibility = Visibility.Visible;
+
             int tCount = 1;
             for (int i = 0; i < 8; i+=2)
             {
@@ -3264,6 +3458,7 @@ namespace kursa4
                     if (hitOnCompCapacity[0] == 3)
                     {
                         DeleteCompShip(compShip4, 8,ttemp);
+                        hitOnComp = true;
                     }
                     else
                     {
@@ -3285,6 +3480,7 @@ namespace kursa4
                         if (hitOnCompCapacity[1] == 2)
                         {
                             DeleteCompShip(compShip3_1, 6,ttemp);
+                            hitOnComp = true;
                         }
                         else
                         {
@@ -3308,6 +3504,7 @@ namespace kursa4
                         if (hitOnCompCapacity[2] == 2)
                         {
                             DeleteCompShip(compShip3_2, 6,ttemp);
+                            hitOnComp = true;
                         }
                         else
                         {
@@ -3331,6 +3528,7 @@ namespace kursa4
                         if (hitOnCompCapacity[3] == 1)
                         {
                             DeleteCompShip(compShip2_1, 4,ttemp);
+                            hitOnComp = true;
                         }
                         else
                         {
@@ -3352,7 +3550,8 @@ namespace kursa4
                     {
                         if (hitOnCompCapacity[4] == 1)
                         {
-                            DeleteCompShip(compShip2_2, 4,ttemp); 
+                            DeleteCompShip(compShip2_2, 4,ttemp);
+                            hitOnComp = true;
                         }
                         else
                         {
@@ -3375,6 +3574,7 @@ namespace kursa4
                         if (hitOnCompCapacity[5] == 1)
                         {
                             DeleteCompShip(compShip2_3, 4,ttemp);
+                            hitOnComp = true;
                         }
                         else
                         {
@@ -3395,46 +3595,68 @@ namespace kursa4
 
         
         private int count1Ship = 0;
+
         private void DeleteCompShip(int[] tempCS, int tCount, Button ttemp)
         {
             if (tCount == 2)
             {
                 if (count1Ship == 0)
                 {
-                    Canvas.SetLeft(compRShip1_1,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetLeft(compRShip1_1, Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip1_1, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip1_1.Visibility = Visibility.Visible;
-                } else if (count1Ship == 1)
+                    count1Ship++;
+                }
+                else if (count1Ship == 1)
                 {
-                    Canvas.SetLeft(compRShip1_2,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetLeft(compRShip1_2, Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip1_2, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip1_2.Visibility = Visibility.Visible;
-                } else if (count1Ship == 2)
+                    count1Ship++;
+                }
+                else if (count1Ship == 2)
                 {
-                    Canvas.SetLeft(compRShip1_3,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetLeft(compRShip1_3, Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip1_3, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip1_3.Visibility = Visibility.Visible;
-                } else if (count1Ship == 3)
+                    count1Ship++;
+                }
+                else if (count1Ship == 3)
                 {
-                    Canvas.SetLeft(compRShip1_4,Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetLeft(compRShip1_4, Canvas.GetLeft(ttemp) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip1_4, Canvas.GetTop(ttemp) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip1_4.Visibility = Visibility.Visible;
+                    count1Ship++;
                 }
             }
 
             if (tempCS == compShip2_1)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
                 {
-                    Canvas.SetLeft(compRShip2_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_1, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_1.LayoutTransform = new RotateTransform(90);
                     compRShip2_1.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
-                    Canvas.SetLeft(compRShip2_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_1, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_1.LayoutTransform = new RotateTransform(90);
+                    compRShip2_1.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_1, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_1.LayoutTransform = new RotateTransform(0);
+                    compRShip2_1.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
+                {
+                    Canvas.SetLeft(compRShip2_1, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_1, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_1.LayoutTransform = new RotateTransform(0);
                     compRShip2_1.Visibility = Visibility.Visible;
                 }
@@ -3442,68 +3664,126 @@ namespace kursa4
 
             if (tempCS == compShip2_2)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
                 {
-                    Canvas.SetLeft(compRShip2_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_2, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_2.LayoutTransform = new RotateTransform(90);
                     compRShip2_2.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
-                    Canvas.SetLeft(compRShip2_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_2, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_2.LayoutTransform = new RotateTransform(90);
+                    compRShip2_2.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_2, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_2.LayoutTransform = new RotateTransform(0);
+                    compRShip2_2.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
+                {
+                    Canvas.SetLeft(compRShip2_2, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_2, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_2.LayoutTransform = new RotateTransform(0);
                     compRShip2_2.Visibility = Visibility.Visible;
                 }
             }
-            
+
             if (tempCS == compShip2_3)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
                 {
-                    Canvas.SetLeft(compRShip2_3,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_3, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_3.LayoutTransform = new RotateTransform(90);
                     compRShip2_3.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
-                    Canvas.SetLeft(compRShip2_3,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip2_3, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_3.LayoutTransform = new RotateTransform(90);
+                    compRShip2_3.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip2_3, Canvas.GetLeft(game_cells[tempCS[2], tempCS[3]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[2], tempCS[3]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip2_3.LayoutTransform = new RotateTransform(0);
+                    compRShip2_3.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
+                {
+                    Canvas.SetLeft(compRShip2_3, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip2_3, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip2_3.LayoutTransform = new RotateTransform(0);
                     compRShip2_3.Visibility = Visibility.Visible;
                 }
             }
-            
+
             if (tempCS == compShip3_1)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
                 {
-                    Canvas.SetLeft(compRShip3_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip3_1, Canvas.GetLeft(game_cells[tempCS[4], tempCS[5]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[4], tempCS[5]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip3_1.LayoutTransform = new RotateTransform(90);
                     compRShip3_1.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
-                    Canvas.SetLeft(compRShip3_1,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
-                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    Canvas.SetLeft(compRShip3_1, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_1.LayoutTransform = new RotateTransform(90);
+                    compRShip3_1.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip3_1, Canvas.GetLeft(game_cells[tempCS[4], tempCS[5]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[4], tempCS[5]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_1.LayoutTransform = new RotateTransform(0);
+                    compRShip3_1.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
+                {
+                    Canvas.SetLeft(compRShip3_1, Canvas.GetLeft(game_cells[tempCS[0], tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_1, Canvas.GetTop(game_cells[tempCS[0], tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip3_1.LayoutTransform = new RotateTransform(0);
                     compRShip3_1.Visibility = Visibility.Visible;
                 }
             }
-            
+        
+
+
             if (tempCS == compShip3_2)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[4],tempCS[5]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[4],tempCS[5]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_2.LayoutTransform = new RotateTransform(90);
+                    compRShip3_2.Visibility = Visibility.Visible;
+                } 
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
                     Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip3_2.LayoutTransform = new RotateTransform(90);
                     compRShip3_2.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[4],tempCS[5]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[4],tempCS[5]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip3_2.LayoutTransform = new RotateTransform(0);
+                    compRShip3_2.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
                 {
                     Canvas.SetLeft(compRShip3_2,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip3_2, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
@@ -3514,14 +3794,28 @@ namespace kursa4
             
             if (tempCS == compShip4)
             {
-                if (tempCS[0] == tempCS[2] - 1 || tempCS[0] == tempCS[2] + 1)
+                if (tempCS[0] == tempCS[2] + 1)
+                {
+                    Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[6],tempCS[7]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[6],tempCS[7]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip4.LayoutTransform = new RotateTransform(90);
+                    compRShip4.Visibility = Visibility.Visible;
+                } 
+                else if (tempCS[0] == tempCS[2] - 1)
                 {
                     Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
                     compRShip4.LayoutTransform = new RotateTransform(90);
                     compRShip4.Visibility = Visibility.Visible;
                 }
-                else
+                else if (tempCS[1] == tempCS[3] + 1)
+                {
+                    Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[6],tempCS[7]]) + (window.ActualWidth - 1220) / 2 + 620);
+                    Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[6],tempCS[7]]) + (window.ActualHeight - field.ActualHeight) / 2);
+                    compRShip4.LayoutTransform = new RotateTransform(0);
+                    compRShip4.Visibility = Visibility.Visible;
+                }
+                else if (tempCS[1] == tempCS[3] - 1)
                 {
                     Canvas.SetLeft(compRShip4,Canvas.GetLeft(game_cells[tempCS[0],tempCS[1]]) + (window.ActualWidth - 1220) / 2 + 620);
                     Canvas.SetTop(compRShip4, Canvas.GetTop(game_cells[tempCS[0],tempCS[1]]) + (window.ActualHeight - field.ActualHeight) / 2);
@@ -3629,7 +3923,7 @@ namespace kursa4
                 }
                 positionsOfHit[0] = 2;
             }
-            else
+            else if (positionsOfHit[0] != 1)
             {
                 positionsOfHit[0] = 0;
             }
@@ -3644,7 +3938,7 @@ namespace kursa4
                 }
                 positionsOfHit[1] = 2;
             }
-            else
+            else if (positionsOfHit[1] != 1)
             {
                 positionsOfHit[1] = 0;
             }
@@ -3659,7 +3953,7 @@ namespace kursa4
                 }
                 positionsOfHit[2] = 2;
             }
-            else
+            else if (positionsOfHit[2] != 1)
             {
                 positionsOfHit[2] = 0;
             }
@@ -3674,7 +3968,7 @@ namespace kursa4
                 }
                 positionsOfHit[3] = 2;
             }
-            else
+            else if (positionsOfHit[3] != 1)
             {
                 positionsOfHit[3] = 0;
             }
@@ -4313,88 +4607,209 @@ namespace kursa4
             show_unvisible();
         }
 
-        private void ButtonShowCompShips_OnClick(object sender, RoutedEventArgs e)
+        /*
+        private int[,] testField = new int[10, 10];
+        
+        private bool CheckAroundPlayerShip(int i, int j)
         {
-            for (int i = 0; i < 10; i++)
+            // if (cells[])
+            return false;
+        }
+
+        private void AddDeadZoneAroundPlayerShip(int i, int j, int uD, int ship)
+        {
+            if (uD == 0)
             {
-                for (int j = 0; j < 10; j++)
+                if (ship == 4)
                 {
-                    if (compships[i, j] == 1)
+                    if (j != 9)
                     {
-                        game_cells[i,j].Background = new SolidColorBrush(Colors.Blue);
+                        testField[i, j - 1] = 2;
                     }
-                    else
+                    
+                    testField[i, j] = 1;
+                    testField[i, j + 1] = 1;
+                    testField[i, j + 2] = 1;
+                    testField[i, j + 3] = 1;
+                    
+                    if (j != 6)
                     {
-                        game_cells[i,j].Background = new SolidColorBrush(Colors.Firebrick);
+                        testField[i, j + 4] = 2;
+                    }
+
+                    if (i != 9)
+                    {
+                        if (j != 9)
+                        {
+                            testField[i - 1, j - 1] = 2;
+                        }
+                        
+                        testField[i + 1, j] = 2;
+                        testField[i + 1, j + 1] = 2;
+                        testField[i + 1, j + 2] = 2;
+                        testField[i + 1, j + 3] = 2;
+                        
+                        if (j != 6)
+                        {
+                            testField[i + 1, j + 4] = 2;
+                        }
+                    }
+                    
+                    if (i != 0)
+                    {
+                        if (j != 9)
+                        {
+                            testField[i - 1, j - 1] = 2;
+                        }
+                        
+                        testField[i - 1, j] = 2;
+                        testField[i - 1, j + 1] = 2;
+                        testField[i - 1, j + 2] = 2;
+                        testField[i - 1, j + 3] = 2;
+                        
+                        if (j != 6)
+                        {
+                            testField[i - 1, j + 4] = 2;
+                        }
                     }
                 }
             }
-        }
+            else
+            {
+                if (i != 9)
+                {
+                    testField[i + 1, j] = 2;
+                }
+                    
+                testField[i, j] = 1;
+                testField[i, j + 1] = 1;
+                testField[i, j + 2] = 1;
+                testField[i, j + 3] = 1;
+                    
+                if (j != 6)
+                {
+                    testField[i, j + 4] = 2;
+                }
 
-        private void ButtonPlaceShips_OnClick(object sender, RoutedEventArgs e)
+                if (i != 9)
+                {
+                    if (j != 9)
+                    {
+                        testField[i - 1, j - 1] = 2;
+                    }
+                        
+                    testField[i + 1, j] = 2;
+                    testField[i + 1, j + 1] = 2;
+                    testField[i + 1, j + 2] = 2;
+                    testField[i + 1, j + 3] = 2;
+                        
+                    if (j != 6)
+                    {
+                        testField[i + 1, j + 4] = 2;
+                    }
+                }
+                    
+                if (i != 0)
+                {
+                    if (j != 9)
+                    {
+                        testField[i - 1, j - 1] = 2;
+                    }
+                        
+                    testField[i - 1, j] = 2;
+                    testField[i - 1, j + 1] = 2;
+                    testField[i - 1, j + 2] = 2;
+                    testField[i - 1, j + 3] = 2;
+                        
+                    if (j != 6)
+                    {
+                        testField[i - 1, j + 4] = 2;
+                    }
+                }
+            }
+        }*/
+
+        /*private void ButtonPlaceShips_OnClick(object sender, RoutedEventArgs e)
         {
-            Canvas.SetLeft(Ship4,Canvas.GetLeft(cells[0, 0]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship4,Canvas.GetTop(cells[0, 0]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship4.Tag = "touched";
-            
-            Canvas.SetLeft(Ship3_1,Canvas.GetLeft(cells[0, 5]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship3_1,Canvas.GetTop(cells[0, 5]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship3_1.Tag = "touched";
-            
-            Canvas.SetLeft(Ship3_2,Canvas.GetLeft(cells[2, 0]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship3_2,Canvas.GetTop(cells[2, 0]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship3_2.Tag = "touched";
-            
-            Canvas.SetLeft(Ship2_1,Canvas.GetLeft(cells[2, 4]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship2_1,Canvas.GetTop(cells[2, 4]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship2_1.Tag = "touched";
-            
-            Canvas.SetLeft(Ship2_2,Canvas.GetLeft(cells[2, 7]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship2_2,Canvas.GetTop(cells[2, 7]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship2_2.Tag = "touched";
-            
-            Canvas.SetLeft(Ship2_3,Canvas.GetLeft(cells[4, 0]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship2_3,Canvas.GetTop(cells[4, 0]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship2_3.Tag = "touched";
-            
-            Canvas.SetLeft(Ship1_1,Canvas.GetLeft(cells[0, 9]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship1_1,Canvas.GetTop(cells[0, 9]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship1_1.Tag = "touched";
-            
-            Canvas.SetLeft(Ship1_2,Canvas.GetLeft(cells[4, 3]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship1_2,Canvas.GetTop(cells[4, 3]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship1_2.Tag = "touched";
-            
-            Canvas.SetLeft(Ship1_3,Canvas.GetLeft(cells[4, 5]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship1_3,Canvas.GetTop(cells[4, 5]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship1_3.Tag = "touched";
-            
-            Canvas.SetLeft(Ship1_4,Canvas.GetLeft(cells[4, 7]) + (window.ActualWidth - field.ActualWidth) / 2);
-            Canvas.SetTop(Ship1_4,Canvas.GetTop(cells[4, 7]) + (window.ActualHeight - field.ActualHeight) / 2);
-            Ship1_4.Tag = "touched";
-            
-            
-            arrShipPosition[0] = 0;
-            arrShipPosition[1] = 9;
-            arrShipPosition[2] = 4;
-            arrShipPosition[3] = 3;
-            arrShipPosition[4] = 4;
-            arrShipPosition[5] = 5;
-            arrShipPosition[6] = 4;
-            arrShipPosition[7] = 7;
-            arrShipPosition[8] = 2;
-            arrShipPosition[9] = 4;
-            arrShipPosition[10] = 2;
-            arrShipPosition[11] = 7;
-            arrShipPosition[12] = 4;
-            arrShipPosition[13] = 0;
-            arrShipPosition[14] = 0;
-            arrShipPosition[15] = 5;
-            arrShipPosition[16] = 2;
-            arrShipPosition[17] = 0;
-            arrShipPosition[18] = 0;
-            arrShipPosition[19] = 0;
-        }
+            int i;
+            int j;
+            int count = 0;
+
+            while (count != 10)
+            {
+                i = ran.Next(10);
+                j = ran.Next(10);
+                
+                if (count == 0)
+                {
+                    this.dragobject = Ship4;
+                    tship = Ship4;
+                    int positionNavigate = ran.Next(100);
+
+                    if (positionNavigate < 50)
+                    {
+                        if (j > 6)
+                        {
+                            place_ship(cells[i,6]);
+                            count++;
+                        }
+                        else
+                        {
+                            place_ship(cells[i,j]);
+                            count++;
+                        }
+                    }
+
+                    if (positionNavigate > 50)
+                    {
+                        if (i > 6)
+                        {
+                            place_ship(cells[6,j]);
+                            count++;
+                        }
+                        else
+                        {
+                            place_ship(cells[i,j]);
+                            count++;
+                        }
+                    }
+                }
+                else if (count == 1)
+                {
+                    this.dragobject = Ship3_1;
+                    tship = Ship3_1;
+                    int positionNavigate = ran.Next(100); 
+                    
+                    if (positionNavigate < 50)
+                    {
+                        if (j > 7)
+                        {
+                            place_ship(cells[i,6]);
+                            count++;
+                        }
+                        else
+                        {
+                            place_ship(cells[i,j]);
+                            count++;
+                        }
+                    }
+
+                    if (positionNavigate > 50)
+                    {
+                        if (i > 7)
+                        {
+                            place_ship(cells[6,j]);
+                            count++;
+                        }
+                        else
+                        {
+                            place_ship(cells[i,j]);
+                            count++;
+                        }
+                    }
+                }
+            }
+        }*/
 
         
         
@@ -4413,10 +4828,12 @@ namespace kursa4
         private void Win()
         {
             Winner.Visibility = Visibility.Visible;
-            ButtonPlaceShips.Visibility = Visibility.Hidden;
-            ButtonShowCompShips.Visibility = Visibility.Hidden;
             ButtonMainMenu.Visibility = Visibility.Visible;
             endGame = true;
+
+            MyRecords record = new MyRecords();
+            record.Deserialize();
+            record.AddWin(nameOfPlayer);
         }
 
         private bool endGame = false;
@@ -4424,8 +4841,6 @@ namespace kursa4
         private void Lose()
         {
             Loser.Visibility = Visibility.Visible;
-            ButtonPlaceShips.Visibility = Visibility.Hidden;
-            ButtonShowCompShips.Visibility = Visibility.Hidden;
             ButtonMainMenu.Visibility = Visibility.Visible;
             loopComphit = false;
             endGame = true;
@@ -4452,17 +4867,31 @@ namespace kursa4
             Ship1_2.Visibility = Visibility.Hidden;
             Ship1_3.Visibility = Visibility.Hidden;
             Ship1_4.Visibility = Visibility.Hidden;
-            Ship1_1.FontSize = 13;
-            Ship1_2.FontSize = 13;
-            Ship1_3.FontSize = 13;
-            Ship1_4.FontSize = 13;
-            
+            compRShip4.Visibility = Visibility.Hidden;
+            compRShip3_1.Visibility = Visibility.Hidden;
+            compRShip3_2.Visibility = Visibility.Hidden;
+            compRShip2_1.Visibility = Visibility.Hidden;
+            compRShip2_2.Visibility = Visibility.Hidden;
+            compRShip2_3.Visibility = Visibility.Hidden;
+            compRShip1_1.Visibility = Visibility.Hidden;
+            compRShip1_2.Visibility = Visibility.Hidden;
+            compRShip1_3.Visibility = Visibility.Hidden;
+            compRShip1_4.Visibility = Visibility.Hidden;
+            Application.Current.MainWindow.MinWidth = 1200;
+            Application.Current.MainWindow.Width = 1200;
+
+            Border1.Visibility = Visibility.Hidden;
+            Border2.Visibility = Visibility.Hidden;
+            ButtonRecords.Visibility = Visibility.Visible;
+            startGame = false;
             ButtonCloseApp.Visibility = Visibility.Visible;
             flag = false;
             field.Visibility = Visibility.Hidden;
             GameField.Visibility = Visibility.Hidden;
             ButtonPlay.Visibility = Visibility.Visible;
             ButtonMainMenu.Visibility = Visibility.Hidden;
+            KillField.Visibility = Visibility.Hidden;
+            KillField2.Visibility = Visibility.Hidden;
 
             for (int i = 0; i < 10; i++)
             {
@@ -4471,7 +4900,8 @@ namespace kursa4
                     cells[i, j] = null;
                     game_cells[i,j] = null;
                     compships[i, j] = 0;
-                    killArr[i, j] = null;
+                    killArr[i, j].Visibility = Visibility.Hidden;
+                    killArr2[i, j].Visibility = Visibility.Hidden;
                 }
             }
 
@@ -4491,17 +4921,6 @@ namespace kursa4
 
         private void DestroyShips()
         {
-            Ship4.Content = "ЧЕТЫРЁХПАЛУБНИК";
-            Ship3_1.Content = "ТРЁХПАЛУБНИК";
-            Ship3_2.Content = "ТРЁХПАЛУБНИК";
-            Ship2_1.Content = "ДВУХПАЛУБНИК";
-            Ship2_2.Content = "ДВУХПАЛУБНИК";
-            Ship2_3.Content = "ДВУХПАЛУБНИК";
-            Ship1_1.Content = "КАТЕР";
-            Ship1_2.Content = "КАТЕР";
-            Ship1_3.Content = "КАТЕР";
-            Ship1_4.Content = "КАТЕР";
-
             Ship4.IsHitTestVisible = true;
             Ship3_1.IsHitTestVisible = true;
             Ship3_2.IsHitTestVisible = true;
@@ -4513,17 +4932,7 @@ namespace kursa4
             Ship1_3.IsHitTestVisible = true;
             Ship1_4.IsHitTestVisible = true;
 
-            Ship4.Background = Brushes.Transparent;
-            Ship3_1.Background = Brushes.Transparent;
-            Ship3_2.Background = Brushes.Transparent;
-            Ship2_1.Background = Brushes.Transparent;
-            Ship2_2.Background = Brushes.Transparent;
-            Ship2_3.Background = Brushes.Transparent;
-            Ship1_1.Background = Brushes.Transparent;
-            Ship1_2.Background = Brushes.Transparent;
-            Ship1_3.Background = Brushes.Transparent;
-            Ship1_4.Background = Brushes.Transparent;
-
+            count1Ship = 0;
             playerHits = 0;
             count = 0;
             endGame = false;
@@ -5067,7 +5476,113 @@ namespace kursa4
 
         private bool instructionFlag2 = false;
 
+        private void ButtonRecords_OnClick(object sender, RoutedEventArgs e)
+        {
+            ButtonPlay.IsHitTestVisible = false;
+            ButtonInstruction.IsHitTestVisible = false;
+            ButtonRecords.IsHitTestVisible = false;
+            ButtonCloseApp.IsHitTestVisible = false;
+
+            MyRecords records = new MyRecords();
+            if (records.Deserialize())
+            {
+                Leaderboards.Visibility = Visibility.Visible;
+                RecordsData dataT;
+
+                foreach (var i in records.name)
+                {
+                    dataT = new RecordsData();
+                    dataT.PlayerName = i.Key;
+                    dataT.Wins = i.Value;
+
+                    ListRecords.Add(dataT);
+                }
+
+                test3.ItemsSource = ListRecords;
+                test3.Items.Refresh();
+                test3.Columns[0].Header = "Никнейм";
+                test3.Columns[0].CanUserResize = false;
+                test3.Columns[0].CanUserSort = false;
+                test3.Columns[0].Width = 200;
+                test3.Columns[1].Header = "Победы";
+                test3.Columns[1].CanUserResize = false;
+                test3.Columns[1].Width = 90;
+            }
+        }
+
+        public List<RecordsData> ListRecords;
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            ButtonPlay.IsHitTestVisible = true;
+            ButtonInstruction.IsHitTestVisible = true;
+            ButtonRecords.IsHitTestVisible = true;
+            ButtonCloseApp.IsHitTestVisible = true;
+            Leaderboards.Visibility = Visibility.Hidden;
+            ListRecords.Clear();
+            test3.Items.Refresh();
+        }
+
+        private void ButtonCheat_OnClick(object sender, RoutedEventArgs e)
+        {
+            Win();
+        }
     }
-    
+
+
+[Serializable]
+    public class MyRecords
+    {
+        public Dictionary<string, int> name = new Dictionary<string, int>();
+
+        public void AddWin(string nameOfUser)
+        {
+            if (name.ContainsKey(nameOfUser))
+            {
+                name[nameOfUser]++;
+            }
+            else
+            {
+                name.Add(nameOfUser,1);
+            }
+            Serialize();
+        }
+
+        public bool Deserialize()
+        {
+            FileInfo fI = new FileInfo("Leaderbords");
+            if (fI.Exists)
+            {
+                FileStream koko = new FileStream("Leaderbords",FileMode.Open);
+                BinaryFormatter ioi = new BinaryFormatter();
+
+                name = (Dictionary<string, int>)ioi.Deserialize(koko);
+                koko.Close();
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("Fuck you!", "Fuck you!", MessageBoxButton.OK,
+                    MessageBoxImage.Warning, MessageBoxResult.OK);
+                return false;
+            }
+        }
+
+        public void Serialize()
+        {
+            FileStream koko = new FileStream("Leaderbords",FileMode.Create);
+            BinaryFormatter ioi = new BinaryFormatter();
+            
+            ioi.Serialize(koko,name);
+            koko.Close();
+        }
+    }
+
+    public class RecordsData
+    {
+        public string PlayerName { get; set; }
+        public int Wins { get; set; }
+
+    }
     
 }
