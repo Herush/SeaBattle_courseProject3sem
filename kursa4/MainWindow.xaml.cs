@@ -232,21 +232,10 @@ namespace kursa4
                     Canvas.SetLeft(cells[i, j], 0 + j * 60);
                     Canvas.SetTop(cells[i, j], 0 + i * 60);
                     field.Children.Add(cells[i, j]);
-                    cells[i, j].DragLeave += OnDragLeave;
-                    cells[i, j].DragEnter += OnDragEnter;
                     cells[i, j].PreviewDrop += OnPreviewDrop;
                 }
             }
 
-        }
-
-        private void OnDragLeave(object sender, DragEventArgs e)
-        {
-            if (point_true)
-            {
-                _poinOfDrag = sender as Border;
-                point_true = false;
-            }
         }
 
         private void SetPointerInTemp()
@@ -937,13 +926,6 @@ namespace kursa4
             Canvas.SetTop(shipT,bordY + (grid.Height - field.Height) / 2);
         }
 
-        private void OnDragEnter(object sender, DragEventArgs e)
-        {
-
-            this.temp = sender as Border;
-            enter_in_bord = true;
-        }
-
         bool situtation = false;
         bool mayroll = true;
         private bool unDrag = false;
@@ -1111,6 +1093,7 @@ namespace kursa4
 
             if (check_all_ships())
             {
+                Win();
                 startGame = true;
                 ButtonField();
                 gameField();
@@ -1221,14 +1204,13 @@ namespace kursa4
             Ship1_2.IsHitTestVisible = false;
             Ship1_3.IsHitTestVisible = false;
             Ship1_4.IsHitTestVisible = false;
-
         }
 
         private Button[,] game_cells;
 
         private void ButtonField()
         {
-            show_unvisible();
+            GameField.Visibility = Visibility.Visible;
             comp_field();
 
             for (int i = 0; i < 10; i++)
@@ -1250,7 +1232,7 @@ namespace kursa4
         }
 
         private int count = 0;
-        Random ran = new Random();
+        private Random ran = new Random();
         private int position;
         
         private void comp_field()
@@ -3324,11 +3306,6 @@ namespace kursa4
             
             return false;
         }
-        
-        private void show_unvisible()
-        {
-            GameField.Visibility = Visibility.Visible;
-        }
 
         private void check_hit_of_ship(Border ttemp, Label ttship)
         {
@@ -3827,29 +3804,13 @@ namespace kursa4
         
         private int[] originalHit = new int[2];
         private bool hitTrue = false;
-        private int csds = 0;
-        
+
         private void comphit()
         {
             if (originalHit[0] == -1)
             {
                 originalHit[0] = ran.Next(10);
                 originalHit[1] = ran.Next(10);
-                csds++;
-            }
-
-            if (csds == 1)
-            {
-                originalHit[0] = 2;
-                originalHit[1] = 2;
-            } else if (csds == 2)
-            {
-                originalHit[0] = 6;
-                originalHit[1] = 2;
-            } else if (csds == 3)
-            {
-                originalHit[0] = 4;
-                originalHit[1] = 2;
             }
 
             int i = originalHit[0];
@@ -4452,8 +4413,6 @@ namespace kursa4
             killArr[i, j].Visibility = Visibility.Visible;
         }
         
-        
-        
         private void field_with_comphits()
         {
             if (!tryHitShip && !reverse)
@@ -4601,217 +4560,6 @@ namespace kursa4
 
             return arrtemp;
         }
-
-        private void ButtonContinue_OnClick(object sender, RoutedEventArgs e)
-        {
-            show_unvisible();
-        }
-
-        /*
-        private int[,] testField = new int[10, 10];
-        
-        private bool CheckAroundPlayerShip(int i, int j)
-        {
-            // if (cells[])
-            return false;
-        }
-
-        private void AddDeadZoneAroundPlayerShip(int i, int j, int uD, int ship)
-        {
-            if (uD == 0)
-            {
-                if (ship == 4)
-                {
-                    if (j != 9)
-                    {
-                        testField[i, j - 1] = 2;
-                    }
-                    
-                    testField[i, j] = 1;
-                    testField[i, j + 1] = 1;
-                    testField[i, j + 2] = 1;
-                    testField[i, j + 3] = 1;
-                    
-                    if (j != 6)
-                    {
-                        testField[i, j + 4] = 2;
-                    }
-
-                    if (i != 9)
-                    {
-                        if (j != 9)
-                        {
-                            testField[i - 1, j - 1] = 2;
-                        }
-                        
-                        testField[i + 1, j] = 2;
-                        testField[i + 1, j + 1] = 2;
-                        testField[i + 1, j + 2] = 2;
-                        testField[i + 1, j + 3] = 2;
-                        
-                        if (j != 6)
-                        {
-                            testField[i + 1, j + 4] = 2;
-                        }
-                    }
-                    
-                    if (i != 0)
-                    {
-                        if (j != 9)
-                        {
-                            testField[i - 1, j - 1] = 2;
-                        }
-                        
-                        testField[i - 1, j] = 2;
-                        testField[i - 1, j + 1] = 2;
-                        testField[i - 1, j + 2] = 2;
-                        testField[i - 1, j + 3] = 2;
-                        
-                        if (j != 6)
-                        {
-                            testField[i - 1, j + 4] = 2;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (i != 9)
-                {
-                    testField[i + 1, j] = 2;
-                }
-                    
-                testField[i, j] = 1;
-                testField[i, j + 1] = 1;
-                testField[i, j + 2] = 1;
-                testField[i, j + 3] = 1;
-                    
-                if (j != 6)
-                {
-                    testField[i, j + 4] = 2;
-                }
-
-                if (i != 9)
-                {
-                    if (j != 9)
-                    {
-                        testField[i - 1, j - 1] = 2;
-                    }
-                        
-                    testField[i + 1, j] = 2;
-                    testField[i + 1, j + 1] = 2;
-                    testField[i + 1, j + 2] = 2;
-                    testField[i + 1, j + 3] = 2;
-                        
-                    if (j != 6)
-                    {
-                        testField[i + 1, j + 4] = 2;
-                    }
-                }
-                    
-                if (i != 0)
-                {
-                    if (j != 9)
-                    {
-                        testField[i - 1, j - 1] = 2;
-                    }
-                        
-                    testField[i - 1, j] = 2;
-                    testField[i - 1, j + 1] = 2;
-                    testField[i - 1, j + 2] = 2;
-                    testField[i - 1, j + 3] = 2;
-                        
-                    if (j != 6)
-                    {
-                        testField[i - 1, j + 4] = 2;
-                    }
-                }
-            }
-        }*/
-
-        /*private void ButtonPlaceShips_OnClick(object sender, RoutedEventArgs e)
-        {
-            int i;
-            int j;
-            int count = 0;
-
-            while (count != 10)
-            {
-                i = ran.Next(10);
-                j = ran.Next(10);
-                
-                if (count == 0)
-                {
-                    this.dragobject = Ship4;
-                    tship = Ship4;
-                    int positionNavigate = ran.Next(100);
-
-                    if (positionNavigate < 50)
-                    {
-                        if (j > 6)
-                        {
-                            place_ship(cells[i,6]);
-                            count++;
-                        }
-                        else
-                        {
-                            place_ship(cells[i,j]);
-                            count++;
-                        }
-                    }
-
-                    if (positionNavigate > 50)
-                    {
-                        if (i > 6)
-                        {
-                            place_ship(cells[6,j]);
-                            count++;
-                        }
-                        else
-                        {
-                            place_ship(cells[i,j]);
-                            count++;
-                        }
-                    }
-                }
-                else if (count == 1)
-                {
-                    this.dragobject = Ship3_1;
-                    tship = Ship3_1;
-                    int positionNavigate = ran.Next(100); 
-                    
-                    if (positionNavigate < 50)
-                    {
-                        if (j > 7)
-                        {
-                            place_ship(cells[i,6]);
-                            count++;
-                        }
-                        else
-                        {
-                            place_ship(cells[i,j]);
-                            count++;
-                        }
-                    }
-
-                    if (positionNavigate > 50)
-                    {
-                        if (i > 7)
-                        {
-                            place_ship(cells[6,j]);
-                            count++;
-                        }
-                        else
-                        {
-                            place_ship(cells[i,j]);
-                            count++;
-                        }
-                    }
-                }
-            }
-        }*/
-
-        
         
         private void LoseEvent()
         {
@@ -5522,11 +5270,7 @@ namespace kursa4
             ListRecords.Clear();
             test3.Items.Refresh();
         }
-
-        private void ButtonCheat_OnClick(object sender, RoutedEventArgs e)
-        {
-            Win();
-        }
+        
     }
 
 
@@ -5562,7 +5306,7 @@ namespace kursa4
             }
             else
             {
-                MessageBox.Show("Fuck you!", "Fuck you!", MessageBoxButton.OK,
+                MessageBox.Show("Ошибка файла!", "Ошибка!", MessageBoxButton.OK,
                     MessageBoxImage.Warning, MessageBoxResult.OK);
                 return false;
             }
